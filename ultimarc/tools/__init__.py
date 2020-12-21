@@ -1,0 +1,93 @@
+#
+# This file is subject to the terms and conditions defined in the
+# file 'LICENSE', which is part of this source code package.
+#
+import argparse
+import logging
+import sys
+import traceback
+
+from ultimarc import translate_gettext as _
+from ultimarc.tools.system_utils import remove_pidfile, write_pidfile_or_die, setup_logging, tc as _tc
+
+toolname = 'ultimarc-cli'
+
+_logger = logging.getLogger('pdr')
+
+
+class ToolEnvironmentObject(object):
+    """ Tool environment configuration object """
+    def __init__(self, items):
+        """
+        :param items: dict of config key value pairs
+        """
+        # Turn on terminal colors.        
+        _tc.set_default_formatting(_tc.bold, _tc.custom_fg_color(43))
+        _tc.set_default_foreground(_tc.custom_fg_color(152))
+        _logger.info('')
+
+    def cleanup(self):
+        """ Clean up or close everything we need to """
+        _logger.info(_tc.reset)  # Turn off terminal colors.
+
+
+class ToolContextManager(object):
+    """
+    A processing context manager for cli tools
+    """
+    _tool_cmd = None
+    _command = None
+    _env = None
+
+    _env_config_obj = None
+
+    def __init__(self, command, args):
+        """
+        Initialize Tool Context Manager
+        :param command: command name
+        :param args: parsed argparser commandline arguments object.
+        """
+        if not command:
+            _logger.error(_('command not set, aborting.'))
+            exit(1)
+
+        self._command = command
+        write_pidfile_or_die(command)
+
+        if not self._env:
+            remove_pidfile(command)
+            exit(1)
+
+    def __enter__(self):
+        """ Return object with properties set to config values """
+        self._env_config_obj = ToolEnvironmentObject(self._env)
+        return self._env_config_obj
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """ Clean up or close everything we need to """
+        self._env_config_obj.cleanup()
+
+        remove_pidfile(self._command)
+
+        if exc_type is not None:
+            print((traceback.format_exc()))
+            _logger.error(_('tool encountered an unexpected error, quitting.'))
+            exit(1)
+
+    @staticmethod
+    def setup_logging(tool_cmd):
+        setup_logging(
+            _logger, tool_cmd, _('--debug') in sys.argv, '{0}.log'.format(tool_cmd)
+            if '--log-file' in sys.argv else None)
+
+    @staticmethod
+    def get_argparser(tool_cmd, tool_desc):
+        """
+        :param tool_cmd: Tool command line id.
+        :param tool_desc: Tool description.
+        """
+        # Setup program arguments.
+        parser = argparse.ArgumentParser(prog=tool_cmd, description=tool_desc)
+        parser.add_argument(_('--debug'), help=_('enable debug output'), default=False, action='store_true')
+        parser.add_argument(_('--log-file'), help=_('write output to a log file'), default=False, action='store_true')
+        return parser
