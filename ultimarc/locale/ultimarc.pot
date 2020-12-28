@@ -1,0 +1,96 @@
+# Translations template for QtPyUltimarc.
+# Copyright (C) 2020 ORGANIZATION
+# This file is distributed under the same license as the QtPyUltimarc
+# project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: QtPyUltimarc 0.1.0\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2020-12-20 18:35-0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.0\n"
+
+#: ultimarc/tools/__init__.py:51
+msgid "command not set, aborting."
+msgstr ""
+
+#: ultimarc/tools/__init__.py:74
+msgid "tool encountered an unexpected error, quitting."
+msgstr ""
+
+#: ultimarc/tools/__init__.py:80 ultimarc/tools/__init__.py:91
+msgid "--debug"
+msgstr ""
+
+#: ultimarc/tools/__init__.py:91
+msgid "enable debug output"
+msgstr ""
+
+#: ultimarc/tools/__init__.py:92
+msgid "--log-file"
+msgstr ""
+
+#: ultimarc/tools/__init__.py:92
+msgid "write output to a log file"
+msgstr ""
+
+#: ultimarc/tools/__main__.py:41
+msgid "Unable to locate \"tools\" directory."
+msgstr ""
+
+#: ultimarc/tools/__main__.py:64
+msgid "ERROR: tool library path not found, aborting."
+msgstr ""
+
+#: ultimarc/tools/__main__.py:90
+msgid "finished."
+msgstr ""
+
+#: ultimarc/tools/__main__.py:96
+msgid "usage"
+msgstr ""
+
+#: ultimarc/tools/__main__.py:97
+msgid "command"
+msgstr ""
+
+#: ultimarc/tools/__main__.py:98
+msgid "-h"
+msgstr ""
+
+#: ultimarc/tools/__main__.py:99
+msgid "--help"
+msgstr ""
+
+#: ultimarc/tools/__main__.py:100
+msgid "args"
+msgstr ""
+
+#: ultimarc/tools/__main__.py:101
+msgid "available commands"
+msgstr ""
+
+#: ultimarc/tools/_tool_template.py:18
+msgid "template"
+msgstr ""
+
+#: ultimarc/tools/_tool_template.py:19
+msgid "put tool help description here"
+msgstr ""
+
+#: ultimarc/tools/list_devices.py:18
+msgid "list"
+msgstr ""
+
+#: ultimarc/tools/list_devices.py:19
+msgid "list all attached ultimarc devices"
+msgstr ""
+
