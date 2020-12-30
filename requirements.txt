@@ -10,7 +10,9 @@ importlib-metadata==3.3.0  # via jsonschema
 jsonschema==3.2.0         # via -r requirements.in
 libusb==1.0.23b7          # via -r requirements.in
 pyrsistent==0.17.3        # via jsonschema
+pyside2==5.15.2           # via -r requirements.in
 pytz==2020.5              # via babel
+shiboken2==5.15.2         # via pyside2
 six==1.15.0               # via jsonschema
 typing-extensions==3.7.4.3  # via importlib-metadata
 zipp==3.4.0               # via importlib-metadata
