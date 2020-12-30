@@ -4,9 +4,16 @@
 #
 #    pip-compile
 #
+attrs==20.3.0             # via jsonschema
 babel==2.9.0              # via -r requirements.in
-hidapi==0.10.1            # via -r requirements.in
-pytz==2020.4              # via babel
+importlib-metadata==3.3.0  # via jsonschema
+jsonschema==3.2.0         # via -r requirements.in
+libusb==1.0.23b7          # via -r requirements.in
+pyrsistent==0.17.3        # via jsonschema
+pytz==2020.5              # via babel
+six==1.15.0               # via jsonschema
+typing-extensions==3.7.4.3  # via importlib-metadata
+zipp==3.4.0               # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

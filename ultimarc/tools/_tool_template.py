@@ -36,12 +36,12 @@ class ProgramTemplateClass(object):
 
         """
         Example: Enabling colors in terminals.
-            Using colors in terminal output is supported by using the self.gcp_env.terminal_colors
+            Using colors in terminal output is supported by using the ultimarc.system_utils
             object.  Errors and Warnings are automatically set to Red and Yellow respectively.
             The terminal_colors object has many predefined colors, but custom colors may be used
-            as well. See rdr_service/services/TerminalColors for more information.
+            as well. See ultimarc.system_utils for more information.
         """
-        # from ultimarc.tools.system_utils import tc as _tc
+        # from ultimarc.system_utils import tc as _tc
         # _logger.info(_tc.fmt('This is a blue info line.', _tc.fg_bright_blue))
         # _logger.info(_tc.fmt('This is a custom color line', _tc.custom_fg_color(156)))
 
@@ -51,7 +51,7 @@ class ProgramTemplateClass(object):
 
 def run():
     # Set global debug value and setup application logging.
-    ToolContextManager.setup_logging(tool_cmd)
+    ToolContextManager.initialize_logging(tool_cmd)
     parser = ToolContextManager.get_argparser(tool_cmd, tool_desc)
 
     # TODO:  Setup additional program arguments here.

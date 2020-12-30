@@ -2,14 +2,14 @@
 # This file is subject to the terms and conditions defined in the
 # file 'LICENSE', which is part of this source code package.
 #
-# Template for Ultimarc CLI tools.
+# List all Ultimarc devices attached to local host.
 #
 import logging
 import sys
 
 from ultimarc import translate_gettext as _
+from ultimarc.devices import USBDeviceNotFoundError, USBDeviceClaimInterfaceError
 from ultimarc.tools import ToolContextManager, ToolEnvironmentObject
-
 
 _logger = logging.getLogger('ultimarc')
 
@@ -19,46 +19,73 @@ tool_cmd = _('list')
 tool_desc = _('list all attached ultimarc devices')
 
 
-class ProgramTemplateClass(object):
-    def __init__(self, args, tool_env: ToolEnvironmentObject):
+class ListDevicesClass(object):
+    def __init__(self, args, env: (ToolEnvironmentObject, None)):
         """
         :param args: command line arguments.
-        :param tool_env: tool environment information, see: gcp_initialize().
+        :param env: tool environment information, see: gcp_initialize().
         """
         self.args = args
-        self.tool_env = tool_env
+        self.env = env
+
+    def get_devices(self):
+        """ Return a list of devices we should show information for. """
+        return self.env.devices.filter(class_id=self.args.class_id, bus=self.args.bus, address=self.args.address)
+
+    def list_devices_found(self):
+        """ List all the devices found. """
+        # Find all Ultimarc USB devices.
+        _logger.info(_('Device classes found') + ':')
+        for cat in self.env.devices.get_device_classes():
+            _logger.info(f' {cat}')
+
+        _logger.info('\n' + _('Devices') + ':')
+        for dev in self.get_devices():
+            _logger.info(f' {dev}')
+
+        if not self.args.descriptors:
+            return
+
+        try:
+            desc_string_fields = ['iManufacturer', 'iProduct', 'iSerialNumber', 'idProduct', 'idVendor']
+            for dev in self.get_devices():
+                _logger.info('')
+                # Open device.
+                with dev as dev_h:
+                    _logger.info(_('Showing device descriptor properties for') + f' {dev.dev_key}')
+                    _logger.info('  ' + _('Bus') + f': {dev.bus}')
+                    _logger.info('  ' + _('Address') + f': {dev.address}')
+                    for fld in dev_h.property_fields:
+                        desc_val = dev_h.get_desc_value(fld)
+                        if fld in desc_string_fields:
+                            desc_str = dev_h.get_desc_string(dev_h.get_desc_value(fld)) or ''
+                            _logger.info(f'  {fld}: {desc_val:04x} (desc idx: 0x{desc_val:04x}, str: "{desc_str}")')
+                        else:
+                            _logger.info(f'  {fld}: {desc_val}')
+
+        except (USBDeviceNotFoundError, USBDeviceClaimInterfaceError) as e:
+            _logger.error(_('An error occurred while inspecting device') + f' {e.dev_key}.')
 
     def run(self):
         """
         Main program process
         :return: Exit code value
         """
-
-        """
-        Example: Enabling colors in terminals.
-            Using colors in terminal output is supported by using the self.gcp_env.terminal_colors
-            object.  Errors and Warnings are automatically set to Red and Yellow respectively.
-            The terminal_colors object has many predefined colors, but custom colors may be used
-            as well. See rdr_service/services/TerminalColors for more information.
-        """
-        # from ultimarc.tools.system_utils import tc as _tc
-        # _logger.info(_tc.fmt('This is a blue info line.', _tc.fg_bright_blue))
-        # _logger.info(_tc.fmt('This is a custom color line', _tc.custom_fg_color(156)))
-
-        # TODO: write program main process here after setting 'tool_cmd' and 'tool_desc'...
+        self.list_devices_found()
         return 0
 
 
 def run():
     # Set global debug value and setup application logging.
-    ToolContextManager.setup_logging(tool_cmd)
+    ToolContextManager.initialize_logging(tool_cmd)
     parser = ToolContextManager.get_argparser(tool_cmd, tool_desc)
+    parser.add_argument('-d', '--descriptors', help=_('Show device descriptor values.'), default=False,
+                        action='store_true')
 
-    # TODO:  Setup additional program arguments here.
     args = parser.parse_args()
 
     with ToolContextManager(tool_cmd, args) as tool_env:
-        process = ProgramTemplateClass(args, tool_env)
+        process = ListDevicesClass(args, tool_env)
         exit_code = process.run()
         return exit_code
 

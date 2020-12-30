@@ -8,19 +8,28 @@ import sys
 import traceback
 
 from ultimarc import translate_gettext as _
-from ultimarc.tools.system_utils import remove_pidfile, write_pidfile_or_die, setup_logging, tc as _tc
+from ultimarc.devices import USBDevices
+from ultimarc.system_utils import remove_pidfile, write_pidfile_or_die, setup_logging, tc as _tc, JSONObject
 
 toolname = 'ultimarc-cli'
 
-_logger = logging.getLogger('pdr')
+_logger = logging.getLogger('ultimarc')
+
+_VENDOR_FILTER = ['d209']  # List of USB vendor IDs.
 
 
 class ToolEnvironmentObject(object):
     """ Tool environment configuration object """
+
+    devices = None  # USBDevices object
+
     def __init__(self, items):
         """
         :param items: dict of config key value pairs
         """
+        for k, v in items.items():
+            self.__dict__[k] = v
+
         # Turn on terminal colors.        
         _tc.set_default_formatting(_tc.bold, _tc.custom_fg_color(43))
         _tc.set_default_foreground(_tc.custom_fg_color(152))
@@ -52,6 +61,12 @@ class ToolContextManager(object):
             exit(1)
 
         self._command = command
+        # The Environment dict is where we can setup any information related to all tools.
+        self._env = {
+            'command': command,
+            'devices': USBDevices(_VENDOR_FILTER)
+        }
+
         write_pidfile_or_die(command)
 
         if not self._env:
@@ -75,10 +90,10 @@ class ToolContextManager(object):
             exit(1)
 
     @staticmethod
-    def setup_logging(tool_cmd):
+    def initialize_logging(tool_cmd):
         setup_logging(
-            _logger, tool_cmd, _('--debug') in sys.argv, '{0}.log'.format(tool_cmd)
-            if '--log-file' in sys.argv else None)
+            _logger, tool_cmd, '--debug' in sys.argv, '-q' in sys.argv or '--quiet' in sys.argv,
+            '{0}.log'.format(tool_cmd) if '--log-file' in sys.argv else None)
 
     @staticmethod
     def get_argparser(tool_cmd, tool_desc):
@@ -88,6 +103,10 @@ class ToolContextManager(object):
         """
         # Setup program arguments.
         parser = argparse.ArgumentParser(prog=tool_cmd, description=tool_desc)
-        parser.add_argument(_('--debug'), help=_('enable debug output'), default=False, action='store_true')
-        parser.add_argument(_('--log-file'), help=_('write output to a log file'), default=False, action='store_true')
+        parser.add_argument('--debug', help=_('enable debug output'), default=False, action='store_true')
+        parser.add_argument('--log-file', help=_('write output to a log file'), default=False, action='store_true')
+        parser.add_argument('-q', '--quiet', help=_('suppress normal output'), default=False, action='store_true')
+        parser.add_argument('-c', '--class-id', help=_('filter by device class id'), type=str)
+        parser.add_argument('--bus', help=_('filter by usb device bus number'), type=int, default=None)
+        parser.add_argument('--address', help=_('filter by usb device address number'), type=int, default=None)
         return parser

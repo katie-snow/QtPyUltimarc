@@ -25,7 +25,7 @@ try:
 except ImportError:
     pass
 
-_logger = logging.getLogger("rdr_logger")
+_logger = logging.getLogger("ultimarc")
 
 
 class JSONObject:
@@ -222,12 +222,13 @@ class _ToolLoggingFormatter(logging.Formatter):
         return msg
 
 
-def setup_logging(logger, progname, debug=False, logfile=None):
+def setup_logging(logger, progname, debug=False, quiet=False, logfile=None):
     """
   Setup Python logging
   :param logger: Handle to logger object
   :param progname: Name of application or service
-  :param debug: True if Debugging enabled
+  :param debug: True if debugging enabled
+  :param quiet: True if quiet output selected.
   :param logfile: Path and filename to log file to output to
   :return: Nothing
   """
@@ -239,7 +240,8 @@ def setup_logging(logger, progname, debug=False, logfile=None):
         logging.basicConfig(filename=os.devnull, datefmt="%Y-%m-%d %H:%M:%S", level=logging.DEBUG)
         formatter = _ToolLoggingFormatter("%(asctime)s {0}: %(levelname)s: %(message)s".format(progname))
     else:
-        logging.basicConfig(filename=os.devnull, datefmt="%Y-%m-%d %H:%M:%S", level=logging.INFO)
+        logging.basicConfig(filename=os.devnull, datefmt="%Y-%m-%d %H:%M:%S",
+                            level=logging.WARNING if quiet else logging.INFO)
         # formatter = logging.Formatter('%(levelname)s: {0}: %(message)s'.format(progname))
         formatter = _ToolLoggingFormatter("%(message)s")
 
@@ -501,3 +503,27 @@ def print_progress_bar(iteration, total, prefix="", suffix="", decimals=1, bar_l
     if iteration == total:
         sys.stdout.write("\n")
     sys.stdout.flush()
+
+
+def git_project_root(path=None):
+    """
+    Figure out the git project top level directory.
+    :param path: optional: path to check.
+    :return: Git project root path or None
+    """
+    cwd = os.curdir
+    if path:
+        if not os.path.exists(path):
+            raise ValueError('Invalid directory path argument')
+        os.chdir(path)
+
+    args = ['git', 'rev-parse', '--show-toplevel']
+    # pylint: disable=unused-variable
+    code, so, se = run_external_program(args=args)
+
+    os.chdir(cwd)
+
+    if code == 0:
+        return so.strip()
+
+    return None

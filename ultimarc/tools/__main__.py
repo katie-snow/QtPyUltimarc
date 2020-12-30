@@ -25,7 +25,7 @@ def _grep_prop(filename, prop_name):
     fdata = open(filename, "r").read()
     obj = re.search("^{0} = ['|\"|_('|_(\"](.+)['|\"|')|\")]$".format(prop_name), fdata, re.MULTILINE)
     if obj:
-        return obj.group(1)
+        return obj.group(1).replace('(', '').replace("'", '').replace(')', '')
     return None
 
 
@@ -38,7 +38,7 @@ def _run_tool(lib_paths, import_path):
     if not cwd.endswith('tools'):
         tmp_cwd = os.path.join(cwd, 'tools')
         if not os.path.exists(tmp_cwd):
-            raise FileNotFoundError(_('Unable to locate "tools" directory.'))
+            raise FileNotFoundError(_('Unable to locate "tools" module.'))
         os.chdir(tmp_cwd)
 
     args = copy.deepcopy(sys.argv)
@@ -87,7 +87,8 @@ def _run_tool(lib_paths, import_path):
                 mod_name = os.path.basename(lib).split(".")[0]
                 mod = importlib.import_module("{0}.{1}".format(import_path, mod_name))
                 exit_code = mod.run()
-                print(_('finished.'))
+                if '-q' not in sys.argv and '--quiet' not in sys.argv:
+                    print(_('finished.'))
                 os.chdir(cwd)
                 return exit_code
 

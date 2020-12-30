@@ -2,5 +2,9 @@
 # Translations
 babel
 
-# USB
-hidapi
+# USB communications
+libusb
+
+# JSON Schema Validation
+jsonschema
+
