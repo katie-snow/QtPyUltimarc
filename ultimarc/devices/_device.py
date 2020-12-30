@@ -204,7 +204,8 @@ class USBDeviceHandle:
             return None
 
         if config['resourceType'] not in resource_types:
-            _logger.error(_('Resource type does not match accepted types' + f' ({",".join(resource_types)}).'))
+            valid_types = ",".join(resource_types)
+            _logger.error(_('Resource type does not match accepted types') + f' ({valid_types}).')
             return None
 
         return config

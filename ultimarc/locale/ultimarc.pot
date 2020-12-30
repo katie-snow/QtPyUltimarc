@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: QtPyUltimarc 0.1.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2020-12-30 09:55-0600\n"
+"POT-Creation-Date: 2020-12-30 16:13-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,28 +18,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.0\n"
 
-#: ultimarc/main.py:16
-msgid "Device classes found:"
+#: ultimarc/main.py:15
+msgid "Ultimarc Device Configuration Tool"
 msgstr ""
 
-#: ultimarc/main.py:20
-msgid "Devices:"
-msgstr ""
-
-#: ultimarc/main.py:29
-msgid "Showing device descriptor properties for"
-msgstr ""
-
-#: ultimarc/main.py:39
-msgid "An error occurred while inspecting device"
-msgstr ""
-
-#: ultimarc/main.py:46
-msgid "Ultimarc device configurator."
-msgstr ""
-
-#: ultimarc/main.py:48
-msgid "display attached ultimarc devices."
+#: ultimarc/main.py:32
+msgid "Bad UI settings found, aborting."
 msgstr ""
 
 #: ultimarc/devices/__init__.py:30
@@ -54,116 +38,152 @@ msgstr ""
 msgid "Failed to claim USB device interface."
 msgstr ""
 
-#: ultimarc/devices/_base.py:111
+#: ultimarc/devices/_base.py:113
 msgid "Opening USB device"
 msgstr ""
 
-#: ultimarc/devices/_base.py:132
+#: ultimarc/devices/_base.py:134
 msgid "Freeing USB device list."
 msgstr ""
 
-#: ultimarc/devices/_base.py:139
+#: ultimarc/devices/_base.py:141
 msgid "Closing USB device"
 msgstr ""
 
-#: ultimarc/devices/_base.py:147
+#: ultimarc/devices/_base.py:149
 msgid "USB device encountered an unexpected error, quitting."
 msgstr ""
 
-#: ultimarc/devices/_base.py:159 ultimarc/devices/_base.py:234
+#: ultimarc/devices/_base.py:161 ultimarc/devices/_base.py:259
 msgid "Failed to find attached USB devices."
 msgstr ""
 
-#: ultimarc/devices/_base.py:169 ultimarc/devices/_base.py:247
+#: ultimarc/devices/_base.py:171 ultimarc/devices/_base.py:272
 msgid "failed to get USB device descriptor."
 msgstr ""
 
-#: ultimarc/devices/_base.py:178
+#: ultimarc/devices/_base.py:180
 msgid "Failed to open device"
 msgstr ""
 
-#: ultimarc/devices/_base.py:181
+#: ultimarc/devices/_base.py:183
 msgid "Device was not found on host when trying to open it."
 msgstr ""
 
-#: ultimarc/devices/_base.py:205
+#: ultimarc/devices/_base.py:207
 msgid "USB device filter must be a list."
 msgstr ""
 
-#: ultimarc/devices/_base.py:208
+#: ultimarc/devices/_base.py:210
 msgid "Invalid USB vendor/manufacturer id"
 msgstr ""
 
-#: ultimarc/devices/_base.py:238
+#: ultimarc/devices/_base.py:228
+msgid "Invalid filter method argument"
+msgstr ""
+
+#: ultimarc/devices/_base.py:263
 msgid "Vendor filters: "
 msgstr ""
 
-#: ultimarc/devices/_base.py:239
+#: ultimarc/devices/_base.py:264
 msgid "Searching for USB devices..."
 msgstr ""
 
-#: ultimarc/devices/_base.py:255
+#: ultimarc/devices/_base.py:280
 msgid "Device search complete."
 msgstr ""
 
-#: ultimarc/devices/_device.py:66
+#: ultimarc/devices/_device.py:71
 msgid "Invalid descriptor property field name"
 msgstr ""
 
-#: ultimarc/devices/_device.py:81
+#: ultimarc/devices/_device.py:86
 msgid "failed to get descriptor property field string value."
 msgstr ""
 
-#: ultimarc/devices/_device.py:108
+#: ultimarc/devices/_device.py:116
 msgid "Read {} bytes from device"
 msgstr ""
 
-#: ultimarc/devices/_device.py:110
+#: ultimarc/devices/_device.py:118
 msgid "Wrote {} bytes to device"
 msgstr ""
 
-#: ultimarc/devices/_device.py:114
+#: ultimarc/devices/_device.py:122
 msgid "Failed to read data from device"
 msgstr ""
 
-#: ultimarc/devices/_device.py:116
+#: ultimarc/devices/_device.py:124
 msgid "Failed to write data to device"
 msgstr ""
 
-#: ultimarc/devices/aimtrak.py:13
+#: ultimarc/devices/_device.py:176
+msgid "Configuration file did not validate against config schema."
+msgstr ""
+
+#: ultimarc/devices/_device.py:197
+msgid "Configuration file is not valid JSON."
+msgstr ""
+
+#: ultimarc/devices/_device.py:203
+msgid "Configuration file did not validate against the base schema."
+msgstr ""
+
+#: ultimarc/devices/_device.py:208
+msgid "Resource type does not match accepted types"
+msgstr ""
+
+#: ultimarc/devices/aimtrak.py:14
 msgid "Aimtrak Light Gun"
 msgstr ""
 
-#: ultimarc/devices/usb_button.py:35
+#: ultimarc/devices/usb_button.py:41
 msgid "USB Button"
 msgstr ""
 
-#: ultimarc/devices/usb_button.py:47
+#: ultimarc/devices/usb_button.py:53
 msgid "Color argument value is invalid"
 msgstr ""
 
-#: ultimarc/tools/__init__.py:51
+#: ultimarc/devices/usb_button.py:68
+msgid "Failed to read color data from usb button."
+msgstr ""
+
+#: ultimarc/devices/usb_button.py:86
+msgid "Configuration device class is not \"usb-button\"."
+msgstr ""
+
+#: ultimarc/tools/__init__.py:60
 msgid "command not set, aborting."
 msgstr ""
 
-#: ultimarc/tools/__init__.py:74
+#: ultimarc/tools/__init__.py:89
 msgid "tool encountered an unexpected error, quitting."
 msgstr ""
 
-#: ultimarc/tools/__init__.py:80 ultimarc/tools/__init__.py:91
-msgid "--debug"
-msgstr ""
-
-#: ultimarc/tools/__init__.py:91
+#: ultimarc/tools/__init__.py:106
 msgid "enable debug output"
 msgstr ""
 
-#: ultimarc/tools/__init__.py:92
-msgid "--log-file"
+#: ultimarc/tools/__init__.py:107
+msgid "write output to a log file"
 msgstr ""
 
-#: ultimarc/tools/__init__.py:92
-msgid "write output to a log file"
+#: ultimarc/tools/__init__.py:108
+msgid "suppress normal output"
+msgstr ""
+
+#: ultimarc/tools/__init__.py:109
+msgid "filter by device class id"
+msgstr ""
+
+#: ultimarc/tools/__init__.py:110
+msgid "filter by usb device bus number"
+msgstr ""
+
+#: ultimarc/tools/__init__.py:111
+msgid "filter by usb device address number"
 msgstr ""
 
 #: ultimarc/tools/__main__.py:41
@@ -174,31 +194,31 @@ msgstr ""
 msgid "ERROR: tool library path not found, aborting."
 msgstr ""
 
-#: ultimarc/tools/__main__.py:90
+#: ultimarc/tools/__main__.py:91
 msgid "finished."
 msgstr ""
 
-#: ultimarc/tools/__main__.py:96
+#: ultimarc/tools/__main__.py:97
 msgid "usage"
 msgstr ""
 
-#: ultimarc/tools/__main__.py:97
+#: ultimarc/tools/__main__.py:98
 msgid "command"
 msgstr ""
 
-#: ultimarc/tools/__main__.py:98
+#: ultimarc/tools/__main__.py:99
 msgid "-h"
 msgstr ""
 
-#: ultimarc/tools/__main__.py:99
+#: ultimarc/tools/__main__.py:100
 msgid "--help"
 msgstr ""
 
-#: ultimarc/tools/__main__.py:100
+#: ultimarc/tools/__main__.py:101
 msgid "args"
 msgstr ""
 
-#: ultimarc/tools/__main__.py:101
+#: ultimarc/tools/__main__.py:102
 msgid "available commands"
 msgstr ""
 
@@ -218,11 +238,87 @@ msgstr ""
 msgid "list all attached ultimarc devices"
 msgstr ""
 
-#: ultimarc/tools/usb_button.py:18
+#: ultimarc/tools/list_devices.py:38
+msgid "Device classes found"
+msgstr ""
+
+#: ultimarc/tools/list_devices.py:42
+msgid "Devices"
+msgstr ""
+
+#: ultimarc/tools/list_devices.py:55
+msgid "Showing device descriptor properties for"
+msgstr ""
+
+#: ultimarc/tools/list_devices.py:56
+msgid "Bus"
+msgstr ""
+
+#: ultimarc/tools/list_devices.py:57
+msgid "Address"
+msgstr ""
+
+#: ultimarc/tools/list_devices.py:67
+msgid "An error occurred while inspecting device"
+msgstr ""
+
+#: ultimarc/tools/list_devices.py:82
+msgid "Show device descriptor values."
+msgstr ""
+
+#: ultimarc/tools/usb_button.py:21
 msgid "usb-button"
 msgstr ""
 
-#: ultimarc/tools/usb_button.py:19
+#: ultimarc/tools/usb_button.py:22
 msgid "manage usb-button devices."
+msgstr ""
+
+#: ultimarc/tools/usb_button.py:48
+msgid "No USB button devices found, aborting"
+msgstr ""
+
+#: ultimarc/tools/usb_button.py:65
+msgid "Color"
+msgstr ""
+
+#: ultimarc/tools/usb_button.py:76
+msgid "randomly set button color to"
+msgstr ""
+
+#: ultimarc/tools/usb_button.py:84
+msgid "configuration successfully applied to device."
+msgstr ""
+
+#: ultimarc/tools/usb_button.py:95
+msgid "set usb button color with RGB value"
+msgstr ""
+
+#: ultimarc/tools/usb_button.py:96
+msgid "randomly set usb button color"
+msgstr ""
+
+#: ultimarc/tools/usb_button.py:98
+msgid "output current usb button color RGB value"
+msgstr ""
+
+#: ultimarc/tools/usb_button.py:100
+msgid "Set button config from config file."
+msgstr ""
+
+#: ultimarc/tools/usb_button.py:106
+msgid "Nothing to do."
+msgstr ""
+
+#: ultimarc/tools/usb_button.py:110
+msgid "More than one mutually exclusive argument specified."
+msgstr ""
+
+#: ultimarc/tools/usb_button.py:115
+msgid "Invalid RGB value found for --set-color argument."
+msgstr ""
+
+#: ultimarc/tools/usb_button.py:122
+msgid "Unable to find configuration file specified in argument."
 msgstr ""
 
