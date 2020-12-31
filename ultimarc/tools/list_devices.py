@@ -8,7 +8,7 @@ import logging
 import sys
 
 from ultimarc import translate_gettext as _
-from ultimarc.devices import USBDeviceNotFoundError, USBDeviceClaimInterfaceError, DeviceClassIDs
+from ultimarc.devices import USBDeviceNotFoundError, USBDeviceClaimInterfaceError, DeviceClassID
 from ultimarc.tools import ToolContextManager, ToolEnvironmentObject
 
 _logger = logging.getLogger('ultimarc')

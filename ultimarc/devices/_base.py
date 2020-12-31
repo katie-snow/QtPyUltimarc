@@ -35,8 +35,8 @@ USB_PRODUCT_DESCRIPTIONS = {
 }
 
 
-class DeviceClassIDs(Enum):
-    """ Device class ids, used in schemas and tools for filtering devices by class. """
+class DeviceClassID(Enum):
+    """ Device class id values, used in schemas and tools for filtering devices by class. """
     USBButton = 'usb-button'
     AimTrak = 'aimtrak'
 
@@ -231,12 +231,12 @@ class USBDevices:
         :param address: integer
         :return: iter(list)
         """
-        if (class_id and not isinstance(class_id, str)) or (bus and not isinstance(bus, int)) or \
+        if (class_id and not isinstance(class_id, (str, DeviceClassID))) or (bus and not isinstance(bus, int)) or \
                 (address and not isinstance(address, int)):
             raise ValueError(_('Invalid filter method argument'))
         devices = list()
         for dev in self._usb_devices:
-            if class_id and dev.class_id != class_id:
+            if class_id and dev.class_id != (class_id if isinstance(class_id, str) else class_id.value):
                 continue
             if bus and dev.bus != bus:
                 continue
