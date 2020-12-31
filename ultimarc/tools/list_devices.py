@@ -88,7 +88,7 @@ def run():
     # Verify class id is valid by looking in the Enum by value.
     if args.class_id:
         try:
-            DeviceClassIDs(args.class_id)
+            DeviceClassID(args.class_id)
         except ValueError:
             _logger.error('Invalid class id argument value.')
             return -1
