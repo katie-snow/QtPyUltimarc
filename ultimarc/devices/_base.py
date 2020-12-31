@@ -198,17 +198,17 @@ class USBDevices:
     device_count = 0
     error = False
 
-    def __init__(self, filters: list = None):
+    def __init__(self, vendor_filter: list = None):
         """
-        :param filters: list of vendor/manufacturer IDs to capture.
+        :param vendor_filter: list of vendor/manufacturer IDs to capture.
         """
-        if filters:
-            if not isinstance(filters, list):
+        if vendor_filter:
+            if not isinstance(vendor_filter, list):
                 raise TypeError(_('USB device filter must be a list.'))
-            for vendor_id in filters:
+            for vendor_id in vendor_filter:
                 if not isinstance(vendor_id, str) or len(vendor_id) != 4:
                     raise ValueError(_("Invalid USB vendor/manufacturer id") + f' ({vendor_id}).')
-            self._filters = filters
+            self._filters = vendor_filter
 
         self._find_devices()
 

@@ -60,7 +60,7 @@ class USBButtonClass(object):
             for dev in devices:
                 with dev as dev_h:
                     red, green, blue = dev_h.get_color()
-                    if red:
+                    if red is not None:
                         _logger.info(f'{dev.dev_key} ({dev.bus},{dev.address}): ' +
                                      _('Color') + f': RGB({red},{green},{blue}).')
 
