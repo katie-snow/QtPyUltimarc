@@ -55,10 +55,10 @@ class ListDevicesClass(object):
                     _logger.info(_('Showing device descriptor properties for') + f' {dev.dev_key}')
                     _logger.info('  ' + _('Bus') + f': {dev.bus}')
                     _logger.info('  ' + _('Address') + f': {dev.address}')
-                    for fld in dev_h.property_fields:
-                        desc_val = dev_h.get_desc_value(fld)
+                    for fld in dev_h.discriptor_fields:
+                        desc_val = dev_h.get_descriptor_value(fld)
                         if fld in desc_string_fields:
-                            desc_str = dev_h.get_desc_string(dev_h.get_desc_value(fld)) or ''
+                            desc_str = dev_h.get_descriptor_string(dev_h.get_descriptor_value(fld)) or ''
                             _logger.info(f'  {fld}: {desc_val:04x} (desc idx: 0x{desc_val:04x}, str: "{desc_str}")')
                         else:
                             _logger.info(f'  {fld}: {desc_val}')

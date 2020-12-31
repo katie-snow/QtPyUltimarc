@@ -3,14 +3,10 @@
 # file 'LICENSE', which is part of this source code package.
 #
 import ctypes as ct
-import json
 import logging
-import os
-
-from jsonschema import validate, ValidationError
 
 from ultimarc import translate_gettext as _
-from ultimarc.devices._device import USBDeviceHandle as _USBDevice
+from ultimarc.devices._device import USBDeviceHandle
 
 
 _logger = logging.getLogger('ultimarc')
@@ -33,7 +29,7 @@ class USBButtonColorStruct(ct.Structure):
     ]
 
 
-class USBButtonDevice(_USBDevice):
+class USBButtonDevice(USBDeviceHandle):
     """
     Manage a USB Button device
     """
@@ -88,7 +84,7 @@ class USBButtonDevice(_USBDevice):
 
         # Determine which config resource type we have.
         if config['resourceType'] == 'usb-button-color':
-            if not self.validate_config(config, '../schemas/usb-button-color.schema'):
+            if not self.validate_config(config, 'usb-button-color.schema'):
                 return False
             c = config['colorRGB']
             data = USBButtonColorStruct(0x01, c['red'], c['green'], c['blue'])

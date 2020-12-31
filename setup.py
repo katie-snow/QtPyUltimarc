@@ -4,7 +4,7 @@
 import os
 from setuptools import setup, find_packages
 
-__VERSION__ = '0.1.0'
+__VERSION__ = '0.1.1'
 base_dir = os.path.abspath(os.path.dirname(__file__))
 
 with open(os.path.join(base_dir, 'README.md')) as readme:

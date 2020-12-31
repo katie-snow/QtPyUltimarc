@@ -37,47 +37,47 @@ class USBDeviceHandle:
     Represents an opened USB device.  Do not instantiate directly, use object obtained
     from a USBDeviceInfo object using 'with' command.  IE 'with USBDeviceInfo as handle:'
     """
-    __dev__ = None
-    __dev_handle__ = None
-    __dev_desc__ = None
+    __libusb_dev__ = None
+    __libusb_dev_handle__ = None
+    __libusb_dev_desc__ = None
 
     dev_key = None
     class_id = 'unset'  # Used to match/filter devices. Override in child classes.
     class_descr = 'unset'  # Override in child classes.
 
-    property_fields = None  # List of available device property fields.
+    discriptor_fields = None  # List of available device property fields.
 
     def __init__(self, dev_handle, dev_key):
-        self.__dev__ = usb.get_device(dev_handle)
-        self.__dev_handle__ = dev_handle
+        self.__libusb_dev__ = usb.get_device(dev_handle)
+        self.__libusb_dev_handle__ = dev_handle
         self.dev_key = dev_key
-        self.property_fields = self._get_properties_fields()
+        self.discriptor_fields = self._get_descriptor_fields()
 
-    def _get_properties_fields(self):
+    def _get_descriptor_fields(self):
         """
-        Return a list of available property fields.
+        Return a list of available descriptor property fields.
         :return: list of strings.
         """
-        if not self.__dev_desc__:
-            self.__dev_desc__ = usb.device_descriptor()
-            usb.get_device_descriptor(self.__dev__, ct.byref(self.__dev_desc__))
-        fields = sorted([fld[0] for fld in self.__dev_desc__._fields_])
+        if not self.__libusb_dev_desc__:
+            self.__libusb_dev_desc__ = usb.device_descriptor()
+            usb.get_device_descriptor(self.__libusb_dev__, ct.byref(self.__libusb_dev_desc__))
+        fields = sorted([fld[0] for fld in self.__libusb_dev_desc__._fields_])
 
         return fields
 
-    def get_desc_value(self, prop_field):
-        if prop_field and prop_field in self.property_fields:
-            return getattr(self.__dev_desc__, prop_field)
+    def get_descriptor_value(self, prop_field):
+        if prop_field and prop_field in self.discriptor_fields:
+            return getattr(self.__libusb_dev_desc__, prop_field)
         raise ValueError(_('Invalid descriptor property field name') + f' ({prop_field})')
 
-    def get_desc_string(self, index):
+    def get_descriptor_string(self, index):
         """
         Return the String value of a device descriptor property.
         :param index: integer
         :return: String or None
         """
         buf = ct.create_string_buffer(1024)
-        ret = usb.get_string_descriptor_ascii(self.__dev_handle__, index, ct.cast(buf, ct.POINTER(ct.c_ubyte)),
+        ret = usb.get_string_descriptor_ascii(self.__libusb_dev_handle__, index, ct.cast(buf, ct.POINTER(ct.c_ubyte)),
                                               ct.sizeof(buf))
         if ret > 0:
             result = buf.value.decode('utf-8')
@@ -86,10 +86,10 @@ class USBDeviceHandle:
         usb_error(ret, _('failed to get descriptor property field string value.'), debug=True)
         return None
 
-    # TODO: Write function to get device capabilities and other information based on this code.
+    # TODO: Write function(s) to get device capabilities and other information based on this code.
     #      https://github.com/karpierz/libusb/blob/master/examples/testlibusb.py
 
-    def _make_control_transfer(self, request_type, b_request, w_value, w_index, data, size):
+    def _make_control_transfer(self, request_type, b_request, w_value, w_index, data, size, timeout=2000):
         """
         Read/Write data from USB device.
         :param request_type: Request type value. Combines direction, type and recipient enum values.
@@ -101,7 +101,7 @@ class USBDeviceHandle:
         :return: True if successful otherwise False.
         """
         ret = usb.control_transfer(
-            self.__dev_handle__,  # ct.c_char_p
+            self.__libusb_dev_handle__,  # ct.c_char_p
             request_type,  # ct.c_uint8
             # TODO: Understand these next 3 arguments better.
             b_request,  # ct.c_uint8
@@ -109,22 +109,17 @@ class USBDeviceHandle:
             w_index,  # ct.c_uint16
             ct.cast(ct.pointer(data), ct.POINTER(ct.c_ubyte)),  # ct.POINTER(ct.c_ubyte)
             ct.c_uint16(size),  # ct.c_uint16
-            2000)  # ct.c_uint32
+            timeout)  # ct.c_uint32
 
         if ret >= 0:
-            if request_type & usb.LIBUSB_ENDPOINT_IN:
-                _logger.debug(_('Read {} bytes from device').format(size) + f' {self.dev_key}.')
-            else:
-                _logger.debug(_('Wrote {} bytes to device').format(size) + f' {self.dev_key}.')
+            direction = _('Read') if request_type & usb.LIBUSB_ENDPOINT_IN else _('Write')
+            _logger.debug(f'{direction} {size} ' + _('bytes from device').format(size) + f' {self.dev_key}.')
             return True
 
-        if request_type & usb.LIBUSB_ENDPOINT_IN:
-            usb_error(ret, _('Failed to read data from device') + f' {self.dev_key}.')
-        else:
-            usb_error(ret, _('Failed to write data to device') + f' {self.dev_key}.')
+        usb_error(ret, _('Failed to communicate with device') + f' {self.dev_key}.')
         return False
 
-    def write(self, b_request, w_value, w_index, data, size, request_type=usb.LIBUSB_REQUEST_TYPE_CLASS,
+    def write(self, b_request, w_value, w_index, data=None, size=None, request_type=usb.LIBUSB_REQUEST_TYPE_CLASS,
               recipient=usb.LIBUSB_RECIPIENT_INTERFACE):
         """
         Write data from USB device.
@@ -141,7 +136,7 @@ class USBDeviceHandle:
         request_type = usb.LIBUSB_ENDPOINT_OUT | request_type | recipient
         return self._make_control_transfer(request_type, b_request, w_value, w_index, data, size)
 
-    def read(self, b_request, w_value, w_index, data, size, request_type=usb.LIBUSB_REQUEST_TYPE_CLASS,
+    def read(self, b_request, w_value, w_index, data=None, size=None, request_type=usb.LIBUSB_REQUEST_TYPE_CLASS,
              recipient=usb.LIBUSB_RECIPIENT_INTERFACE):
         """
         Read data from USB device.
@@ -159,19 +154,40 @@ class USBDeviceHandle:
         # we need to add 8 extra bytes to the data buffer for read requests.
         return self._make_control_transfer(request_type, b_request, w_value, w_index, data, size)
 
-    def validate_config(self, config, schema_path):
+    def load_config_schema(self, schema_file):
+        """
+        Load the requested schema file.
+        :param schema_file: Schema file name only, no path included.
+        :return: schema dict.
+        """
+        schema_paths = ['../schemas', './schemas', './ultimarc/schemas']
+        schema_path = None
+
+        for path in schema_paths:
+            schema_path = os.path.abspath(os.path.join(path, schema_file))
+            if os.path.exists(schema_path):
+                break
+
+        if not schema_path:
+            _logger.error(_('Unable to locate schema directory.'))
+            return None
+
+        with open(schema_path) as h:
+            return json.loads(h.read())
+
+    def validate_config(self, config, schema_file):
         """
         Validate a configuration dict against a schema file.
         :param config: dict
-        :param schema_path: relative or abspath of schema.
+        :param schema_file: relative or abspath of schema.
         :return: True if valid otherwise False.
         """
-        schema_path = os.path.abspath(schema_path)
-        with open(schema_path) as h:
-            base_schema = json.loads(h.read())
+        schema = self.load_config_schema(schema_file)
+        if not schema:
+            return False
 
         try:
-            validate(config, base_schema)
+            validate(config, schema)
         except ValidationError as e:
             _logger.error(_('Configuration file did not validate against config schema.'))
             return False
@@ -186,9 +202,9 @@ class USBDeviceHandle:
         :return: config dict.
         """
         # Read the base schema, all json configs must validate against this schema.
-        schema_path = os.path.abspath('../schemas/base.schema')
-        with open(schema_path) as h:
-            base_schema = json.loads(h.read())
+        base_schema = self.load_config_schema('base.schema')
+        if not base_schema:
+            return None
 
         try:
             with open(config_file) as h:
@@ -200,7 +216,7 @@ class USBDeviceHandle:
         try:
             validate(config, base_schema)
         except ValidationError as e:
-            _logger.error(_('Configuration file did not validate against the base schema.'))
+            _logger.error(_('Configuration file did not validate against the base schema.') + f'\n{e}')
             return None
 
         if config['resourceType'] not in resource_types:
