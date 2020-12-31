@@ -5,6 +5,7 @@
 # http://libusb.sourceforge.net/api-1.0/libusb_api.html
 #
 import ctypes as ct
+from enum import Enum
 import logging
 import traceback
 
@@ -16,6 +17,7 @@ from ultimarc.devices.usb_button import USBButtonDevice
 from ultimarc.devices.aimtrak import AimTrakDevice
 
 _logger = logging.getLogger('ultimarc')
+
 
 # Device Class lookups are based on first 3 digits of product id.
 _USB_PRODUCT_CLASSES = {
@@ -31,6 +33,12 @@ USB_PRODUCT_DESCRIPTIONS = {
     'd209:1603': 'Aimtrak Lightgun #3',
     'd209:1604': 'Aimtrak Lightgun #4',
 }
+
+
+class DeviceClassIDs(Enum):
+    """ Device class ids, used in schemas and tools for filtering devices by class. """
+    USBButton = 'usb-button'
+    AimTrak = 'aimtrak'
 
 
 #

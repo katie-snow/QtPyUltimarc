@@ -8,7 +8,7 @@ import logging
 import sys
 
 from ultimarc import translate_gettext as _
-from ultimarc.devices import USBDeviceNotFoundError, USBDeviceClaimInterfaceError
+from ultimarc.devices import USBDeviceNotFoundError, USBDeviceClaimInterfaceError, DeviceClassIDs
 from ultimarc.tools import ToolContextManager, ToolEnvironmentObject
 
 _logger = logging.getLogger('ultimarc')
@@ -79,10 +79,19 @@ def run():
     # Set global debug value and setup application logging.
     ToolContextManager.initialize_logging(tool_cmd)
     parser = ToolContextManager.get_argparser(tool_cmd, tool_desc)
+    parser.add_argument('-c', '--class-id', help=_('filter by device class id'), type=str)
     parser.add_argument('-d', '--descriptors', help=_('Show device descriptor values.'), default=False,
                         action='store_true')
 
     args = parser.parse_args()
+
+    # Verify class id is valid by looking in the Enum by value.
+    if args.class_id:
+        try:
+            DeviceClassIDs(args.class_id)
+        except ValueError:
+            _logger.error('Invalid class id argument value.')
+            return -1
 
     with ToolContextManager(tool_cmd, args) as tool_env:
         process = ListDevicesClass(args, tool_env)

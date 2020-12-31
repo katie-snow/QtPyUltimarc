@@ -106,7 +106,6 @@ class ToolContextManager(object):
         parser.add_argument('--debug', help=_('enable debug output'), default=False, action='store_true')
         parser.add_argument('--log-file', help=_('write output to a log file'), default=False, action='store_true')
         parser.add_argument('-q', '--quiet', help=_('suppress normal output'), default=False, action='store_true')
-        parser.add_argument('-c', '--class-id', help=_('filter by device class id'), type=str)
         parser.add_argument('--bus', help=_('filter by usb device bus number'), type=int, default=None)
         parser.add_argument('--address', help=_('filter by usb device address number'), type=int, default=None)
         return parser
