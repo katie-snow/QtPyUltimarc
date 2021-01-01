@@ -5,6 +5,7 @@
 # http://libusb.sourceforge.net/api-1.0/libusb_api.html
 #
 import ctypes as ct
+from enum import Enum
 import logging
 import traceback
 
@@ -16,6 +17,7 @@ from ultimarc.devices.usb_button import USBButtonDevice
 from ultimarc.devices.aimtrak import AimTrakDevice
 
 _logger = logging.getLogger('ultimarc')
+
 
 # Device Class lookups are based on first 3 digits of product id.
 _USB_PRODUCT_CLASSES = {
@@ -31,6 +33,12 @@ USB_PRODUCT_DESCRIPTIONS = {
     'd209:1603': 'Aimtrak Lightgun #3',
     'd209:1604': 'Aimtrak Lightgun #4',
 }
+
+
+class DeviceClassID(Enum):
+    """ Device class id values, used in schemas and tools for filtering devices by class. """
+    USBButton = 'usb-button'
+    AimTrak = 'aimtrak'
 
 
 #
@@ -223,12 +231,12 @@ class USBDevices:
         :param address: integer
         :return: iter(list)
         """
-        if (class_id and not isinstance(class_id, str)) or (bus and not isinstance(bus, int)) or \
+        if (class_id and not isinstance(class_id, (str, DeviceClassID))) or (bus and not isinstance(bus, int)) or \
                 (address and not isinstance(address, int)):
             raise ValueError(_('Invalid filter method argument'))
         devices = list()
         for dev in self._usb_devices:
-            if class_id and dev.class_id != class_id:
+            if class_id and dev.class_id != (class_id if isinstance(class_id, str) else class_id.value):
                 continue
             if bus and dev.bus != bus:
                 continue

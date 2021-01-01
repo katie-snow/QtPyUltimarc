@@ -43,7 +43,7 @@ _python()
             ;;
         usb-button)
             # These are options specific to this tool.
-            local toolopts="--set-color --get-color --load-config --export-config"
+            local toolopts="--set-color --set-random-color --get-color --load-config --export-config"
             COMPREPLY=( $(compgen -W "${stdopts} ${toolopts}" -- ${cur}) )
             return 0
             ;;

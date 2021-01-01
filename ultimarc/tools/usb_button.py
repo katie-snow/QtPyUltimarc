@@ -12,6 +12,7 @@ import re
 import sys
 
 from ultimarc import translate_gettext as _
+from ultimarc.devices import DeviceClassID
 from ultimarc.tools import ToolContextManager, ToolEnvironmentObject
 
 _logger = logging.getLogger('ultimarc')
@@ -42,7 +43,8 @@ class USBButtonClass(object):
         """
         # Get devices we want to work with based on filters.
         devices = [dev for dev in
-                   self.env.devices.filter(class_id='usb-button', bus=self.args.bus, address=self.args.address)]
+                   self.env.devices.filter(class_id=DeviceClassID.USBButton, bus=self.args.bus,
+                                           address=self.args.address)]
 
         if not devices:
             _logger.error(_('No USB button devices found, aborting'))
