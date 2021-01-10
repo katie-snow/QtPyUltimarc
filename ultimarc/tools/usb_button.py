@@ -96,12 +96,14 @@ def run():
     parser = ToolContextManager.get_argparser(tool_cmd, tool_desc)
 
     # --set-color --get-color --load-config --export-config
-    parser.add_argument('--set-color', help=_('set usb button color with RGB value'), type=str, default=None)
+    parser.add_argument('--set-color', help=_('set usb button color with RGB value'), type=str, default=None,
+                        metavar='INT,INT,INT')
     parser.add_argument('--set-random-color', help=_('randomly set usb button color'), default=False,
                         action='store_true')
     parser.add_argument('--get-color', help=_('output current usb button color RGB value'), default=False,
                         action='store_true')
-    parser.add_argument('--set-config', help=_('Set button config from config file.'), type=str, default=None)
+    parser.add_argument('--set-config', help=_('Set button config from config file.'), type=str, default=None,
+                        metavar='CONFIG-FILE')
 
     args = parser.parse_args()
 
