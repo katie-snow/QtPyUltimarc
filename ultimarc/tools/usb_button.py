@@ -22,7 +22,7 @@ _logger = logging.getLogger('ultimarc')
 tool_cmd = _('usb-button')
 tool_desc = _('manage usb-button devices.')
 
-_RGB_STRING_REGEX = "^([0-9]{1,3}),([0-9]{1,3}),([0-9]{1,3})+$"
+_RGB_STRING_REGEX = r"^.*?([0-9]{1,3}),\s*?([0-9]{1,3}),\s*?([0-9]{1,3})+.*?$"
 
 
 class USBButtonClass(object):
@@ -53,9 +53,12 @@ class USBButtonClass(object):
         # See if we are setting a color from the command line args.
         if self.args.set_color:
             match = re.match(_RGB_STRING_REGEX, self.args.set_color)
+            red, green, blue = match.groups()
             for dev in devices:
                 with dev as dev_h:
-                    dev_h.set_color(match.groups()[0], match.groups()[1], match.groups()[2])
+                    dev_h.set_color(int(red), int(green), int(blue))
+                    _logger.info(f'{dev.dev_key} ({dev.bus},{dev.address}): ' +
+                                 _('Color') + f': RGB({red},{green},{blue}).')
 
         # Return the current color RGB values.
         elif self.args.get_color:
