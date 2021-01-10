@@ -4,10 +4,14 @@ The Ultimarc command line tools can be used to program different Ultimarc USB de
 to the local machine. The command line tools are launched through an integrated launcher command.
 Addtionally Bash autocompletion can be enabled by sourcing the `tools.bash` file in your .bashrc profile.
 
+&nbsp; 
+
 ### Device Matching And Filtering
 If the `--bus` and `--address` arguments are not specified, device configuration changes will be applied 
 to all devices discovered by the tool.  If only the `--bus` argument is specifed, all devices on that 
 bus will be matched.  To target a specific device, the `--bus` and `--address` arguments must be specified.
+
+&nbsp; 
 
 ### Running the tool
 
@@ -27,6 +31,8 @@ To get a list of available tools to run:
 To get help for a specific tool run:
 
 ```ultimarc-cli [TOOL NAME] --help```
+
+&nbsp; 
 
 ### Common Tool Arguments
 
@@ -73,6 +79,7 @@ The Address filter specifics a specific device ID on a bus. The `--bus` argument
 
 ```--address [ADDRESS]```
 
+&nbsp; 
 
 ### USB Button Tool
 
@@ -85,8 +92,8 @@ A tool for managing Ultimarc USB Button devices.
 #### --help
 
 ```
-usage: usb-button [-h] [--debug] [--log-file] [-q] [--bus BUS] [--address ADDRESS] [--set-color INT,INT,INT] [--set-random-color] [--get-color]
-                  [--set-config CONFIG-FILE]
+usage: usb-button [-h] [--debug] [--log-file] [-q] [--bus BUS] [--address ADDRESS] [--set-color INT,INT,INT]
+                  [--set-random-color] [--get-color] [--set-config CONFIG-FILE]
 
 manage usb-button devices.
 
