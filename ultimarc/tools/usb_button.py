@@ -4,7 +4,6 @@
 #
 # Tool for managing Ultimarc USB Button devices.
 #
-import json
 import logging
 import os
 import random
