@@ -4,7 +4,6 @@
 #
 # Tool for managing Ultimarc USB Button devices.
 #
-import json
 import logging
 import os
 import random
@@ -22,7 +21,7 @@ _logger = logging.getLogger('ultimarc')
 tool_cmd = _('usb-button')
 tool_desc = _('manage usb-button devices.')
 
-_RGB_STRING_REGEX = "^([0-9]{1,3}),([0-9]{1,3}),([0-9]{1,3})+$"
+_RGB_STRING_REGEX = r"^.*?([0-9]{1,3}),\s*?([0-9]{1,3}),\s*?([0-9]{1,3})+.*?$"
 
 
 class USBButtonClass(object):
@@ -53,9 +52,12 @@ class USBButtonClass(object):
         # See if we are setting a color from the command line args.
         if self.args.set_color:
             match = re.match(_RGB_STRING_REGEX, self.args.set_color)
+            red, green, blue = match.groups()
             for dev in devices:
                 with dev as dev_h:
-                    dev_h.set_color(match.groups()[0], match.groups()[1], match.groups()[2])
+                    dev_h.set_color(int(red), int(green), int(blue))
+                    _logger.info(f'{dev.dev_key} ({dev.bus},{dev.address}): ' +
+                                 _('Color') + f': RGB({red},{green},{blue}).')
 
         # Return the current color RGB values.
         elif self.args.get_color:
@@ -94,12 +96,14 @@ def run():
     parser = ToolContextManager.get_argparser(tool_cmd, tool_desc)
 
     # --set-color --get-color --load-config --export-config
-    parser.add_argument('--set-color', help=_('set usb button color with RGB value'), type=str, default=None)
+    parser.add_argument('--set-color', help=_('set usb button color with RGB value'), type=str, default=None,
+                        metavar='INT,INT,INT')
     parser.add_argument('--set-random-color', help=_('randomly set usb button color'), default=False,
                         action='store_true')
     parser.add_argument('--get-color', help=_('output current usb button color RGB value'), default=False,
                         action='store_true')
-    parser.add_argument('--set-config', help=_('Set button config from config file.'), type=str, default=None)
+    parser.add_argument('--set-config', help=_('Set button config from config file.'), type=str, default=None,
+                        metavar='CONFIG-FILE')
 
     args = parser.parse_args()
 
