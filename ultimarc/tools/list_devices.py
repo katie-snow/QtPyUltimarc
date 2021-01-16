@@ -8,7 +8,8 @@ import logging
 import sys
 
 from ultimarc import translate_gettext as _
-from ultimarc.devices import USBDeviceNotFoundError, USBDeviceClaimInterfaceError, DeviceClassID
+from ultimarc.devices import DeviceClassID
+from ultimarc.exceptions import USBDeviceNotFoundError, USBDeviceClaimInterfaceError
 from ultimarc.tools import ToolContextManager, ToolEnvironmentObject
 
 _logger = logging.getLogger('ultimarc')
@@ -55,7 +56,7 @@ class ListDevicesClass(object):
                     _logger.info(_('Showing device descriptor properties for') + f' {dev.dev_key}')
                     _logger.info('  ' + _('Bus') + f': {dev.bus}')
                     _logger.info('  ' + _('Address') + f': {dev.address}')
-                    for fld in dev_h.discriptor_fields:
+                    for fld in dev_h.descriptor_fields:
                         desc_val = dev_h.get_descriptor_value(fld)
                         if fld in desc_string_fields:
                             desc_str = dev_h.get_descriptor_string(dev_h.get_descriptor_value(fld)) or ''

@@ -15,6 +15,7 @@ from jsonschema import validate, ValidationError
 import libusb as usb
 
 from ultimarc import translate_gettext as _
+from ultimarc.exceptions import USBDeviceClaimInterfaceError, USBDeviceInterfaceNotClaimedError
 
 _logger = logging.getLogger('ultimarc')
 
@@ -44,14 +45,19 @@ class USBDeviceHandle:
     dev_key = None
     class_id = 'unset'  # Used to match/filter devices. Override in child classes.
     class_descr = 'unset'  # Override in child classes.
+    interface = None  # Interface to write and read from.
 
-    discriptor_fields = None  # List of available device property fields.
+    descriptor_fields = None  # List of available device property fields.
 
     def __init__(self, dev_handle, dev_key):
         self.__libusb_dev__ = usb.get_device(dev_handle)
         self.__libusb_dev_handle__ = dev_handle
         self.dev_key = dev_key
-        self.discriptor_fields = self._get_descriptor_fields()
+        self.descriptor_fields = self._get_descriptor_fields()
+
+        if self.interface:
+            self.claim_interface(self.interface)
+
 
     def _get_descriptor_fields(self):
         """
@@ -66,7 +72,7 @@ class USBDeviceHandle:
         return fields
 
     def get_descriptor_value(self, prop_field):
-        if prop_field and prop_field in self.discriptor_fields:
+        if prop_field and prop_field in self.descriptor_fields:
             return getattr(self.__libusb_dev_desc__, prop_field)
         raise ValueError(_('Invalid descriptor property field name') + f' ({prop_field})')
 
@@ -89,6 +95,19 @@ class USBDeviceHandle:
     # TODO: Write function(s) to get device capabilities and other information based on this code.
     #      https://github.com/karpierz/libusb/blob/master/examples/testlibusb.py
 
+    def claim_interface(self, interface):
+        """
+        :param interface: int, interface to write and read from.
+        """
+        self.interface = int(interface)
+        # We need to claim the USB device interface.
+        usb.set_auto_detach_kernel_driver(self.__libusb_dev_handle__, 1)
+        status = usb.claim_interface(self.__libusb_dev_handle__, self.interface)
+        if status != usb.LIBUSB_SUCCESS:
+            # __exit__ function should close the handle for us
+            # usb.close(self.__libusb_dev_handle__)
+            raise USBDeviceClaimInterfaceError(self.dev_key)
+
     def _make_control_transfer(self, request_type, b_request, w_value, w_index, data, size, timeout=2000):
         """
         Read/Write data from USB device.
@@ -100,6 +119,9 @@ class USBDeviceHandle:
         :param size: size of data.
         :return: True if successful otherwise False.
         """
+        if not self.interface:
+            raise USBDeviceInterfaceNotClaimedError(self.dev_key)
+
         ret = usb.control_transfer(
             self.__libusb_dev_handle__,  # ct.c_char_p
             request_type,  # ct.c_uint8
@@ -132,6 +154,9 @@ class USBDeviceHandle:
         :param recipient: Recipient enum value.
         :return: True if successful otherwise False.
         """
+        if not self.interface:
+            raise USBDeviceInterfaceNotClaimedError(self.dev_key)
+
         # Combine direction, request type and recipient together.
         request_type = usb.LIBUSB_ENDPOINT_OUT | request_type | recipient
         return self._make_control_transfer(request_type, b_request, w_value, w_index, data, size)
@@ -149,6 +174,9 @@ class USBDeviceHandle:
         :param recipient: Recipient enum value.
         :return: True if successful otherwise False.
         """
+        if not self.interface:
+            raise USBDeviceInterfaceNotClaimedError(self.dev_key)
+
         # Combine direction, request type and recipient together.
         request_type = usb.LIBUSB_ENDPOINT_IN | request_type | recipient
         # we need to add 8 extra bytes to the data buffer for read requests.

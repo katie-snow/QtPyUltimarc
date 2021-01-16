@@ -35,6 +35,7 @@ class USBButtonDevice(USBDeviceHandle):
     """
     class_id = 'usb-button'  # Used to match/filter devices.
     class_descr = _('USB Button')
+    interface = 0  # Interface to write and read from.
 
     def set_color(self, red, green, blue):
         """

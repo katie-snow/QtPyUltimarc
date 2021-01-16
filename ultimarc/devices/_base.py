@@ -15,6 +15,7 @@ from ultimarc import translate_gettext as _
 from ultimarc.devices._device import usb_error
 from ultimarc.devices.usb_button import USBButtonDevice
 from ultimarc.devices.aimtrak import AimTrakDevice
+from ultimarc.exceptions import USBDeviceNotFoundError
 
 _logger = logging.getLogger('ultimarc')
 
@@ -41,23 +42,6 @@ class DeviceClassID(Enum):
     AimTrak = 'aimtrak'
 
 
-#
-# USB device custom exception classes.
-#
-class USBDeviceNotFoundError(Exception):
-    """ Device was not found when trying to open it. """
-    def __init__(self, dev_key, message=_('Device was not found when trying to open it.')):
-        self.dev_key = dev_key
-        self.message = message
-        super().__init__(f'{dev_key}: {message}')
-
-
-class USBDeviceClaimInterfaceError(Exception):
-    """ Failed to claim USB device interface. """
-    def __init__(self, dev_key, message=_('Failed to claim USB device interface.')):
-        self.dev_key = dev_key
-        self.message = message
-        super().__init__(f'{dev_key}: {message}')
 
 
 class USBDeviceInfo:
@@ -125,13 +109,14 @@ class USBDeviceInfo:
             raise USBDeviceNotFoundError(self.dev_key)
 
         # We need to claim the USB device interface.
-        usb.set_auto_detach_kernel_driver(dev_handle, 1)
-        status = usb.claim_interface(dev_handle, 0)
-        if status != usb.LIBUSB_SUCCESS:
-            usb.close(dev_handle)
-            self._close_device_list_handle()
-            raise USBDeviceClaimInterfaceError(self.dev_key)
+        # usb.set_auto_detach_kernel_driver(dev_handle, 1)
+        # status = usb.claim_interface(dev_handle, 0)
+        # if status != usb.LIBUSB_SUCCESS:
+        #     usb.close(dev_handle)
+        #     self._close_device_list_handle()
+        #     raise USBDeviceClaimInterfaceError(self.dev_key)
 
+        self._close_device_list_handle()
         self.__dev_handle__ = dev_handle
         self.__dev_handle_obj__ = self.__dev_class__(self.__dev_handle__, self.dev_key)
         return self.__dev_handle_obj__
