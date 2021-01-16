@@ -15,6 +15,7 @@ from ultimarc import translate_gettext as _
 from ultimarc.devices._device import usb_error
 from ultimarc.devices.usb_button import USBButtonDevice
 from ultimarc.devices.aimtrak import AimTrakDevice
+from ultimarc.devices.mini_pac import MiniPacDevice
 from ultimarc.exceptions import USBDeviceNotFoundError
 
 _logger = logging.getLogger('ultimarc')
@@ -24,6 +25,7 @@ _logger = logging.getLogger('ultimarc')
 _USB_PRODUCT_CLASSES = {
     'd209:120': USBButtonDevice,
     'd209:160': AimTrakDevice,
+    'd209:044': MiniPacDevice,
 }
 
 # USB key values for every USB device.
@@ -33,6 +35,7 @@ USB_PRODUCT_DESCRIPTIONS = {
     'd209:1602': 'Aimtrak Lightgun #2',
     'd209:1603': 'Aimtrak Lightgun #3',
     'd209:1604': 'Aimtrak Lightgun #4',
+    'd209:0440': 'Mini-PAC #1',
 }
 
 
@@ -40,8 +43,7 @@ class DeviceClassID(Enum):
     """ Device class id values, used in schemas and tools for filtering devices by class. """
     USBButton = 'usb-button'
     AimTrak = 'aimtrak'
-
-
+    MiniPac = 'mini-pac'
 
 
 class USBDeviceInfo:
