@@ -48,7 +48,7 @@ class MiniPACClass(object):
 
         for dev in devices:
             with dev as dev_h:
-                # dev_h.get_device_configuration()
+                ret = dev_h.get_current_configuration()
                 x = 1
 
         return 0
