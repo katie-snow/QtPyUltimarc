@@ -15,6 +15,8 @@ from ultimarc import translate_gettext as _
 from ultimarc.devices._device import usb_error
 from ultimarc.devices.usb_button import USBButtonDevice
 from ultimarc.devices.aimtrak import AimTrakDevice
+from ultimarc.devices.mini_pac import MiniPacDevice
+from ultimarc.exceptions import USBDeviceNotFoundError
 
 _logger = logging.getLogger('ultimarc')
 
@@ -23,6 +25,7 @@ _logger = logging.getLogger('ultimarc')
 _USB_PRODUCT_CLASSES = {
     'd209:120': USBButtonDevice,
     'd209:160': AimTrakDevice,
+    'd209:044': MiniPacDevice,
 }
 
 # USB key values for every USB device.
@@ -32,6 +35,7 @@ USB_PRODUCT_DESCRIPTIONS = {
     'd209:1602': 'Aimtrak Lightgun #2',
     'd209:1603': 'Aimtrak Lightgun #3',
     'd209:1604': 'Aimtrak Lightgun #4',
+    'd209:0440': 'Mini-PAC #1',
 }
 
 
@@ -39,25 +43,7 @@ class DeviceClassID(Enum):
     """ Device class id values, used in schemas and tools for filtering devices by class. """
     USBButton = 'usb-button'
     AimTrak = 'aimtrak'
-
-
-#
-# USB device custom exception classes.
-#
-class USBDeviceNotFoundError(Exception):
-    """ Device was not found when trying to open it. """
-    def __init__(self, dev_key, message=_('Device was not found when trying to open it.')):
-        self.dev_key = dev_key
-        self.message = message
-        super().__init__(f'{dev_key}: {message}')
-
-
-class USBDeviceClaimInterfaceError(Exception):
-    """ Failed to claim USB device interface. """
-    def __init__(self, dev_key, message=_('Failed to claim USB device interface.')):
-        self.dev_key = dev_key
-        self.message = message
-        super().__init__(f'{dev_key}: {message}')
+    MiniPac = 'mini-pac'
 
 
 class USBDeviceInfo:
@@ -125,13 +111,14 @@ class USBDeviceInfo:
             raise USBDeviceNotFoundError(self.dev_key)
 
         # We need to claim the USB device interface.
-        usb.set_auto_detach_kernel_driver(dev_handle, 1)
-        status = usb.claim_interface(dev_handle, 0)
-        if status != usb.LIBUSB_SUCCESS:
-            usb.close(dev_handle)
-            self._close_device_list_handle()
-            raise USBDeviceClaimInterfaceError(self.dev_key)
+        # usb.set_auto_detach_kernel_driver(dev_handle, 1)
+        # status = usb.claim_interface(dev_handle, 0)
+        # if status != usb.LIBUSB_SUCCESS:
+        #     usb.close(dev_handle)
+        #     self._close_device_list_handle()
+        #     raise USBDeviceClaimInterfaceError(self.dev_key)
 
+        self._close_device_list_handle()
         self.__dev_handle__ = dev_handle
         self.__dev_handle_obj__ = self.__dev_class__(self.__dev_handle__, self.dev_key)
         return self.__dev_handle_obj__

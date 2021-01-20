@@ -9,9 +9,10 @@ import sys
 import libusb as usb
 
 from ultimarc import translate_gettext as _
-from ._base import _USB_PRODUCT_CLASSES, USB_PRODUCT_DESCRIPTIONS, USBDevices, USBDeviceClaimInterfaceError, \
-    USBDeviceNotFoundError, DeviceClassID
+from ._base import _USB_PRODUCT_CLASSES, USB_PRODUCT_DESCRIPTIONS, USBDevices, DeviceClassID
 from ._device import usb_error
+from ..exceptions import USBDeviceClaimInterfaceError, USBDeviceNotFoundError, \
+    USBDeviceInterfaceNotClaimedError
 
 _logger = logging.getLogger('default')
 
@@ -39,6 +40,7 @@ __all__ = [
     USBDevices,
     usb_error,
     USBDeviceClaimInterfaceError,
+    USBDeviceInterfaceNotClaimedError,
     USBDeviceNotFoundError,
     DeviceClassID
 ]
