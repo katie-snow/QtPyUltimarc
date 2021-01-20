@@ -231,21 +231,23 @@ class USBDeviceHandle:
         if not self.interface:
             raise USBDeviceInterfaceNotClaimedError(self.dev_key)
 
-        actual_length = int(0)
-        length = 5 if uses_report_id else 4
+        actual_length = ct.c_int(0)
+        length = 5 if uses_report_id else 4  # Expecting the report_id in the message
         payload = (ct.c_ubyte * length)(0)
         payload_ptr = ct.byref(payload)
 
-        for pos in range(0, ct.sizeof(response), 4):
-            self._make_interrupt_transfer(endpoint, payload_ptr, length, actual_length)
+        # Here don't add the report_id into the response structure, 4 instead of 5
+        for pos in range(0, ct.sizeof(response), 4 if uses_report_id else 5):
+            self._make_interrupt_transfer(endpoint, payload_ptr, length, ct.byref(actual_length))
             # Remove report_id (byte 0) if it is used
+            actual_length = actual_length \
+                if actual_length == length and not uses_report_id else ct.c_int(actual_length.value - 1)
             ct.memmove(ct.addressof(response)+pos,
                        ct.byref(payload, 1) if uses_report_id else ct.byref(payload),
-                       4)
+                       actual_length.value)
             _logger.debug(_(' '.join(hex(x) for x in payload)))
 
         return response
-
 
     def load_config_schema(self, schema_file):
         """
