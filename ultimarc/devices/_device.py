@@ -59,7 +59,6 @@ class USBDeviceHandle:
         if self.interface:
             self.claim_interface(self.interface)
 
-
     def _get_descriptor_fields(self):
         """
         Return a list of available descriptor property fields.
@@ -111,9 +110,9 @@ class USBDeviceHandle:
 
     def _make_interrupt_transfer(self, endpoint, data, size, actual_length, timeout=2000):
         """
-        Read data from USB device
+        Read message from USB device
         :param endpoint: Endpoint address to listen on.
-        :param data: Data structure for the received data.
+        :param data: Variable to hold received data.
         :param size: Size expected to be received.
         :param actual_length: Actual length received.
         """
@@ -171,12 +170,12 @@ class USBDeviceHandle:
     def write(self, b_request, report_id, w_index, data=None, size=None, request_type=usb.LIBUSB_REQUEST_TYPE_CLASS,
               recipient=usb.LIBUSB_RECIPIENT_INTERFACE):
         """
-        Write data from USB device.
+        Write message to USB device.
         :param b_request: Request field for the setup packet
         :param report_id: report_id portion of the Value field for the setup packet.
         :param w_index: Index field for the setup packet
         :param data: ctypes structure class.
-        :param size: size of data.
+        :param size: size of message.
         :param request_type: Request type enum value.
         :param recipient: Recipient enum value.
         :return: True if successful otherwise False.
@@ -193,26 +192,23 @@ class USBDeviceHandle:
 
         ct.memmove(ct.addressof(payload) + 1, ct.byref(data, 0),
                    size if size <= 4 else 4)
-        _logger.debug(_(' '.join(hex(x) for x in payload)))
 
         payload_ptr = ct.byref(payload) if report_id else ct.byref(payload, 1)
         ret = self._make_control_transfer(request_type, b_request, w_value,
                                            w_index, payload_ptr,
                                            ct.sizeof(payload) if report_id else size)
-
-        # Release interface to allow the device to write back
-        # usb.release_interface(self.__libusb_dev_handle__, self.interface)
+        _logger.debug(_(' '.join(hex(x) for x in payload)))
         return ret
 
     def read(self, b_request, w_value, w_index, data=None, size=None, request_type=usb.LIBUSB_REQUEST_TYPE_CLASS,
              recipient=usb.LIBUSB_RECIPIENT_INTERFACE):
         """
-        Read data from USB device.
+        Read message from USB device.
         :param b_request: Request field for the setup packet
         :param w_value: Value field for the setup packet.
         :param w_index: Index field for the setup packet
         :param data: ctypes structure class.
-        :param size: size of data.
+        :param size: size of message.
         :param request_type: Request type enum value.
         :param recipient: Recipient enum value.
         :return: True if successful otherwise False.
@@ -222,22 +218,34 @@ class USBDeviceHandle:
 
         # Combine direction, request type and recipient together.
         request_type = usb.LIBUSB_ENDPOINT_IN | request_type | recipient
-        # we need to add 8 extra bytes to the data buffer for read requests.
+        # we need to add 8 extra bytes to the structure buffer for read requests.
         return self._make_control_transfer(request_type, b_request, w_value, w_index, data, size)
 
-    def read_interrupt(self, endpoint, data, length, actual_length):
+    def read_interrupt(self, endpoint, response, uses_report_id=True):
         """
-        Read data from USB device on the interrupt endpoint.
-        :param endpoint: Endpoint to receive data on.
-        :param data: Structure to hold data.
-        :param length: Expected length of data to receive.
-        :param actual_length: Actual length received.
+        Read response from USB device on the interrupt endpoint.
+        :param endpoint: Endpoint to receive message on.
+        :param response: Variable holding the complete response from the device.
+        :param uses_report_id: True if report_id is in the message.
         """
         if not self.interface:
             raise USBDeviceInterfaceNotClaimedError(self.dev_key)
 
-        payload_ptr = ct.byref(data)
-        return self._make_interrupt_transfer(endpoint, payload_ptr, length, actual_length)
+        actual_length = int(0)
+        length = 5 if uses_report_id else 4
+        payload = (ct.c_ubyte * length)(0)
+        payload_ptr = ct.byref(payload)
+
+        for pos in range(0, ct.sizeof(response), 4):
+            self._make_interrupt_transfer(endpoint, payload_ptr, length, actual_length)
+            # Remove report_id (byte 0) if it is used
+            ct.memmove(ct.addressof(response)+pos,
+                       ct.byref(payload, 1) if uses_report_id else ct.byref(payload),
+                       4)
+            _logger.debug(_(' '.join(hex(x) for x in payload)))
+
+        return response
+
 
     def load_config_schema(self, schema_file):
         """
