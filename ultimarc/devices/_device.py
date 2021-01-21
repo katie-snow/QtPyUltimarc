@@ -19,6 +19,7 @@ from ultimarc.exceptions import USBDeviceClaimInterfaceError, USBDeviceInterface
 
 _logger = logging.getLogger('ultimarc')
 
+USB_REPORT_TYPE_OUT = 0x200
 
 def usb_error(code, msg, debug=False):
     """
@@ -57,7 +58,6 @@ class USBDeviceHandle:
 
         if self.interface:
             self.claim_interface(self.interface)
-
 
     def _get_descriptor_fields(self):
         """
@@ -108,6 +108,32 @@ class USBDeviceHandle:
             # usb.close(self.__libusb_dev_handle__)
             raise USBDeviceClaimInterfaceError(self.dev_key)
 
+    def _make_interrupt_transfer(self, endpoint, data, size, actual_length, timeout=2000):
+        """
+        Read message from USB device
+        :param endpoint: Endpoint address to listen on.
+        :param data: Variable to hold received data.
+        :param size: Size expected to be received.
+        :param actual_length: Actual length received.
+        """
+        if not self.interface:
+            raise USBDeviceInterfaceNotClaimedError(self.dev_key)
+
+        ret = usb.interrupt_transfer(
+            self.__libusb_dev_handle__,  # ct.c_char_p
+            endpoint,  # ct.ubyte
+            ct.cast(data, ct.POINTER(ct.c_ubyte)),  # ct.POINTER(ct.c_ubyte)
+            size,
+            ct.cast(actual_length, ct.POINTER(ct.c_int)),  # ct.POINTER(ct.c_int)
+            timeout)  # ct.c_uint32
+
+        if ret >= 0:
+            _logger.debug(f'Read {size} ' + _('bytes from device').format(size) + f' {self.dev_key}.')
+            return True
+
+        usb_error(ret, _('Failed to communicate with device') + f' {self.dev_key}.')
+        return False
+
     def _make_control_transfer(self, request_type, b_request, w_value, w_index, data, size, timeout=2000):
         """
         Read/Write data from USB device.
@@ -129,7 +155,7 @@ class USBDeviceHandle:
             b_request,  # ct.c_uint8
             w_value,  # ct.c_uint16
             w_index,  # ct.c_uint16
-            ct.cast(ct.pointer(data), ct.POINTER(ct.c_ubyte)),  # ct.POINTER(ct.c_ubyte)
+            ct.cast(data, ct.POINTER(ct.c_ubyte)),  # ct.POINTER(ct.c_ubyte)
             ct.c_uint16(size),  # ct.c_uint16
             timeout)  # ct.c_uint32
 
@@ -141,15 +167,15 @@ class USBDeviceHandle:
         usb_error(ret, _('Failed to communicate with device') + f' {self.dev_key}.')
         return False
 
-    def write(self, b_request, w_value, w_index, data=None, size=None, request_type=usb.LIBUSB_REQUEST_TYPE_CLASS,
+    def write(self, b_request, report_id, w_index, data=None, size=None, request_type=usb.LIBUSB_REQUEST_TYPE_CLASS,
               recipient=usb.LIBUSB_RECIPIENT_INTERFACE):
         """
-        Write data from USB device.
+        Write message to USB device.
         :param b_request: Request field for the setup packet
-        :param w_value: Value field for the setup packet.
+        :param report_id: report_id portion of the Value field for the setup packet.
         :param w_index: Index field for the setup packet
         :param data: ctypes structure class.
-        :param size: size of data.
+        :param size: size of message.
         :param request_type: Request type enum value.
         :param recipient: Recipient enum value.
         :return: True if successful otherwise False.
@@ -159,17 +185,30 @@ class USBDeviceHandle:
 
         # Combine direction, request type and recipient together.
         request_type = usb.LIBUSB_ENDPOINT_OUT | request_type | recipient
-        return self._make_control_transfer(request_type, b_request, w_value, w_index, data, size)
+        w_value = USB_REPORT_TYPE_OUT | report_id
+
+        payload = (ct.c_ubyte * 5)(0)
+        payload[0] = report_id
+
+        ct.memmove(ct.addressof(payload) + 1, ct.byref(data, 0),
+                   size if size <= 4 else 4)
+
+        payload_ptr = ct.byref(payload) if report_id else ct.byref(payload, 1)
+        ret = self._make_control_transfer(request_type, b_request, w_value,
+                                           w_index, payload_ptr,
+                                           ct.sizeof(payload) if report_id else size)
+        _logger.debug(_(' '.join(hex(x) for x in payload)))
+        return ret
 
     def read(self, b_request, w_value, w_index, data=None, size=None, request_type=usb.LIBUSB_REQUEST_TYPE_CLASS,
              recipient=usb.LIBUSB_RECIPIENT_INTERFACE):
         """
-        Read data from USB device.
+        Read message from USB device.
         :param b_request: Request field for the setup packet
         :param w_value: Value field for the setup packet.
         :param w_index: Index field for the setup packet
         :param data: ctypes structure class.
-        :param size: size of data.
+        :param size: size of message.
         :param request_type: Request type enum value.
         :param recipient: Recipient enum value.
         :return: True if successful otherwise False.
@@ -179,8 +218,36 @@ class USBDeviceHandle:
 
         # Combine direction, request type and recipient together.
         request_type = usb.LIBUSB_ENDPOINT_IN | request_type | recipient
-        # we need to add 8 extra bytes to the data buffer for read requests.
+        # we need to add 8 extra bytes to the structure buffer for read requests.
         return self._make_control_transfer(request_type, b_request, w_value, w_index, data, size)
+
+    def read_interrupt(self, endpoint, response, uses_report_id=True):
+        """
+        Read response from USB device on the interrupt endpoint.
+        :param endpoint: Endpoint to receive message on.
+        :param response: Variable holding the complete response from the device.
+        :param uses_report_id: True if report_id is in the message.
+        """
+        if not self.interface:
+            raise USBDeviceInterfaceNotClaimedError(self.dev_key)
+
+        actual_length = ct.c_int(0)
+        length = 5 if uses_report_id else 4  # Expecting the report_id in the message
+        payload = (ct.c_ubyte * length)(0)
+        payload_ptr = ct.byref(payload)
+
+        # Here don't add the report_id into the response structure, 4 instead of 5
+        for pos in range(0, ct.sizeof(response), 4 if uses_report_id else 5):
+            self._make_interrupt_transfer(endpoint, payload_ptr, length, ct.byref(actual_length))
+            # Remove report_id (byte 0) if it is used
+            actual_length = actual_length \
+                if actual_length == length and not uses_report_id else ct.c_int(actual_length.value - 1)
+            ct.memmove(ct.addressof(response)+pos,
+                       ct.byref(payload, 1) if uses_report_id else ct.byref(payload),
+                       actual_length.value)
+            _logger.debug(_(' '.join(hex(x) for x in payload)))
+
+        return response
 
     def load_config_schema(self, schema_file):
         """

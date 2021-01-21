@@ -140,9 +140,9 @@ class USBDeviceInfo:
         self._close_device_list_handle()
 
         if exc_type is not None:
-            print((traceback.format_exc()))
+            # print((traceback.format_exc()))
             _logger.error(_('USB device encountered an unexpected error, quitting.'))
-            exit(-1)
+            # exit(-1)
 
     def _get_device_handle(self):
         """
