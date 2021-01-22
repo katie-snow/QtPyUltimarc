@@ -183,7 +183,7 @@ class USBDeviceHandle:
         ret = usb.control_transfer(
             self.__libusb_dev_handle__,  # ct.c_char_p
             request_type,  # ct.c_uint8
-            b_request,  # ct.c_uint8, must be a
+            b_request,  # ct.c_uint8, must be a USBRequestCode Enum value.
             w_value,  # ct.c_uint16
             w_index,  # ct.c_uint16
             ct.cast(data, ct.POINTER(ct.c_ubyte)),  # ct.POINTER(ct.c_ubyte)
