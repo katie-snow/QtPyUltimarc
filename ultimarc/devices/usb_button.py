@@ -6,17 +6,15 @@ import ctypes as ct
 import logging
 
 from ultimarc import translate_gettext as _
-from ultimarc.devices._device import USBDeviceHandle
+from ultimarc.devices._device import USBDeviceHandle, USBRequestCode
+from ultimarc.devices._structures import UltimarcStruct
 
 
 _logger = logging.getLogger('ultimarc')
 
 
-# TODO: What do these value mean?
-USBB_GET_COLOR = ct.c_uint8(0x01)
-USBB_SET_COLOR = ct.c_uint8(0x09)
-USBButtonReportID = ct.c_uint16(0x0)
-USBButtonWIndex = ct.c_uint16(0x0)
+USBButtonReportID = 0x0
+USBButtonWIndex = 0x0
 
 
 class USBButtonColorStruct(ct.Structure):
@@ -50,16 +48,16 @@ class USBButtonDevice(USBDeviceHandle):
                 raise ValueError(_('Color argument value is invalid'))
 
         data = USBButtonColorStruct(0x01, red, green, blue)
-        return self.write(USBB_SET_COLOR, USBButtonReportID, USBButtonWIndex, data, ct.sizeof(data))
+        return self.write(USBRequestCode.SET_CONFIGURATION, USBButtonReportID, USBButtonWIndex, data, ct.sizeof(data))
 
     def get_color(self):
         """
         Return the current USB button RGB color values.
         :return: (Integer, Integer, Integer) or None
         """
-        data = USBButtonColorStruct()
+        data = USBButtonColorStruct(0x01, 0x0, 0x0, 0x0)
         for x in range(20):
-            ret = self.read(USBB_GET_COLOR, USBButtonReportID, USBButtonWIndex, data, ct.sizeof(data))
+            ret = self.read(USBRequestCode.CLEAR_FEATURE, USBButtonReportID, USBButtonWIndex, data, ct.sizeof(data))
             if ret:
                 return data.red, data.green, data.blue
             _logger.error(_('Failed to read color data from usb button.'))
@@ -89,6 +87,6 @@ class USBButtonDevice(USBDeviceHandle):
                 return False
             c = config['colorRGB']
             data = USBButtonColorStruct(0x01, c['red'], c['green'], c['blue'])
-            return self.write(USBB_SET_COLOR, USBButtonReportID, USBButtonWIndex, data, ct.sizeof(data))
+            return self.write(USBRequestCode.SET_CONFIGURATION, USBButtonReportID, USBButtonWIndex, data, ct.sizeof(data))
 
         return False
