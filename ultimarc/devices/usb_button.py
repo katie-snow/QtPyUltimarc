@@ -13,8 +13,8 @@ from ultimarc.devices._structures import UltimarcStruct
 _logger = logging.getLogger('ultimarc')
 
 
-USBButtonReportID = ct.c_uint16(0x0)
-USBButtonWIndex = ct.c_uint16(0x0)
+USBButtonReportID = 0x0
+USBButtonWIndex = 0x0
 
 
 class USBButtonColorStruct(ct.Structure):
@@ -48,7 +48,7 @@ class USBButtonDevice(USBDeviceHandle):
                 raise ValueError(_('Color argument value is invalid'))
 
         data = USBButtonColorStruct(0x01, red, green, blue)
-        return self.write(USBRequestCode.SET_CONFIGURATION, 0x0, USBButtonWIndex, data, ct.sizeof(data))
+        return self.write(USBRequestCode.SET_CONFIGURATION, USBButtonReportID, USBButtonWIndex, data, ct.sizeof(data))
 
     def get_color(self):
         """
@@ -57,7 +57,7 @@ class USBButtonDevice(USBDeviceHandle):
         """
         data = USBButtonColorStruct(0x01, 0x0, 0x0, 0x0)
         for x in range(20):
-            ret = self.read(USBRequestCode.CLEAR_FEATURE, 0x0, USBButtonWIndex, data, ct.sizeof(data))
+            ret = self.read(USBRequestCode.CLEAR_FEATURE, USBButtonReportID, USBButtonWIndex, data, ct.sizeof(data))
             if ret:
                 return data.red, data.green, data.blue
             _logger.error(_('Failed to read color data from usb button.'))
