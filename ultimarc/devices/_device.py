@@ -9,6 +9,7 @@ import ctypes as ct
 import json
 import logging
 import os
+from enum import IntEnum
 from json import JSONDecodeError
 
 from jsonschema import validate, ValidationError
@@ -19,7 +20,28 @@ from ultimarc.exceptions import USBDeviceClaimInterfaceError, USBDeviceInterface
 
 _logger = logging.getLogger('ultimarc')
 
-USB_REPORT_TYPE_OUT = 0x200
+USB_REPORT_TYPE_OUT = ct.c_uint16(0x200)
+
+
+class USBRequestCode(IntEnum):
+    """
+    Standard USB Setup Packet Request Codes.
+    https://www.jungo.com/st/support/documentation/windriver/802/wdusb_man_mhtml/node55.html#usb_standard_dev_req_codes
+    """
+    GET_STATUS = 0
+    CLEAR_FEATURE = 1
+    # Reserved = 2
+    SET_FEATURE = 3
+    # Reserved = 4
+    SET_ADDRESS = 5
+    GET_DESCRIPTOR = 6
+    SET_DESCRIPTOR = 7
+    GET_CONFIGURATION = 8
+    SET_CONFIGURATION = 9
+    GET_INTERFACE = 10
+    SET_INTERFACE = 11
+    SYNCH_FRAME = 12
+
 
 def usb_error(code, msg, debug=False):
     """
@@ -56,7 +78,7 @@ class USBDeviceHandle:
         self.dev_key = dev_key
         self.descriptor_fields = self._get_descriptor_fields()
 
-        if self.interface:
+        if self.interface is not None:
             self.claim_interface(self.interface)
 
     def _get_descriptor_fields(self):
@@ -116,7 +138,7 @@ class USBDeviceHandle:
         :param size: Size expected to be received.
         :param actual_length: Actual length received.
         """
-        if not self.interface:
+        if self.interface is None:
             raise USBDeviceInterfaceNotClaimedError(self.dev_key)
 
         ret = usb.interrupt_transfer(
@@ -138,21 +160,30 @@ class USBDeviceHandle:
         """
         Read/Write data from USB device.
         :param request_type: Request type value. Combines direction, type and recipient enum values.
-        :param b_request: Request field for the setup packet
-        :param w_value: Value field for the setup packet.
-        :param w_index: Index field for the setup packet
+                        Bit 7: Request direction (0=Host to device - Out, 1=Device to host - In).
+                        Bits 5-6: Request type (0=standard, 1=class, 2=vendor, 3=reserved).
+                        Bits 0-4: Recipient (0=device, 1=interface, 2=endpoint,3=other).
+        :param b_request: Request field for the setup packet. The actual request, see USBRequestCodes Enum.
+        :param w_value: Value field for the setup packet. A word-size value that varies according to the request.
+                        For example, in the CLEAR_FEATURE request the value is used to select the feature, in the
+                        GET_DESCRIPTOR request the value indicates the descriptor type and in the SET_ADDRESS
+                        request the value contains the device address.
+        :param w_index: Index field for the setup packet. A word-size value that varies according to the request.
+                        The index is generally used to specify an endpoint or an interface.
         :param data: ctypes structure class.
         :param size: size of data.
         :return: True if successful otherwise False.
+        https://www.jungo.com/st/support/documentation/windriver/802/wdusb_man_mhtml/node55.html#SECTION001213000000000000000
         """
-        if not self.interface:
+        if self.interface is None:
             raise USBDeviceInterfaceNotClaimedError(self.dev_key)
+        if not isinstance(b_request, USBRequestCode):
+            raise ValueError('b_request argument must be USBRequestCode enum value.')
 
         ret = usb.control_transfer(
             self.__libusb_dev_handle__,  # ct.c_char_p
             request_type,  # ct.c_uint8
-            # TODO: Understand these next 3 arguments better.
-            b_request,  # ct.c_uint8
+            b_request,  # ct.c_uint8, must be a
             w_value,  # ct.c_uint16
             w_index,  # ct.c_uint16
             ct.cast(data, ct.POINTER(ct.c_ubyte)),  # ct.POINTER(ct.c_ubyte)
@@ -180,12 +211,15 @@ class USBDeviceHandle:
         :param recipient: Recipient enum value.
         :return: True if successful otherwise False.
         """
-        if not self.interface:
+        if self.interface is None:
             raise USBDeviceInterfaceNotClaimedError(self.dev_key)
+
+        if isinstance(report_id, int):
+            report_id = ct.c_uint8(report_id)
 
         # Combine direction, request type and recipient together.
         request_type = usb.LIBUSB_ENDPOINT_OUT | request_type | recipient
-        w_value = USB_REPORT_TYPE_OUT | report_id
+        w_value = ct.c_uint16(USB_REPORT_TYPE_OUT.value | report_id.value)
 
         payload = (ct.c_ubyte * 5)(0)
         payload[0] = report_id
@@ -213,13 +247,12 @@ class USBDeviceHandle:
         :param recipient: Recipient enum value.
         :return: True if successful otherwise False.
         """
-        if not self.interface:
+        if self.interface is None:
             raise USBDeviceInterfaceNotClaimedError(self.dev_key)
 
         # Combine direction, request type and recipient together.
         request_type = usb.LIBUSB_ENDPOINT_IN | request_type | recipient
-        # we need to add 8 extra bytes to the structure buffer for read requests.
-        return self._make_control_transfer(request_type, b_request, w_value, w_index, data, size)
+        return self._make_control_transfer(request_type, b_request, w_value, w_index, ct.byref(data), size)
 
     def read_interrupt(self, endpoint, response, uses_report_id=True):
         """
@@ -228,7 +261,7 @@ class USBDeviceHandle:
         :param response: Variable holding the complete response from the device.
         :param uses_report_id: True if report_id is in the message.
         """
-        if not self.interface:
+        if self.interface is None:
             raise USBDeviceInterfaceNotClaimedError(self.dev_key)
 
         actual_length = ct.c_int(0)
