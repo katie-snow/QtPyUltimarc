@@ -6,12 +6,12 @@ import ctypes as ct
 import logging
 
 from ultimarc import translate_gettext as _
-from ultimarc.devices._device import USBDeviceHandle
+from ultimarc.devices._device import USBDeviceHandle, USBRequestCode
 from ultimarc.devices._structures import PacHeaderStruct, PacStruct
 
 _logger = logging.getLogger('ultimarc')
 
-MINI_PAC_SET_REPORT = ct.c_uint8(0x09)
+
 MINI_PAC_INDEX = ct.c_uint16(0x02)
 
 PINMAP = {
@@ -64,7 +64,7 @@ class MiniPacDevice(USBDeviceHandle):
     def get_current_configuration(self):
         """ Return the current Mini-PAC pins configuration """
         request = PacHeaderStruct(0x59, 0xdd, 0x0f, 0)
-        ret = self.write(MINI_PAC_SET_REPORT, int(0x03), MINI_PAC_INDEX,
+        ret = self.write(USBRequestCode.SET_CONFIGURATION, int(0x03), MINI_PAC_INDEX,
                          request, ct.sizeof(request))
 
         if ret:
