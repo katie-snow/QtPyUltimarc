@@ -1,6 +1,5 @@
 {
   "schemaVersion" : 2.0,
   "resourceType": "aimtrak",
-  "deviceClass" : "aimtrak",
-  "boardId": 1.0
+  "deviceClass" : "aimtrak"
 }
