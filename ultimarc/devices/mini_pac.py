@@ -14,6 +14,46 @@ _logger = logging.getLogger('ultimarc')
 MINI_PAC_SET_REPORT = ct.c_uint8(0x09)
 MINI_PAC_INDEX = ct.c_uint16(0x02)
 
+PINMAP = {
+    """ Pin map for device
+    code_index: Normal key press action
+    shifted_code_index: Shifted key press action
+    shift_key_index: Which key is the shift key 
+    pin name: (code_index, shifted_code_index, shift_key_index) 
+    """
+    '1up': (11, 81, 111),
+    '1down': (9, 59, 109),
+    '1right': (15, 65, 115),
+    '1left': (12, 63,113),
+    '2up': (38, 88, 138),
+    '2down': (40, 90, 140),
+    '2right': (34, 84, 134),
+    '2left': (36, 86, 136),
+    '1sw1': (10, 60, 110),
+    '1sw2': (12, 62, 112),
+    '1sw3': (14, 64, 114),
+    '1sw4': (16, 66, 116),
+    '1sw5': (42, 92, 142),
+    '1sw6': (46, 96, 146),
+    '1sw8': (48, 98, 148),
+    '2sw1': (18, 68, 118),
+    '2sw2': (20, 70, 120),
+    '2sw3': (22, 72, 122),
+    '2sw4': (24, 74, 124),
+    '2sw5': (2, 52, 104),
+    '2sw6': (4, 54, 106),
+    '2sw7': (6, 56, 106),
+    '2sw8': (8, 58, 108),
+    '1start': (26, 76, 126),
+    '1coin': (30, 80, 130),
+    '1a': (7, 57, 107),
+    '1b': (5, 55, 105),
+    '2start': (28, 78, 128),
+    '2coin': (32, 82, 132),
+    '2a': (3, 53, 103),
+    '2b': (1, 51, 101)
+}
+
 
 class MiniPacDevice(USBDeviceHandle):
     """ Manage a MINI-pac device """
