@@ -28,19 +28,53 @@ class USBRequestCode(IntEnum):
     Standard USB Setup Packet Request Codes.
     https://www.jungo.com/st/support/documentation/windriver/802/wdusb_man_mhtml/node55.html#usb_standard_dev_req_codes
     """
-    GET_STATUS = 0
-    CLEAR_FEATURE = 1
-    # Reserved = 2
-    SET_FEATURE = 3
-    # Reserved = 4
-    SET_ADDRESS = 5
-    GET_DESCRIPTOR = 6
-    SET_DESCRIPTOR = 7
-    GET_CONFIGURATION = 8
-    SET_CONFIGURATION = 9
-    GET_INTERFACE = 10
-    SET_INTERFACE = 11
-    SYNCH_FRAME = 12
+    GET_STATUS = 0x00  # Request status of the specific recipient
+    CLEAR_FEATURE = 0x01  # Clear or disable a specific feature
+    # Reserved = 0x02
+    SET_FEATURE = 0x03  # Set or enable a specific feature
+    # Reserved = 0x04
+    SET_ADDRESS = 0x05  # Set device address for all future accesses
+    GET_DESCRIPTOR = 0x06  # Get the specified descriptor
+    SET_DESCRIPTOR = 0x07  # Used to update existing descriptors or add new descriptors
+    GET_CONFIGURATION = 0x08  # Get the current device configuration value
+    SET_CONFIGURATION = 0x09  # Set device configuration
+    GET_INTERFACE = 0x0A  # Return the selected alternate setting for the specified interface
+    SET_INTERFACE = 0x0B  # Select an alternate interface for the specified interface
+    SYNCH_FRAME = 0x0C  # Set then report an endpoint's synchronization frame
+    REQUEST_SET_SEL = 0x30  # Sets both the U1 and U2 Exit Latency
+    SET_ISOCH_DELAY = 0x31  # Delay from the time a host transmits a packet to the time it is
+    # received by the device.
+
+
+class USBRequestDirection(IntEnum):
+    """
+    Request Endpoint Direction. Values for bit 7 of the libusb.endpoint_descriptor::bEndpointAddress
+    "bmRequestType".
+    """
+    ENDPOINT_OUT = 0x00
+    ENDPOINT_IN = 0x80
+
+
+class USBRequestType(IntEnum):
+    """
+    Request Type. Values for bits 5-6 of the libusb.control_setup::bmRequestType "bmRequestType"
+    field in control transfers.
+    """
+    REQUEST_TYPE_STANDARD = (0x00 << 5)  # Standard
+    REQUEST_TYPE_CLASS = (0x01 << 5)  # Class
+    REQUEST_TYPE_VENDOR = (0x02 << 5)  # Vendor
+    REQUEST_TYPE_RESERVED = (0x03 << 5)  # Reserved
+
+
+class USBRequestRecipient(IntEnum):
+    """
+    Request Recipient. Values for bits 0-4 of the libusb.control_setup::bmRequestType "bmRequestType"
+    field in control transfers. Values 4 through 31 are reserved.
+    """
+    RECIPIENT_DEVICE = 0x00  # Device
+    RECIPIENT_INTERFACE = 0x01  # Interface
+    RECIPIENT_ENDPOINT = 0x02  # Endpoint
+    RECIPIENT_OTHER = 0x03  # Other
 
 
 def usb_error(code, msg, debug=False):
@@ -191,15 +225,15 @@ class USBDeviceHandle:
             timeout)  # ct.c_uint32
 
         if ret >= 0:
-            direction = _('Read') if request_type & usb.LIBUSB_ENDPOINT_IN else _('Write')
+            direction = _('Read') if request_type & USBRequestDirection.ENDPOINT_IN else _('Write')
             _logger.debug(f'{direction} {size} ' + _('bytes from device').format(size) + f' {self.dev_key}.')
             return True
 
         usb_error(ret, _('Failed to communicate with device') + f' {self.dev_key}.')
         return False
 
-    def write(self, b_request, report_id, w_index, data=None, size=None, request_type=usb.LIBUSB_REQUEST_TYPE_CLASS,
-              recipient=usb.LIBUSB_RECIPIENT_INTERFACE):
+    def write(self, b_request, report_id, w_index, data=None, size=None, request_type=USBRequestType.REQUEST_TYPE_CLASS,
+              recipient=USBRequestRecipient.RECIPIENT_INTERFACE):
         """
         Write message to USB device.
         :param b_request: Request field for the setup packet
@@ -207,18 +241,22 @@ class USBDeviceHandle:
         :param w_index: Index field for the setup packet
         :param data: ctypes structure class.
         :param size: size of message.
-        :param request_type: Request type enum value.
-        :param recipient: Recipient enum value.
+        :param request_type: USBRequestType enum value.
+        :param recipient: USBRequestRecipient enum value.
         :return: True if successful otherwise False.
         """
         if self.interface is None:
             raise USBDeviceInterfaceNotClaimedError(self.dev_key)
+        if not isinstance(request_type, USBRequestType):
+            raise ValueError('Request type argument must be a USBRequestType enum value.')
+        if not isinstance(recipient, USBRequestRecipient):
+            raise ValueError('Request type argument must be a USBRequestRecipient enum value.')
 
         if isinstance(report_id, int):
             report_id = ct.c_uint8(report_id)
 
         # Combine direction, request type and recipient together.
-        request_type = usb.LIBUSB_ENDPOINT_OUT | request_type | recipient
+        request_type = USBRequestDirection.ENDPOINT_OUT | request_type | recipient
         w_value = ct.c_uint16(USB_REPORT_TYPE_OUT.value | report_id.value)
 
         payload = (ct.c_ubyte * 5)(0)
@@ -234,8 +272,8 @@ class USBDeviceHandle:
         _logger.debug(_(' '.join(hex(x) for x in payload)))
         return ret
 
-    def read(self, b_request, w_value, w_index, data=None, size=None, request_type=usb.LIBUSB_REQUEST_TYPE_CLASS,
-             recipient=usb.LIBUSB_RECIPIENT_INTERFACE):
+    def read(self, b_request, w_value, w_index, data=None, size=None, request_type=USBRequestType.REQUEST_TYPE_CLASS,
+             recipient=USBRequestRecipient.RECIPIENT_INTERFACE):
         """
         Read message from USB device.
         :param b_request: Request field for the setup packet
@@ -249,6 +287,10 @@ class USBDeviceHandle:
         """
         if self.interface is None:
             raise USBDeviceInterfaceNotClaimedError(self.dev_key)
+        if not isinstance(request_type, USBRequestType):
+            raise ValueError('Request type argument must be a USBRequestType enum value.')
+        if not isinstance(recipient, USBRequestRecipient):
+            raise ValueError('Request type argument must be a USBRequestRecipient enum value.')
 
         # Combine direction, request type and recipient together.
         request_type = usb.LIBUSB_ENDPOINT_IN | request_type | recipient
