@@ -256,7 +256,7 @@ class USBDevices:
             return
 
         _logger.debug(_('Vendor filters: ') + ', '.join(self._filters))
-        _logger.debug(_('Searching for USB devices...'))
+        _logger.debug(_('Searching for Ultimarc USB devices...'))
         for dev in dev_list:
             if not dev:  # We must always look for the Null device and quit the loop.
                 break
