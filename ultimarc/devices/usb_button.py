@@ -3,6 +3,8 @@
 # file 'LICENSE', which is part of this source code package.
 #
 import ctypes as ct
+import libusb as usb
+from libusb import standard_request
 import logging
 
 from ultimarc import translate_gettext as _
@@ -57,7 +59,7 @@ class USBButtonDevice(USBDeviceHandle):
         """
         data = USBButtonColorStruct(0x01, 0x0, 0x0, 0x0)
         for x in range(20):
-            ret = self.read(USBRequestCode.CLEAR_FEATURE, USBButtonReportID, USBButtonWIndex, data, ct.sizeof(data))
+            ret = self.read(USBRequestCode.GET_CONFIGURATION, USBButtonReportID, USBButtonWIndex, data, ct.sizeof(data))
             if ret:
                 return data.red, data.green, data.blue
             _logger.error(_('Failed to read color data from usb button.'))
