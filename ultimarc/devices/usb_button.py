@@ -171,7 +171,7 @@ class USBButtonDevice(USBDeviceHandle):
         row7 = row_to_struct(config.keys[1].row7)
         row8 = row_to_struct(config.keys[1].row8)
 
-        data = USBButtonConfigStruct(0x50, 0xdd, action, 0x00,
+        data = USBButtonConfigStruct(application, 0xdd, action, 0x00,
                     pressed_rgb, released_rgb,
                     row1, row2, row3, row4, row5, row6, row7, row8)
 
