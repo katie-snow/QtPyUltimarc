@@ -2,7 +2,7 @@
   "schemaVersion" : 2.0,
   "resourceType": "usb-button-color",
   "deviceClass" : "usb-button",
-  "colorRGB" : {
+  "colorRGB": {
     "red" : 200,
     "green" : 200,
     "blue" : 100

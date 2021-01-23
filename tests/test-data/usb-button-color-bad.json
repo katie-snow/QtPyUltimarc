@@ -2,6 +2,7 @@
   "schemaVersion" : 2.0,
   "resourceType": "bad-resource-type",
   "deviceClass" : "not-a-usb-button",
+  "boardId": 1.0,
   "colorRGB" : {
     "red" : -1,
     "green" : 256,
