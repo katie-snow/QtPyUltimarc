@@ -8,11 +8,11 @@
     },
     "resourceType": {
       "type": "string",
-      "enum": ["usb-button-color", "aimtrak"]
+      "enum": ["usb-button-color", "aimtrak", "mini-pac-pins"]
     },
     "deviceClass": {
       "type": "string",
-      "enum": ["usb-button", "aimtrak"]
+      "enum": ["usb-button", "aimtrak", "mini-pac"]
     }
   },
   "required": [
