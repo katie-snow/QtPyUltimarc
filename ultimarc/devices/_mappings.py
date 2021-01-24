@@ -226,7 +226,7 @@ IPACSeriesMapping = {
 #
 # Pre 2015 IPAC key mapping
 #
-PREIPACMapping = {
+LegacyIPACMapping = {
     "A": 0x1C,
     "B": 0x32,
     "C": 0x21,
