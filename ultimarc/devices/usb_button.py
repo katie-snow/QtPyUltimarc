@@ -19,6 +19,7 @@ _logger = logging.getLogger('ultimarc')
 USBButtonReportID = 0x0200
 USBButtonWIndex = 0x0
 PACKETSIZE = 64
+ROWARRAY = ct.c_uint8 * 6
 
 
 class ConfigApplication(IntEnum):
@@ -27,9 +28,9 @@ class ConfigApplication(IntEnum):
 
 
 ButtonModeMapping = {
-    'alternate': 0x00,
-    'extended': 0x01,
-    'both': 0x02
+    'alternate': 0x00,  # Send primary sequence then secondary on alternate presses.
+    'extended': 0x01,  # Send both sequences on every press.
+    'both': 0x02  # Send primary sequence on short press, secondary on long press.
 }
 
 
@@ -45,13 +46,8 @@ class USBButtonColorStruct(UltimarcStruct):
     """ Defines RGB color values for USB button device """
     _fields_ = [
         ('reportId', ct.c_uint8),  # Must always be 0x01.
-        ('red', ct.c_uint8),
-        ('green', ct.c_uint8),
-        ('blue', ct.c_uint8)
+        ('rgb', RGBValueStruct)
     ]
-
-
-ROWARRAY = ct.c_uint8 * 6
 
 
 class USBButtonConfigStruct(UltimarcStruct):
@@ -71,7 +67,8 @@ class USBButtonConfigStruct(UltimarcStruct):
         ('row5', ROWARRAY),
         ('row6', ROWARRAY),
         ('row7', ROWARRAY),
-        ('row8', ROWARRAY)
+        ('row8', ROWARRAY),
+        ('padding', ROWARRAY)
     ]
 
 
@@ -82,6 +79,19 @@ class USBButtonDevice(USBDeviceHandle):
     class_id = 'usb-button'  # Used to match/filter devices.
     class_descr = _('USB Button')
     interface = 0  # USB interface to write and read from.
+
+    def get_state(self):
+        """
+        Return the USB button click state.
+        :return: 1 if clicked otherwise 0, None if error.
+        """
+        # TODO: Can't seem to make this work to return the button click state.  See USBButtonGetState() in PacDrive.cpp.
+        data = USBButtonColorStruct(0x02, RGBValueStruct(0x0, 0x0, 0x0))
+        ret = self.read(USBRequestCode.CLEAR_FEATURE, USBButtonReportID, USBButtonWIndex, data, ct.sizeof(data))
+        if ret:
+            return data.red
+        _logger.error(_('Failed to read usb button state.'))
+        return None
 
     def set_color(self, red, green, blue):
         """
@@ -95,7 +105,7 @@ class USBButtonDevice(USBDeviceHandle):
             if not isinstance(color, int) or not 0 <= color <= 255:
                 raise ValueError(_('Color argument value is invalid'))
 
-        data = USBButtonColorStruct(0x01, red, green, blue)
+        data = USBButtonColorStruct(0x01, RGBValueStruct(red, green, blue))
         return self.write(USBRequestCode.SET_CONFIGURATION, USBButtonReportID, USBButtonWIndex, data, ct.sizeof(data))
 
     def get_color(self):
@@ -104,7 +114,7 @@ class USBButtonDevice(USBDeviceHandle):
         to using the set_color() method.
         :return: (Integer, Integer, Integer) or None
         """
-        data = USBButtonColorStruct(0x01, 0x0, 0x0, 0x0)
+        data = USBButtonColorStruct(0x01, RGBValueStruct(0x0, 0x0, 0x0))
         ret = self.read(USBRequestCode.CLEAR_FEATURE, USBButtonReportID, USBButtonWIndex, data, ct.sizeof(data))
         if ret:
             return data.red, data.green, data.blue
@@ -135,7 +145,8 @@ class USBButtonDevice(USBDeviceHandle):
             if not self.validate_config(config.to_dict(), 'usb-button-color.schema'):
                 return False
             _logger.debug(_('Device JSON configuration passed schema validation.'))
-            data = USBButtonColorStruct(0x01, config.colorRGB.red, config.colorRGB.green, config.colorRGB.blue)
+            data = USBButtonColorStruct(0x01,
+                            RGBValueStruct(config.colorRGB.red, config.colorRGB.green, config.colorRGB.blue))
             return self.write(USBRequestCode.SET_CONFIGURATION, USBButtonReportID, USBButtonWIndex, data,
                               ct.sizeof(data))
 
@@ -162,19 +173,16 @@ class USBButtonDevice(USBDeviceHandle):
             debug_data.append(debug_row)
             return data
 
-        row1 = row_to_struct(config.keys[0].row1)
-        row2 = row_to_struct(config.keys[0].row2)
-        row3 = row_to_struct(config.keys[0].row3)
-        row4 = row_to_struct(config.keys[0].row4)
-        row5 = row_to_struct(config.keys[1].row5)
-        row6 = row_to_struct(config.keys[1].row6)
-        row7 = row_to_struct(config.keys[1].row7)
-        row8 = row_to_struct(config.keys[1].row8)
+        row_keys = list()
+        # Make sure we always put the primary set before the secondary set.
+        for key in sorted(config.keys, key=lambda k: k.sequence):
+            row_keys.append(row_to_struct(key.row1))
+            row_keys.append(row_to_struct(key.row2))
+            row_keys.append(row_to_struct(key.row3))
+            row_keys.append(row_to_struct(key.row4))
+        row_keys.append(ROWARRAY(0))  # Add padding data, this is probably used by the bluetooth usb button.
 
-        # TODO: Why do we have to write twice in a row for the config to be applied to the device?
-        data = USBButtonConfigStruct(application, 0xdd, action, 0x00,
-                    pressed_rgb, released_rgb,
-                    row1, row2, row3, row4, row5, row6, row7, row8)
+        data = USBButtonConfigStruct(application, 0xdd, action, 0x00, released_rgb, pressed_rgb, *row_keys)
 
         _logger.debug(_(' application') + f': {application.name}')
         _logger.debug(_(' action') + f': {config.action}')

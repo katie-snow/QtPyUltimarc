@@ -118,7 +118,7 @@ def run():
     if num_args == 0:
         _logger.warning(_('Nothing to do.'))
         return 0
-    if num_args > 1:
+    if num_args > 1 and (not args.set_config or not args.temporary):
         # Enhance this check and provide better feedback on which arguments are mutually exclusive.
         _logger.error(_('More than one mutually exclusive argument specified.'))
         return -1
@@ -129,7 +129,7 @@ def run():
             return -1
 
     if not args.set_config and args.temporary:
-        _logger.error(_('The temporary argument can only be used with the --set-config argument.'))
+        _logger.error(_('The --temporary argument can only be used with the --set-config argument.'))
         return -1
 
     if args.set_config:

@@ -77,9 +77,9 @@
         {
           "type": "object",
           "properties": {
-            "setType": {
+            "sequence": {
               "type": "string",
-              "const": "pressed"
+              "const": "primary"
             },
             "row1": {
               "type": "array",
@@ -199,7 +199,7 @@
             }
           },
           "required": [
-            "setType",
+            "sequence",
             "row1",
             "row2",
             "row3",
@@ -209,11 +209,11 @@
         {
           "type": "object",
           "properties": {
-            "setType": {
+            "sequence": {
               "type": "string",
-              "const": "released"
+              "const": "secondary"
             },
-            "row5": {
+            "row1": {
               "type": "array",
               "items": [
                 {
@@ -242,7 +242,7 @@
                 }
               ]
             },
-            "row5": {
+            "row2": {
               "type": "array",
               "items": [
                 {
@@ -271,7 +271,7 @@
                 }
               ]
             },
-            "row7": {
+            "row3": {
               "type": "array",
               "items": [
                 {
@@ -300,7 +300,7 @@
                 }
               ]
             },
-            "row8": {
+            "row4": {
               "type": "array",
               "items": [
                 {
@@ -331,11 +331,11 @@
             }
           },
           "required": [
-            "setType",
-            "row5",
-            "row6",
-            "row7",
-            "row8"
+            "sequence",
+            "row1",
+            "row2",
+            "row3",
+            "row4"
           ]
         }
       ]
