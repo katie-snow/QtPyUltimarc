@@ -16,6 +16,7 @@ class MiniPacSchemaTest(TestCase):
 
     mini_pac_schema = None
     mini_pac_config = None
+    mini_pac_bad_config = None
 
     def setUp(self) -> None:
         """ This is called before every test method in the test class """
@@ -35,3 +36,39 @@ class MiniPacSchemaTest(TestCase):
     def test_mini_pac_good(self):
         """ Test that the test mini-pac config matches the mini-pac schema """
         self.assertIsNone(validate(self.mini_pac_config, self.mini_pac_schema))
+
+    def test_mini_pac_bad_json(self):
+        """ Test that bad json configurations fail against the mini-pac schema """
+
+        # Macro entry
+        bad_config_file = os.path.join(git_project_root(),
+                                       'tests/test-data/mini-pac-macro-bad.json')
+        self.assertTrue(os.path.exists(bad_config_file))
+
+        with open(bad_config_file) as h:
+            bad_config = json.loads(h.read())
+
+        with self.assertRaises(ValidationError):
+            validate(bad_config, self.mini_pac_schema)
+
+        # Pin entry
+        bad_config_file = os.path.join(git_project_root(),
+                                       'tests/test-data/mini-pac-pin-bad.json')
+        self.assertTrue(os.path.exists(bad_config_file))
+
+        with open(bad_config_file) as h:
+            bad_config = json.loads(h.read())
+
+        with self.assertRaises(ValidationError):
+            validate(bad_config, self.mini_pac_schema)
+
+        # Debounce entry
+        bad_config_file = os.path.join(git_project_root(),
+                                       'tests/test-data/mini-pac-debounce-bad.json')
+        self.assertTrue(os.path.exists(bad_config_file))
+
+        with open(bad_config_file) as h:
+            bad_config = json.loads(h.read())
+
+        with self.assertRaises(ValidationError):
+            validate(bad_config, self.mini_pac_schema)

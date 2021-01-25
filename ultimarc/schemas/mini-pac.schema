@@ -48,7 +48,13 @@
       "examples": [
         "short"
       ],
-      "pattern": "^.*$"
+      "pattern": "^.*$",
+      "enum": [
+              "none",
+              "standard",
+              "long",
+              "short"
+      ]
     },
     "shift_key": {
       "$id": "#root/shift_key",
