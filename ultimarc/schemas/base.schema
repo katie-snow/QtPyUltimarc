@@ -7,13 +7,14 @@
       "const": 2.0
     },
     "resourceType": {
-      "type": "string",
-      "enum": ["usb-button-color", "aimtrak"]
+      "type": "string"
     },
     "deviceClass": {
-      "type": "string",
-      "enum": ["usb-button", "aimtrak"]
+      "type": "string"
     }
+  },
+  "boardId": {
+    "type": "integer"
   },
   "required": [
     "schemaVersion",
