@@ -11,7 +11,6 @@ from ultimarc.devices._structures import PacHeaderStruct, PacStruct
 
 _logger = logging.getLogger('ultimarc')
 
-
 MINI_PAC_INDEX = ct.c_uint16(0x02)
 
 PINMAP = {
@@ -69,3 +68,32 @@ class MiniPacDevice(USBDeviceHandle):
 
         if ret:
             return self.read_interrupt(0x84, PacStruct())
+
+    def set_config(self, config_file):
+        """ Write a new configuration to the current Mini-PAC device """
+
+        # Get the current configuration from the device
+        cur_config = self.get_current_configuration()
+
+        # List of possible 'resourceType' values in the config file for a USB button.
+        resource_types = ['mini-pac-pins']
+
+        # Validate against the base schema.
+        config = self.validate_config_base(config_file, resource_types)
+        if not config:
+            return False
+
+        if config['deviceClass'] != 'mini-pac':
+            _logger.error(_('Configuration device class is not "mini-pac".'))
+            return False
+
+        # Determine which config resource type we have.
+        if config['resourceType'] == 'mini-pac-pins':
+            if not self.validate_config(config, 'mini-pac.schema'):
+                return False
+
+            # Insert the new configuration into the PacStruct data object
+            data = None
+            return self.write(USBRequestCode.SET_CONFIGURATION, int(0x03), MINI_PAC_INDEX, data, ct.sizeof(data))
+
+        return False
