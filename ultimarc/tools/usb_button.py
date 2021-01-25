@@ -12,6 +12,7 @@ import sys
 
 from ultimarc import translate_gettext as _
 from ultimarc.devices import DeviceClassID
+from ultimarc.devices.usb_button import ConfigApplication
 from ultimarc.tools import ToolContextManager, ToolEnvironmentObject
 
 _logger = logging.getLogger('ultimarc')
@@ -83,9 +84,13 @@ class USBButtonClass(object):
         elif self.args.set_config:
             for dev in devices:
                 with dev as dev_h:
-                    dev_h.set_config(self.args.set_config)
-                    _logger.info(f'{dev.dev_key} ({dev.bus},{dev.address}): ' +
+                    application = ConfigApplication.temporary if self.args.temporary else ConfigApplication.permanent
+                    if dev_h.set_config(self.args.set_config, application):
+                        _logger.info(f'{dev.dev_key} ({dev.bus},{dev.address}): ' +
                                  _('configuration successfully applied to device.'))
+                    else:
+                        _logger.error(f'{dev.dev_key} ({dev.bus},{dev.address}): ' +
+                                     _('failed to apply configuration to device.'))
 
         return 0
 
@@ -104,6 +109,8 @@ def run():
                         action='store_true')
     parser.add_argument('--set-config', help=_('Set button config from config file.'), type=str, default=None,
                         metavar='CONFIG-FILE')
+    parser.add_argument('--temporary', help=_('Apply config until device unplugged.'), default=False,
+                        action='store_true')
 
     args = parser.parse_args()
 
@@ -111,7 +118,7 @@ def run():
     if num_args == 0:
         _logger.warning(_('Nothing to do.'))
         return 0
-    if num_args > 1:
+    if num_args > 1 and (not args.set_config or not args.temporary):
         # Enhance this check and provide better feedback on which arguments are mutually exclusive.
         _logger.error(_('More than one mutually exclusive argument specified.'))
         return -1
@@ -120,6 +127,10 @@ def run():
         if not re.match(_RGB_STRING_REGEX, args.set_color):
             _logger.error(_('Invalid RGB value found for --set-color argument.'))
             return -1
+
+    if not args.set_config and args.temporary:
+        _logger.error(_('The --temporary argument can only be used with the --set-config argument.'))
+        return -1
 
     if args.set_config:
         # Always force absolute path for config files.

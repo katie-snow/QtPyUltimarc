@@ -225,8 +225,10 @@ class USBDeviceHandle:
             timeout)  # ct.c_uint32
 
         if ret >= 0:
-            direction = _('Read') if request_type & USBRequestDirection.ENDPOINT_IN else _('Write')
-            _logger.debug(f'{direction} {size} ' + _('bytes from device').format(size) + f' {self.dev_key}.')
+            if request_type & USBRequestDirection.ENDPOINT_IN:
+                _logger.debug('Read {} bytes from'.format(size) + f' {self.dev_key}.')
+            else:
+                _logger.debug('Wrote {} bytes to'.format(size) + f' {self.dev_key}.')
             return True
 
         usb_error(ret, _('Failed to communicate with device') + f' {self.dev_key}.')
@@ -270,6 +272,52 @@ class USBDeviceHandle:
                                            w_index, payload_ptr,
                                            ct.sizeof(payload) if report_id else size)
         _logger.debug(_(' '.join(hex(x) for x in payload)))
+        return ret
+
+    def write_alt(self, b_request, report_id, w_index, data=None, size=None,
+                  request_type=USBRequestType.REQUEST_TYPE_CLASS, recipient=USBRequestRecipient.RECIPIENT_INTERFACE):
+        """
+        Write message to USB device.
+        :param b_request: Request field for the setup packet
+        :param report_id: report_id portion of the Value field for the setup packet.
+        :param w_index: Index field for the setup packet
+        :param data: ctypes structure class.
+        :param size: size of message.
+        :param request_type: USBRequestType enum value.
+        :param recipient: USBRequestRecipient enum value.
+        :return: True if successful otherwise False.
+        """
+        if self.interface is None:
+            raise USBDeviceInterfaceNotClaimedError(self.dev_key)
+        if not isinstance(request_type, USBRequestType):
+            raise ValueError('Request type argument must be a USBRequestType enum value.')
+        if not isinstance(recipient, USBRequestRecipient):
+            raise ValueError('Request type argument must be a USBRequestRecipient enum value.')
+
+        if isinstance(report_id, int):
+            report_id = ct.c_uint8(report_id)
+
+        # Combine direction, request type and recipient together.
+        request_type = USBRequestDirection.ENDPOINT_OUT | request_type | recipient
+        w_value = ct.c_uint16(USB_REPORT_TYPE_OUT.value | report_id.value)
+
+        payload = (ct.c_ubyte * 5)(0)
+        offset = 1 if report_id else 0
+        pos = 0
+
+        if report_id:
+            payload[0] = report_id
+
+        while pos < size:
+            payload_size = 4 if size - pos > 4 else size - pos
+            ct.memmove(ct.addressof(payload) + offset, ct.byref(data, pos), payload_size)
+
+            ret = self._make_control_transfer(request_type, b_request, w_value,
+                                           w_index, ct.byref(payload), payload_size + offset)
+            pos += payload_size
+            _logger.debug(_(' '.join(hex(x) for x in payload)))
+
+        _logger.debug(_('Write operation complete, wrote {} bytes.').format(pos))
         return ret
 
     def read(self, b_request, w_value, w_index, data=None, size=None, request_type=USBRequestType.REQUEST_TYPE_CLASS,
@@ -330,7 +378,9 @@ class USBDeviceHandle:
         :param schema_file: Schema file name only, no path included.
         :return: schema dict.
         """
-        schema_paths = ['../schemas', './schemas', './ultimarc/schemas']
+        schema_paths = [
+            './ultimarc/schemas', '../ultimarc/schemas', '../../ultimarc/schemas', '../schemas', './schemas'
+        ]
         schema_path = None
 
         for path in schema_paths:
@@ -360,6 +410,7 @@ class USBDeviceHandle:
             validate(config, schema)
         except ValidationError as e:
             _logger.error(_('Configuration file did not validate against config schema.'))
+            _logger.error(e)
             return False
 
         return True

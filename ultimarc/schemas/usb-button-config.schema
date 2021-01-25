@@ -1,0 +1,353 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "type": "number",
+      "const": 2.0
+    },
+    "resourceType": {
+      "type": "string",
+      "const": "usb-button-config"
+    },
+    "deviceClass": {
+      "type": "string",
+      "const": "usb-button"
+    },
+    "boardId": {
+      "type": "integer"
+    },
+    "action": {
+      "type": "string",
+      "enum": ["extended", "alternate", "both"]
+    },
+    "releasedColor": {
+      "type": "object",
+      "properties": {
+        "red": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "green": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "blue": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        }
+      },
+      "required": [
+        "red",
+        "green",
+        "blue"
+      ]
+    },
+    "pressedColor": {
+      "type": "object",
+      "properties": {
+        "red": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "green": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "blue": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        }
+      },
+      "required": [
+        "red",
+        "green",
+        "blue"
+      ]
+    },
+    "keys": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "sequence": {
+              "type": "string",
+              "const": "primary"
+            },
+            "row1": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                }
+              ]
+            },
+            "row2": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                }
+              ]
+            },
+            "row3": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                }
+              ]
+            },
+            "row4": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                }
+              ]
+            }
+          },
+          "required": [
+            "sequence",
+            "row1",
+            "row2",
+            "row3",
+            "row4"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "sequence": {
+              "type": "string",
+              "const": "secondary"
+            },
+            "row1": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                }
+              ]
+            },
+            "row2": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                }
+              ]
+            },
+            "row3": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                }
+              ]
+            },
+            "row4": {
+              "type": "array",
+              "items": [
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^(space|shift .|.*)$"
+                }
+              ]
+            }
+          },
+          "required": [
+            "sequence",
+            "row1",
+            "row2",
+            "row3",
+            "row4"
+          ]
+        }
+      ]
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "resourceType",
+    "deviceClass",
+    "action",
+    "pressedColor",
+    "releasedColor",
+    "keys"
+  ]
+}
