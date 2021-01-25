@@ -7,12 +7,10 @@
       "const": 2.0
     },
     "resourceType": {
-      "type": "string",
-      "enum": ["usb-button-color", "aimtrak", "mini-pac-pins"]
+      "type": "string"
     },
     "deviceClass": {
-      "type": "string",
-      "enum": ["usb-button", "aimtrak", "mini-pac"]
+      "type": "string"
     }
   },
   "required": [

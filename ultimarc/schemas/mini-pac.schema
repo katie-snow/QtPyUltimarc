@@ -15,40 +15,28 @@
       "$id": "#root/schemaVersion",
       "title": "Schemaversion",
       "type": "integer",
-      "examples": [
-        2
-      ],
-      "default": 0
+      "const": 2.0
     },
     "resourceType": {
       "$id": "#root/resourceType",
       "title": "Resourcetype",
       "type": "string",
-      "default": "",
-      "examples": [
-        "mini-pac-pin"
-      ],
-      "pattern": "^.*$"
+      "const": "mini-pac-pins"
     },
     "deviceClass": {
       "$id": "#root/deviceClass",
       "title": "Deviceclass",
       "type": "string",
-      "default": "",
-      "examples": [
-        "mini-pac"
-      ],
-      "pattern": "^.*$"
+      "const": "mini-pac"
     },
     "debounce": {
       "$id": "#root/debounce",
       "title": "Debounce",
       "type": "string",
-      "default": "",
+      "default": "standard",
       "examples": [
         "short"
       ],
-      "pattern": "^.*$",
       "enum": [
               "none",
               "standard",
