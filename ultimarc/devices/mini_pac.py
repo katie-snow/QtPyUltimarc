@@ -7,50 +7,52 @@ import logging
 
 from ultimarc import translate_gettext as _
 from ultimarc.devices._device import USBDeviceHandle, USBRequestCode
+from ultimarc.devices._mappings import IPACSeriesMapping
 from ultimarc.devices._structures import PacHeaderStruct, PacStruct
+from ultimarc.system_utils import JSONObject
 
 _logger = logging.getLogger('ultimarc')
 
 MINI_PAC_INDEX = ct.c_uint16(0x02)
 
-PINMAP = {
-    """ Pin map for device
-    code_index: Normal key press action
-    shifted_code_index: Shifted key press action
-    shift_key_index: Which key is the shift key 
-    pin name: (code_index, shifted_code_index, shift_key_index) 
+PinMapping = {
+    """ Pin mapping for Mini-pac device
+    code_index: Normal action
+    shifted_code_index: Shifted action
+    shift_key_index: Which code is the shift code 
+    pin name: (action_index, shifted_action_index, shift_action_index) 
     """
-    '1up': (11, 81, 111),
-    '1down': (9, 59, 109),
-    '1right': (15, 65, 115),
-    '1left': (12, 63,113),
-    '2up': (38, 88, 138),
-    '2down': (40, 90, 140),
-    '2right': (34, 84, 134),
-    '2left': (36, 86, 136),
-    '1sw1': (10, 60, 110),
-    '1sw2': (12, 62, 112),
-    '1sw3': (14, 64, 114),
-    '1sw4': (16, 66, 116),
-    '1sw5': (42, 92, 142),
-    '1sw6': (46, 96, 146),
-    '1sw8': (48, 98, 148),
-    '2sw1': (18, 68, 118),
-    '2sw2': (20, 70, 120),
-    '2sw3': (22, 72, 122),
-    '2sw4': (24, 74, 124),
-    '2sw5': (2, 52, 104),
-    '2sw6': (4, 54, 106),
-    '2sw7': (6, 56, 106),
-    '2sw8': (8, 58, 108),
-    '1start': (26, 76, 126),
-    '1coin': (30, 80, 130),
-    '1a': (7, 57, 107),
-    '1b': (5, 55, 105),
-    '2start': (28, 78, 128),
-    '2coin': (32, 82, 132),
-    '2a': (3, 53, 103),
-    '2b': (1, 51, 101)
+    '1up': (10, 80, 110),
+    '1down': (8, 58, 108),
+    '1right': (14, 64, 114),
+    '1left': (12, 62, 112),
+    '2up': (37, 87, 137),
+    '2down': (39, 89, 139),
+    '2right': (33, 83, 133),
+    '2left': (35, 85, 135),
+    '1sw1': (9, 59, 109),
+    '1sw2': (11, 61, 111),
+    '1sw3': (13, 63, 113),
+    '1sw4': (15, 65, 115),
+    '1sw5': (41, 91, 141),
+    '1sw6': (45, 95, 145),
+    '1sw8': (47, 97, 147),
+    '2sw1': (17, 67, 117),
+    '2sw2': (19, 69, 119),
+    '2sw3': (21, 71, 121),
+    '2sw4': (23, 73, 123),
+    '2sw5': (1, 51, 101),
+    '2sw6': (3, 53, 103),
+    '2sw7': (5, 55, 105),
+    '2sw8': (7, 57, 107),
+    '1start': (25, 75, 125),
+    '1coin': (29, 79, 129),
+    '1a': (6, 56, 106),
+    '1b': (4, 54, 104),
+    '2start': (27, 77, 127),
+    '2coin': (31, 81, 131),
+    '2a': (2, 52, 102),
+    '2b': (0, 50, 100)
 }
 
 
@@ -72,14 +74,27 @@ class MiniPacDevice(USBDeviceHandle):
     def set_config(self, config_file):
         """ Write a new configuration to the current Mini-PAC device """
 
+
         # Get the current configuration from the device
         cur_config = self.get_current_configuration()
 
-        # List of possible 'resourceType' values in the config file for a USB button.
+
+
+        # Insert the new configuration into the PacStruct data object
+        data = None
+        return self.write(USBRequestCode.SET_CONFIGURATION, int(0x03), MINI_PAC_INDEX, data, ct.sizeof(data))
+
+        #return False
+
+    def _create_message_(self, config_file, cur_device_config=None):
+        """ Create the message to be sent to the device """
+        data = PacStruct()
+
+        # List of possible 'resourceType' values in the config file for a Mini-pac device.
         resource_types = ['mini-pac-pins']
 
         # Validate against the base schema.
-        config = self.validate_config_base(config_file, resource_types)
+        config = JSONObject(self.validate_config_base(config_file, resource_types))
         if not config:
             return False
 
@@ -92,8 +107,15 @@ class MiniPacDevice(USBDeviceHandle):
             if not self.validate_config(config, 'mini-pac.schema'):
                 return False
 
-            # Insert the new configuration into the PacStruct data object
-            data = None
-            return self.write(USBRequestCode.SET_CONFIGURATION, int(0x03), MINI_PAC_INDEX, data, ct.sizeof(data))
+            # Dict - JSONObject of pins
+            # Dict - PINMap
+            # Need to go through the JSONObject get the name, action and shift_action, place
+            # place those values in the PacStruct Object
+            for obj in config['pins'].items():
+                mapping = PinMapping[obj.name]
+                data[mapping[0]] = IPACSeriesMapping[obj.action]
+                data[mapping[1]] = IPACSeriesMapping[obj.shift_action]
 
-        return False
+            return data
+
+        return None
