@@ -1,6 +1,5 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "type": "object",
   "required": [
     "schemaVersion",
     "resourceType",
@@ -108,7 +107,7 @@
         "required": [
           "name",
           "action",
-          "shift_action"
+          "alternate_action"
         ],
         "properties": {
           "name": {
@@ -165,9 +164,9 @@
             ],
             "pattern": "^.*$"
           },
-          "shift_action": {
-            "$id": "#root/pins/items/shift_action",
-            "title": "Shift_Action",
+          "alternate_action": {
+            "$id": "#root/pins/items/alternate_action",
+            "title": "Alternate_Action",
             "type": "string",
             "default": "",
             "examples": [
