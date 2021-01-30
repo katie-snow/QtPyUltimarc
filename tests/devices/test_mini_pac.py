@@ -75,7 +75,9 @@ class MiniPacDeviceTest(TestCase):
         # pin 1down values
         self.assertTrue(data.bytes[8] == 0x51)
         self.assertTrue(data.bytes[58] == 0x13)
-        self.assertTrue(data.bytes[110] == 0x40)
+
+        # pin 1left shift value
+        self.assertTrue(data.bytes[112] == 0x40)
 
         # Macros
         # macro #1
