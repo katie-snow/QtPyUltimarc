@@ -47,18 +47,19 @@ class MiniPACClass(object):
             _logger.error(_('No Mini-PAC devices found, aborting'))
             return -1
 
-        # Always read in the configuration from the device
-        for dev in devices:
-            with dev as dev_h:
-                response = dev_h.get_current_configuration()
-                _logger.debug(response)
-                cur_config = response
+        # Read config from device
+        if self.args.read_config:
+            for dev in devices:
+                with dev as dev_h:
+                    response = dev_h.get_current_configuration()
+                    _logger.debug(response)
+                    cur_config = response
 
         # Set mini-pac device configuration from a configuration file
         if self.args.set_config:
             for dev in devices:
                 with dev as dev_h:
-                    dev_h.set_config(cur_config, self.args.set_config)
+                    dev_h.set_config(self.args.set_config)
                     _logger.info(f'{dev.dev_key} ({dev.bus},{dev.address}): ' +
                                  _('configuration successfully applied to device.'))
 
@@ -71,7 +72,7 @@ def run():
     parser = ToolContextManager.get_argparser(tool_cmd, tool_desc)
 
     # TODO:  Setup additional program arguments here.
-
+    parser.add_argument('--read-config', help=_('Read Mini-pac device config'), default=False, action='store_true')
     parser.add_argument('--set-config', help=_('Set Mini-pac device config from config file'), type=str, default=None,
                         metavar='CONFIG-FILE')
     args = parser.parse_args()
