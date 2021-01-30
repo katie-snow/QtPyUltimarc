@@ -47,10 +47,26 @@ class MiniPacDeviceTest(TestCase):
 
         config_file = os.path.join(git_project_root(), 'tests/test-data/mini-pac-good.json')
         valid, data = dev._create_message_(config_file)
+        print(data)
         self.assertTrue(valid)
         self.assertIsNotNone(data)
 
+        # header
+        self.assertTrue(data.header.type == 0x50)
+        self.assertTrue(data.header.byte_2 == 0xdd)
+        self.assertTrue(data.header.byte_3 == 0x0f)
+        self.assertTrue(data.header.byte_4 == 0)
+
         # pins
+        # prep work check
+        self.assertTrue(data.bytes[16] == 0xff)
+        self.assertTrue(data.bytes[32] == 0x00)
+        self.assertTrue(data.bytes[34] == 0x00)
+        self.assertTrue(data.bytes[49] == 0xff)
+        self.assertTrue(data.bytes[50] == 0x0)
+        self.assertTrue(data.bytes[108] == 0x01)
+        self.assertTrue(data.bytes[147] == 0x01)
+
         # pin 2b values
         self.assertTrue(data.bytes[0] == 0x29)
         self.assertTrue(data.bytes[50] == 0x0)
@@ -59,33 +75,33 @@ class MiniPacDeviceTest(TestCase):
         # pin 1down values
         self.assertTrue(data.bytes[8] == 0x51)
         self.assertTrue(data.bytes[58] == 0x13)
-        self.assertTrue(data.bytes[108] == 0x41)
+        self.assertTrue(data.bytes[110] == 0x40)
 
         # Macros
         # macro #1
-        self.assertTrue(data.bytes[167] == 0xe0)
-        self.assertTrue(data.bytes[168] == 0x16)
-        self.assertTrue(data.bytes[169] == 0x04)
-        self.assertTrue(data.bytes[170] == 0x05)
+        self.assertTrue(data.bytes[166] == 0xe0)
+        self.assertTrue(data.bytes[167] == 0x16)
+        self.assertTrue(data.bytes[168] == 0x04)
+        self.assertTrue(data.bytes[169] == 0x05)
 
         # macro #2
-        self.assertTrue(data.bytes[171] == 0xe1)
-        self.assertTrue(data.bytes[172] == 0x10)
-        self.assertTrue(data.bytes[173] == 0x1f)
+        self.assertTrue(data.bytes[170] == 0xe1)
+        self.assertTrue(data.bytes[171] == 0x10)
+        self.assertTrue(data.bytes[172] == 0x1f)
 
         # macro #3
-        self.assertTrue(data.bytes[174] == 0xe2)
-        self.assertTrue(data.bytes[175] == 0x10)
-        self.assertTrue(data.bytes[176] == 0x20)
-        self.assertTrue(data.bytes[177] == 0x10)
-        self.assertTrue(data.bytes[178] == 0x20)
-        self.assertTrue(data.bytes[179] == 0x1f)
-        self.assertTrue(data.bytes[180] == 0x1e)
+        self.assertTrue(data.bytes[173] == 0xe2)
+        self.assertTrue(data.bytes[174] == 0x10)
+        self.assertTrue(data.bytes[175] == 0x20)
+        self.assertTrue(data.bytes[176] == 0x10)
+        self.assertTrue(data.bytes[177] == 0x20)
+        self.assertTrue(data.bytes[178] == 0x1f)
+        self.assertTrue(data.bytes[179] == 0x1e)
 
         # macro #4 (Is macro #5 in the configuration file)
-        self.assertTrue(data.bytes[181] == 0xe3)
-        self.assertTrue(data.bytes[182] == 0x10)
-        self.assertTrue(data.bytes[183] == 0x1e)
+        self.assertTrue(data.bytes[180] == 0xe3)
+        self.assertTrue(data.bytes[181] == 0x10)
+        self.assertTrue(data.bytes[182] == 0x1e)
 
-        for x in range(184, 252):
+        for x in range(183, 252):
             self.assertTrue(data.bytes[x] == 0)

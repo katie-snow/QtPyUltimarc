@@ -2,7 +2,7 @@
   "schemaVersion" : 2.0,
   "resourceType" : "mini-pac-pins",
   "deviceClass" : "mini-pac",
-  "debounce" : "short",
+  "debounce" : "standard",
   "shift_key" : "1start",
   "macros": [
     {"name": "macro #1", "action": ["m", "1"]},

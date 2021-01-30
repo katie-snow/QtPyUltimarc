@@ -8,7 +8,7 @@ import logging
 from ultimarc import translate_gettext as _
 from ultimarc.devices._device import USBDeviceHandle, USBRequestCode
 from ultimarc.devices._mappings import IPACSeriesMapping
-from ultimarc.devices._structures import PacHeaderStruct, PacStruct
+from ultimarc.devices._structures import PacHeaderStruct, PacStruct, PacConfigUnion
 from ultimarc.system_utils import JSONObject
 
 _logger = logging.getLogger('ultimarc')
@@ -21,7 +21,7 @@ MINI_PAC_INDEX = ct.c_uint16(0x02)
 # alternate_index: Which pin is the shift code
 # pin name: (action_index, alternate_action_index, shift_key)
 PinMapping = {
-    '1up': (10, 80, 110),
+    '1up': (10, 60, 110),
     '1down': (8, 58, 108),
     '1right': (14, 64, 114),
     '1left': (12, 62, 112),
@@ -102,9 +102,26 @@ class MiniPacDevice(USBDeviceHandle):
             if not self.validate_config(config, 'mini-pac.schema'):
                 return False, None
 
+            # Prep the data structure
+            # byte 32, 34 = 0 instead of 0xff
+            for x in range(16, 50, 2):
+                data.bytes[x] = 0xff if (x != 32 and x != 34) else 0
+
+            # byte 108, 147 = 0x01 unless it is the shift key then it is 0x40
+            data.bytes[49] = 0xff
+            data.bytes[108] = 0x01
+            data.bytes[147] = 0x01
+
+            # Header
+            header = PacConfigUnion()
+            data.header.type = 0x50
+            data.header.byte_2 = 0xdd
+            data.header.byte_3 = 0x0f
+            data.header.byte_4 = header.asByte
+
             # Pins
             # Places the action value, alternate action value and if assigned as shift key
-            # 0x41 in the shift_key position for all pins in json config
+            # 0x40 in the shift_key position for all pins in json config
             shift_key = config.shift_key
 
             for pin in config.pins:
@@ -118,8 +135,9 @@ class MiniPacDevice(USBDeviceHandle):
                     if alternate_action:
                         data.bytes[alternate_action_index] = IPACSeriesMapping[alternate_action]
 
+                    # Key designated as shift key
                     if shift_key.upper() == pin.name.upper():
-                        data.bytes[shift_key_index] = 0x41
+                        data.bytes[shift_key_index] = 0x40
                 except KeyError:
                     _logger.debug(_(f'Pin {pin.name} does not exists in Mini-pac device'))
 
@@ -131,10 +149,11 @@ class MiniPacDevice(USBDeviceHandle):
             cur_size_count = 0
             cur_macro_count = 0
             cur_macro = 0xe0
-            cur_position = 167
+            cur_position = 166
 
             for macro in config.macros:
                 if len(macro.action) > 0:
+                    # Set the start point of the new macro
                     data.bytes[cur_position] = cur_macro
                     cur_position += 1
                     cur_macro += 1
