@@ -36,6 +36,12 @@ class MiniPACClass(object):
         :return: Exit code value
         """
         # TODO: write program main process here after setting 'tool_cmd' and 'tool_desc'...
+        # TODO:
+        #   Arguments:
+        #       Debounce change only, read in config and adjust the debounce
+        #       Single pin change (action, alternate_action, shift), reading in config and making the one change
+        #       Config file change with current configurations
+        cur_config = None
 
         # Get devices we want to work with based on filters.
         devices = [dev for dev in
@@ -46,10 +52,21 @@ class MiniPACClass(object):
             _logger.error(_('No Mini-PAC devices found, aborting'))
             return -1
 
-        for dev in devices:
-            with dev as dev_h:
-                response = dev_h.get_current_configuration()
-                _logger.debug(response)
+        # Get config from device
+        if self.args.get_config:
+            for dev in devices:
+                with dev as dev_h:
+                    response = dev_h.get_current_configuration()
+                    _logger.debug(response)
+                    cur_config = response
+
+        # Set mini-pac device configuration from a configuration file
+        if self.args.set_config:
+            for dev in devices:
+                with dev as dev_h:
+                    dev_h.set_config(self.args.set_config)
+                    _logger.info(f'{dev.dev_key} ({dev.bus},{dev.address}): ' +
+                                 _('configuration successfully applied to device.'))
 
         return 0
 
@@ -60,6 +77,9 @@ def run():
     parser = ToolContextManager.get_argparser(tool_cmd, tool_desc)
 
     # TODO:  Setup additional program arguments here.
+    parser.add_argument('--get-config', help=_('Get Mini-pac device config'), default=False, action='store_true')
+    parser.add_argument('--set-config', help=_('Set Mini-pac device config from config file'), type=str, default=None,
+                        metavar='CONFIG-FILE')
     args = parser.parse_args()
 
     with ToolContextManager(tool_cmd, args) as tool_env:

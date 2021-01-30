@@ -1,12 +1,10 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "type": "object",
   "required": [
     "schemaVersion",
     "resourceType",
     "deviceClass",
     "debounce",
-    "shift_key",
     "macros",
     "pins"
   ],
@@ -43,16 +41,6 @@
               "long",
               "short"
       ]
-    },
-    "shift_key": {
-      "$id": "#root/shift_key",
-      "title": "Shift_key",
-      "type": "string",
-      "default": "",
-      "examples": [
-        "1start"
-      ],
-      "pattern": "^.*$"
     },
     "macros": {
       "$id": "#root/macros",
@@ -107,8 +95,7 @@
         "type": "object",
         "required": [
           "name",
-          "action",
-          "shift_action"
+          "action"
         ],
         "properties": {
           "name": {
@@ -165,15 +152,21 @@
             ],
             "pattern": "^.*$"
           },
-          "shift_action": {
-            "$id": "#root/pins/items/shift_action",
-            "title": "Shift_Action",
+          "alternate_action": {
+            "$id": "#root/pins/items/alternate_action",
+            "title": "Alternate_Action",
             "type": "string",
             "default": "",
             "examples": [
               "tab"
             ],
             "pattern": "^.*$"
+          },
+          "shift": {
+            "$id": "#root/pins/items/shift",
+            "title": "Shift",
+            "type": "boolean",
+            "default": false
           }
         }
       }

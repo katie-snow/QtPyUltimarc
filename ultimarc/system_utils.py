@@ -49,7 +49,9 @@ class JSONObject:
                         elif isinstance(i, str):
                             try:
                                 _tmp_data = json.loads(i)
-                                if _tmp_data:
+                                if not isinstance(_tmp_data, list) and not isinstance(_tmp_data, str):
+                                    _tmp.append(i)
+                                elif _tmp_data:
                                     _tmp.append(JSONObject(_tmp_data))
                                 else:
                                     _tmp.append(i)  # For when the value is a string = 'null'.
