@@ -75,7 +75,3 @@ class MiniPacSchemaTest(TestCase):
 
         with self.assertRaises(ValidationError):
             validate(bad_config, self.mini_pac_schema)
-
-
-
-
