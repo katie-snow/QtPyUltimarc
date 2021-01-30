@@ -5,7 +5,6 @@
     "resourceType",
     "deviceClass",
     "debounce",
-    "shift_key",
     "macros",
     "pins"
   ],
@@ -42,16 +41,6 @@
               "long",
               "short"
       ]
-    },
-    "shift_key": {
-      "$id": "#root/shift_key",
-      "title": "Shift_key",
-      "type": "string",
-      "default": "",
-      "examples": [
-        "1start"
-      ],
-      "pattern": "^.*$"
     },
     "macros": {
       "$id": "#root/macros",
@@ -106,8 +95,7 @@
         "type": "object",
         "required": [
           "name",
-          "action",
-          "alternate_action"
+          "action"
         ],
         "properties": {
           "name": {
@@ -173,6 +161,12 @@
               "tab"
             ],
             "pattern": "^.*$"
+          },
+          "shift": {
+            "$id": "#root/pins/items/shift",
+            "title": "Shift",
+            "type": "boolean",
+            "default": false
           }
         }
       }

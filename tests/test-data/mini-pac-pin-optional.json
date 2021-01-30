@@ -2,11 +2,10 @@
   "schemaVersion" : 2.0,
   "resourceType" : "mini-pac-pins",
   "deviceClass" : "mini-pac",
-  "debounce" : "standard",
-  "shift_key" : "1start",
+  "debounce" : "short",
   "macros": [
-    {"name": "macro #1", "action": ["m", "1"]},
-    {"name": "macro #2", "action": ["m", "2", "2"]},
+    {"name": "macro #1", "action": ["s", "a", "b"]},
+    {"name": "macro #2", "action": ["m", "2"]},
     {"name": "macro #3", "action": ["m", "3", "m", "3", "2", "1"]},
     {"name": "macro #4", "action": []},
     {"name": "macro #5", "action": ["m", "1"]}
@@ -15,13 +14,13 @@
     {
       "name": "1right",
       "action": "right",
-      "alternate_action": "tab",
-      "shift": false
+      "alternate_action": "tab"
     },
     {
       "name" : "1up",
       "action": "up",
-      "alternate_action": "`"
+      "alternate_action": "`",
+      "shift": true
     },
     {
       "name": "1down",
@@ -44,18 +43,15 @@
     },
     {
       "name": "1sw3",
-      "action": "space",
-      "alternate_action": ""
+      "action": "space"
     },
     {
       "name": "1sw4",
-      "action": "shift l",
-      "alternate_action": ""
+      "action": "shift l"
     },
     {
       "name": "1sw5",
-      "action": "z",
-      "alternate_action": ""
+      "action": "z"
     },
     {
       "name": "1sw6",
@@ -75,7 +71,7 @@
     {
       "name": "1start",
       "action": "b",
-      "alternate_action": ""
+      "shift": true
     },
     {
       "name": "1coin",

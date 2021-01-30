@@ -121,23 +121,28 @@ class MiniPacDevice(USBDeviceHandle):
 
             # Pins
             # Places the action value, alternate action value and if assigned as shift key
-            # 0x40 in the shift_key position for all pins in json config
-            shift_key = config.shift_key
-
+            # 0x40 in the shift position for all pins designated as shift pins in json config
             for pin in config.pins:
                 try:
-                    action_index, alternate_action_index, shift_key_index = PinMapping[pin.name]
+                    action_index, alternate_action_index, shift_index = PinMapping[pin.name]
                     action = pin.action.upper()
                     if action:
                         data.bytes[action_index] = IPACSeriesMapping[action]
 
-                    alternate_action = pin.alternate_action.upper()
-                    if alternate_action:
-                        data.bytes[alternate_action_index] = IPACSeriesMapping[alternate_action]
+                    try:
+                        alternate_action = pin.alternate_action.upper()
+                        if alternate_action:
+                            data.bytes[alternate_action_index] = IPACSeriesMapping[alternate_action]
+                    except AttributeError:
+                        pass
 
-                    # Key designated as shift key
-                    if shift_key.upper() == pin.name.upper():
-                        data.bytes[shift_key_index] = 0x40
+                    # Pin designated as shift
+                    try:
+                        if pin.shift:
+                            data.bytes[shift_index] = 0x40
+                    except AttributeError:
+                        pass
+
                 except KeyError:
                     _logger.debug(_(f'Pin {pin.name} does not exists in Mini-pac device'))
 
