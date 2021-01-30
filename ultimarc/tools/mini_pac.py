@@ -36,6 +36,11 @@ class MiniPACClass(object):
         :return: Exit code value
         """
         # TODO: write program main process here after setting 'tool_cmd' and 'tool_desc'...
+        # TODO:
+        #   Arguments:
+        #       Debounce change only, read in config and adjust the debounce
+        #       Single pin change (action, alternate_action, shift), reading in config and making the one change
+        #       Config file change with current configurations
         cur_config = None
 
         # Get devices we want to work with based on filters.

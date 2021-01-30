@@ -119,6 +119,8 @@ class MiniPacDevice(USBDeviceHandle):
             data.header.byte_3 = 0x0f
             data.header.byte_4 = header.asByte
 
+            # TODO: Allow macros to be optional and figure out macro naming functionality.
+            #  Does it have to be like the old way?
             # Pins
             # Places the action value, alternate action value and if assigned as shift key
             # 0x40 in the shift position for all pins designated as shift pins in json config

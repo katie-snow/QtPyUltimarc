@@ -127,3 +127,5 @@ class MiniPacDeviceTest(TestCase):
         self.assertTrue(data.bytes[11] == 0x72)
         self.assertTrue(data.bytes[61] == 0)
         self.assertTrue(data.bytes[111] == 0)
+
+    # TODO: Add test for less than all the possible pins in configuration
