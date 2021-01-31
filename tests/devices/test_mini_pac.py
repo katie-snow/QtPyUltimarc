@@ -79,6 +79,12 @@ class MiniPacDeviceTest(TestCase):
         # pin 1left shift value
         self.assertTrue(data.bytes[112] == 0x40)
 
+        # pin 2sw1 use macro in action
+        self.assertTrue(data.bytes[17] == 0xe0)
+
+        # pin 2sw2 use macro in alternate action
+        self.assertTrue(data.bytes[69] == 0xe1)
+
         # Macros
         # macro #1
         self.assertTrue(data.bytes[166] == 0xe0)
@@ -130,4 +136,5 @@ class MiniPacDeviceTest(TestCase):
         self.assertTrue(data.bytes[61] == 0)
         self.assertTrue(data.bytes[111] == 0)
 
-    # TODO: Add test for less than all the possible pins in configuration
+        # macros
+        self.assertTrue(data.bytes[166] == 0)
