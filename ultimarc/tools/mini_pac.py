@@ -64,7 +64,8 @@ class MiniPACClass(object):
         if self.args.set_config:
             for dev in devices:
                 with dev as dev_h:
-                    dev_h.set_config(self.args.set_config)
+                    use_current = self.args.current
+                    dev_h.set_config(self.args.set_config, use_current)
                     _logger.info(f'{dev.dev_key} ({dev.bus},{dev.address}): ' +
                                  _('configuration successfully applied to device.'))
 
@@ -80,7 +81,13 @@ def run():
     parser.add_argument('--get-config', help=_('Get Mini-pac device config'), default=False, action='store_true')
     parser.add_argument('--set-config', help=_('Set Mini-pac device config from config file'), type=str, default=None,
                         metavar='CONFIG-FILE')
+    parser.add_argument('--current',
+                        help=_('Use Mini-pac current config when applying config from file'), default=False, action='store_true')
     args = parser.parse_args()
+
+    if not args.set_config and args.current:
+        _logger.error(_('The --current argument can only be used with the --set_config argument '))
+        return -1
 
     with ToolContextManager(tool_cmd, args) as tool_env:
         process = MiniPACClass(args, tool_env)
