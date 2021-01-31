@@ -5,7 +5,6 @@
     "resourceType",
     "deviceClass",
     "debounce",
-    "macros",
     "pins"
   ],
   "properties": {
