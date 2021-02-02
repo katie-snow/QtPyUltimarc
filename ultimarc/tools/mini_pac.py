@@ -54,9 +54,9 @@ class MiniPACClass(object):
         if self.args.get_config:
             for dev in devices:
                 with dev as dev_h:
-                    response = dev_h.get_current_configuration()
-                    _logger.debug(response)
-                    cur_config = response
+                    indent = int(self.args.indent) if self.args.indent else None
+                    response = dev_h.get_device_config(indent, self.args.file)
+                    _logger.info(response)
 
         # Set mini-pac device configuration from a configuration file
         if self.args.set_config:
@@ -77,12 +77,23 @@ def run():
 
     # TODO:  Setup additional program arguments here.
     parser.add_argument('--get-config', help=_('Get Mini-pac device config'), default=False, action='store_true')
+    parser.add_argument('--indent', help=_('Set the json indent level for the output of the device configuration'),
+                        default=None, metavar='INT')
+    parser.add_argument('--file', help=_('File path to write out the json of the device configuration'), type=str,
+                        default=None, metavar='FILE-NAME')
     parser.add_argument('--set-config', help=_('Set Mini-pac device config from config file'), type=str, default=None,
                         metavar='CONFIG-FILE')
     parser.add_argument('--current',
-                        help=_('Use Mini-pac current config when applying config from file'), default=False, action='store_true')
+                        help=_('Use Mini-pac current config when applying config from file'), default=False,
+                        action='store_true')
     args = parser.parse_args()
 
+    if not args.get_config and args.indent:
+        _logger.error(_('The --indent argument can only be used with the --get_config argument '))
+        return -1
+    if not args.get_config and args.file:
+        _logger.error(_('The --indent argument can only be used with the --get_config argument '))
+        return -1
     if not args.set_config and args.current:
         _logger.error(_('The --current argument can only be used with the --set_config argument '))
         return -1
