@@ -3,17 +3,19 @@
 # file 'LICENSE', which is part of this source code package.
 #
 import ctypes as ct
+import json
 import logging
 
 from ultimarc import translate_gettext as _
 from ultimarc.devices._device import USBDeviceHandle, USBRequestCode
-from ultimarc.devices._mappings import IPACSeriesMapping
+from ultimarc.devices._mappings import IPACSeriesMapping, get_ipac_series_mapping_key
 from ultimarc.devices._structures import PacHeaderStruct, PacStruct, PacConfigUnion
 from ultimarc.system_utils import JSONObject
 
 _logger = logging.getLogger('ultimarc')
 
 MINI_PAC_INDEX = ct.c_uint16(0x02)
+MACRO_START_INDEX = 166
 
 # Pin mapping for Mini-pac device
 # code_index: Normal action
@@ -62,14 +64,80 @@ class MiniPacDevice(USBDeviceHandle):
     class_descr = _('Mini-PAC')
     interface = 2
 
+    def to_json_str(self, pac_struct):
+        """ Converts a PacStruct to a json object """
+        json_obj = {'schemaVersion': 2.0, 'resourceType': 'mini-pac-pins', 'deviceClass': self.class_id}
+
+        # debounce
+        # TODO - fully implement debounce behavior
+        json_obj['debounce'] = 'standard'
+
+        # macros
+        macros = []
+        macro_start = 0xe0
+        macro_index = 1
+
+        y = 0
+        for x in range(MACRO_START_INDEX, len(pac_struct.bytes)):
+            if x >= y:
+                macro = {}
+                if pac_struct.bytes[x]:
+                    if pac_struct.bytes[x] == macro_start:
+                        macro['name'] = f'macro #{macro_index}'
+                        macro_start += 1
+                        macro_index += 1
+
+                        action = []
+                        for y in range (x+1, len(pac_struct.bytes)):
+                            # check that the value isn't zero and not the start of the next macro
+                            if pac_struct.bytes[y] and pac_struct.bytes[y] != macro_start:
+                                action.append(get_ipac_series_mapping_key(pac_struct.bytes[y]))
+                            else:
+                                macro['action'] = action
+                                macros.append(macro)
+                                break
+                else:
+                    # No more macros defined, end the loop
+                    break
+        if len(macros):
+            json_obj['macros'] = macros
+
+        # pins
+        pins = []
+        for key in PinMapping:
+            action_index, alternate_action_index, shift_index = PinMapping[key]
+            pin = {}
+            if pac_struct.bytes[action_index]:
+                pin['name'] = key
+                pin['action'] = get_ipac_series_mapping_key(pac_struct.bytes[action_index])
+                if pac_struct.bytes[alternate_action_index]:
+                    pin['alternate_action'] = get_ipac_series_mapping_key(pac_struct.bytes[alternate_action_index])
+                if pac_struct.bytes[shift_index]:
+                    pin['shift'] = True
+                pins.append(pin)
+        json_obj['pins'] = pins
+        return json_obj
+
+    def get_device_config(self, indent=None, file=None):
+        """ Return a json string of the device configuration """
+        config = self.get_current_configuration()
+        json_obj = self.to_json_str(config)
+        if file:
+            try:
+                with open(file, 'w') as h:
+                    json.dump(json_obj, h, indent=indent)
+            except FileNotFoundError as err:
+                return err
+            return _('Wrote Mini-pac configuration to file.')
+        else:
+            return json.dumps(json_obj, indent=indent) if config else None
+
     def get_current_configuration(self):
         """ Return the current Mini-PAC pins configuration """
         request = PacHeaderStruct(0x59, 0xdd, 0x0f, 0)
         ret = self.write(USBRequestCode.SET_CONFIGURATION, int(0x03), MINI_PAC_INDEX,
                          request, ct.sizeof(request))
-
-        if ret:
-            return self.read_interrupt(0x84, PacStruct())
+        return self.read_interrupt(0x84, PacStruct()) if ret else None
 
     def set_config(self, config_file, use_current):
         """ Write a new configuration to the current Mini-PAC device """
