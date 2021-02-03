@@ -16,6 +16,10 @@ _logger = logging.getLogger('ultimarc')
 
 MINI_PAC_INDEX = ct.c_uint16(0x02)
 MACRO_START_INDEX = 166
+# Each macro starts with control character e0 - fe.  Total of 30 macros possible
+# overall total macro characters is 85
+MACRO_MAX_COUNT = 30
+MACRO_MAX_SIZE = 85
 
 # Pin mapping for Mini-pac device
 # code_index: Normal action
@@ -88,7 +92,7 @@ class MiniPacDevice(USBDeviceHandle):
                         macro_index += 1
 
                         action = []
-                        for y in range (x+1, len(pac_struct.bytes)):
+                        for y in range(x + 1, len(pac_struct.bytes)):
                             # check that the value isn't zero and not the start of the next macro
                             if pac_struct.bytes[y] and pac_struct.bytes[y] != macro_start:
                                 action.append(get_ipac_series_mapping_key(pac_struct.bytes[y]))
@@ -158,9 +162,11 @@ class MiniPacDevice(USBDeviceHandle):
         resource_types = ['mini-pac-pins']
 
         # Validate against the base schema.
-        config = JSONObject(self.validate_config_base(config_file, resource_types))
-        if not config:
+        valid_config = self.validate_config_base(config_file, resource_types)
+        if not valid_config:
             return False, None
+
+        config = JSONObject(valid_config)
 
         if config.deviceClass != 'mini-pac':
             _logger.error(_('Configuration device class is not "mini-pac".'))
@@ -194,12 +200,14 @@ class MiniPacDevice(USBDeviceHandle):
                 # Macros
                 # Each macro starts with control character e0 - fe.  Total of 30 macros possible
                 # overall total macro characters is 85
-                max_size = 85
-                max_macro = 30
                 cur_size_count = 0
-                cur_macro_count = 0
                 cur_macro = 0xe0
-                cur_position = 166
+                cur_position = MACRO_START_INDEX
+
+                if len(config.macros) > MACRO_MAX_COUNT:
+                    _logger.debug(_(f'There are more than {MACRO_MAX_COUNT} '
+                                    f'macros defined for the Mini-pac device'))
+                    return False, None
 
                 for macro in config.macros:
                     if len(macro.action) > 0:
@@ -209,19 +217,17 @@ class MiniPacDevice(USBDeviceHandle):
 
                         cur_position += 1
                         cur_macro += 1
-
-                        if cur_macro_count > max_macro:
-                            _logger.debug(_(f'There are more than {max_macro} macros defined for the Mini-pac device'))
-                            return False, None
+                        cur_size_count += 1
 
                         for action in macro.action:
                             if action.upper() in IPACSeriesMapping:
                                 data.bytes[cur_position] = IPACSeriesMapping[action.upper()]
                                 cur_position += 1
+                                cur_size_count += 1
 
-                            if cur_size_count > max_size:
-                                _logger.debug \
-                                    (_(f'There are more than {max_size} macro values defined for the Mini-pac device'))
+                            if cur_size_count > MACRO_MAX_SIZE:
+                                _logger.debug(_(f'There are more than {MACRO_MAX_SIZE} '
+                                                f'macro values defined for the Mini-pac device'))
                                 return False, None
             except AttributeError:
                 pass

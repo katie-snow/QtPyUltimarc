@@ -1,0 +1,46 @@
+{
+  "schemaVersion" : 2.0,
+  "resourceType" : "mini-pac-pins",
+  "deviceClass" : "mini-pac",
+  "debounce" : "short",
+  "macros": [
+    {"name": "macro #1", "action": ["1", "2"]},
+    {"name": "macro #2", "action": ["m", "2", "2"]},
+    {"name": "macro #3", "action": ["m", "3", "m", "3", "2", "1"]},
+    {"name": "macro #4", "action": ["m"]},
+    {"name": "macro #5", "action": ["m", "1"]},
+    {"name": "macro #6", "action": ["m", "1"]},
+    {"name": "macro #7", "action": ["m", "1"]},
+    {"name": "macro #8", "action": ["m", "1"]},
+    {"name": "macro #9", "action": ["m", "1"]},
+    {"name": "macro #10", "action": ["m", "1"]},
+    {"name": "macro #11", "action": ["m", "1"]},
+    {"name": "macro #12", "action": ["m", "1"]},
+    {"name": "macro #13", "action": ["m", "1"]},
+    {"name": "macro #14", "action": ["m", "1"]},
+    {"name": "macro #15", "action": ["m", "1"]},
+    {"name": "macro #16", "action": ["m", "1"]},
+    {"name": "macro #17", "action": ["m", "1"]},
+    {"name": "macro #18", "action": ["m", "1"]},
+    {"name": "macro #19", "action": ["m", "1"]},
+    {"name": "macro #20", "action": ["m", "1"]},
+    {"name": "macro #21", "action": ["m", "1"]},
+    {"name": "macro #22", "action": ["m", "1"]},
+    {"name": "macro #23", "action": ["m", "1"]},
+    {"name": "macro #24", "action": ["m", "1"]},
+    {"name": "macro #25", "action": ["m", "1"]},
+    {"name": "macro #26", "action": ["m", "1"]},
+    {"name": "macro #27", "action": ["m", "1"]},
+    {"name": "macro #28", "action": ["m", "1"]},
+    {"name": "macro #29", "action": ["m", "1"]},
+    {"name": "macro #30", "action": ["m", "1"]},
+    {"name": "macro #31", "action": ["m", "1"]}
+  ],
+  "pins" : [
+    {
+      "name": "1right",
+      "action": "right",
+      "alternate_action": "tab"
+    }
+  ]
+}

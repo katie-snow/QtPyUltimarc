@@ -138,3 +138,22 @@ class MiniPacDeviceTest(TestCase):
 
         # macros
         self.assertTrue(data.bytes[166] == 0)
+
+    @patch.object(USBDeviceHandle, '_get_descriptor_fields', return_value=None)
+    @patch('libusb.get_device', return_value='pointer')
+    def test_mini_pac_large_macro_entries(self, dev_handle_mock, lib_usb_mock):
+        """ Test that faults happen when the number of macros is to great
+        and the number of actions doesn't exceed 85 with control characters """
+        dev = USBDeviceHandle('test_handle', '0000:0000')
+        self.assertTrue(dev)
+        dev.__class__ = MiniPacDevice
+
+        config_file = os.path.join(git_project_root(), 'tests/test-data/mini-pac-macro-large-count.json')
+        valid, data = dev._create_message_(config_file)
+        self.assertFalse(valid)
+        self.assertIsNone(data)
+
+        config_file = os.path.join(git_project_root(), 'tests/test-data/mini-pac-macro-large-action-count.json')
+        valid, data = dev._create_message_(config_file)
+        self.assertFalse(valid)
+        self.assertIsNone(data)
