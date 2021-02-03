@@ -120,7 +120,8 @@ class MiniPacDevice(USBDeviceHandle):
                     pin['shift'] = True
                 pins.append(pin)
         json_obj['pins'] = pins
-        return json_obj
+
+        return json_obj if self.validate_config(json_obj, 'mini-pac.schema') else None
 
     def get_device_config(self, indent=None, file=None):
         """ Return a json string of the device configuration """
