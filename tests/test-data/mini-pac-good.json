@@ -3,7 +3,6 @@
   "resourceType" : "mini-pac-pins",
   "deviceClass" : "mini-pac",
   "debounce" : "short",
-  "shift_key" : "1up",
   "macros": [
     {"name": "macro #1", "action": ["s", "a", "b"]},
     {"name": "macro #2", "action": ["m", "2"]},
@@ -30,7 +29,8 @@
     {
       "name": "1left",
       "action": "left",
-      "alternate_action": "enter"
+      "alternate_action": "enter",
+      "shift": true
     },
     {
       "name": "1sw1",
@@ -104,13 +104,12 @@
     },
     {
       "name": "2sw1",
-      "action": "a",
-      "alternate_action": ""
+      "action": "macro #1"
     },
     {
       "name": "2sw2",
       "action": "s",
-      "alternate_action": ""
+      "alternate_action": "macro #2"
     },
     {
       "name": "2sw3",

@@ -75,3 +75,15 @@ class MiniPacSchemaTest(TestCase):
 
         with self.assertRaises(ValidationError):
             validate(bad_config, self.mini_pac_schema)
+
+    def test_mini_pac_optional_json(self):
+        """ Test validation when optional entries are not present """
+        # Macro entry
+        opt_config_file = os.path.join(git_project_root(),
+                                       'tests/test-data/mini-pac-pin-optional.json')
+        self.assertTrue(os.path.exists(opt_config_file))
+
+        with open(opt_config_file) as h:
+            opt_config = json.loads(h.read())
+
+        self.assertIsNone(validate(opt_config, self.mini_pac_schema))

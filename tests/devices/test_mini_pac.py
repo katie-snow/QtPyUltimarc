@@ -75,7 +75,15 @@ class MiniPacDeviceTest(TestCase):
         # pin 1down values
         self.assertTrue(data.bytes[8] == 0x51)
         self.assertTrue(data.bytes[58] == 0x13)
-        self.assertTrue(data.bytes[110] == 0x40)
+
+        # pin 1left shift value
+        self.assertTrue(data.bytes[112] == 0x40)
+
+        # pin 2sw1 use macro in action
+        self.assertTrue(data.bytes[17] == 0xe0)
+
+        # pin 2sw2 use macro in alternate action
+        self.assertTrue(data.bytes[69] == 0xe1)
 
         # Macros
         # macro #1
@@ -128,4 +136,24 @@ class MiniPacDeviceTest(TestCase):
         self.assertTrue(data.bytes[61] == 0)
         self.assertTrue(data.bytes[111] == 0)
 
-    # TODO: Add test for less than all the possible pins in configuration
+        # macros
+        self.assertTrue(data.bytes[166] == 0)
+
+    @patch.object(USBDeviceHandle, '_get_descriptor_fields', return_value=None)
+    @patch('libusb.get_device', return_value='pointer')
+    def test_mini_pac_large_macro_entries(self, dev_handle_mock, lib_usb_mock):
+        """ Test that faults happen when the number of macros is to great
+        and the number of actions doesn't exceed 85 with control characters """
+        dev = USBDeviceHandle('test_handle', '0000:0000')
+        self.assertTrue(dev)
+        dev.__class__ = MiniPacDevice
+
+        config_file = os.path.join(git_project_root(), 'tests/test-data/mini-pac-macro-large-count.json')
+        valid, data = dev._create_message_(config_file)
+        self.assertFalse(valid)
+        self.assertIsNone(data)
+
+        config_file = os.path.join(git_project_root(), 'tests/test-data/mini-pac-macro-large-action-count.json')
+        valid, data = dev._create_message_(config_file)
+        self.assertFalse(valid)
+        self.assertIsNone(data)

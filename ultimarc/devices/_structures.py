@@ -83,7 +83,7 @@ class PacConfigUnion(ct.Union):
 
 
 class PacStruct(UltimarcStruct):
-    """ Defines the structure used be most Ultimarc boards.  Total size is 256 """
+    """ Defines the structure used by most Ultimarc boards.  Total size is 256 """
     _fields_ = [
         ('header', PacHeaderStruct),  # 1 - 4  (4 bytes)
         ('bytes', ct.c_ubyte * 252),  # 5 - 256

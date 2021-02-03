@@ -3,17 +3,23 @@
 # file 'LICENSE', which is part of this source code package.
 #
 import ctypes as ct
+import json
 import logging
 
 from ultimarc import translate_gettext as _
 from ultimarc.devices._device import USBDeviceHandle, USBRequestCode
-from ultimarc.devices._mappings import IPACSeriesMapping
+from ultimarc.devices._mappings import IPACSeriesMapping, get_ipac_series_mapping_key
 from ultimarc.devices._structures import PacHeaderStruct, PacStruct, PacConfigUnion
 from ultimarc.system_utils import JSONObject
 
 _logger = logging.getLogger('ultimarc')
 
 MINI_PAC_INDEX = ct.c_uint16(0x02)
+MACRO_START_INDEX = 166
+# Each macro starts with control character e0 - fe.  Total of 30 macros possible
+# overall total macro characters is 85
+MACRO_MAX_COUNT = 30
+MACRO_MAX_SIZE = 85
 
 # Pin mapping for Mini-pac device
 # code_index: Normal action
@@ -62,36 +68,106 @@ class MiniPacDevice(USBDeviceHandle):
     class_descr = _('Mini-PAC')
     interface = 2
 
+    def to_json_str(self, pac_struct):
+        """ Converts a PacStruct to a json object """
+        json_obj = {'schemaVersion': 2.0, 'resourceType': 'mini-pac-pins', 'deviceClass': self.class_id}
+
+        # debounce
+        # TODO - fully implement debounce behavior
+        json_obj['debounce'] = 'standard'
+
+        # macros
+        macros = []
+        macro_start = 0xe0
+        macro_index = 1
+
+        y = 0
+        for x in range(MACRO_START_INDEX, len(pac_struct.bytes)):
+            if x >= y:
+                macro = {}
+                if pac_struct.bytes[x]:
+                    if pac_struct.bytes[x] == macro_start:
+                        macro['name'] = f'macro #{macro_index}'
+                        macro_start += 1
+                        macro_index += 1
+
+                        action = []
+                        for y in range(x + 1, len(pac_struct.bytes)):
+                            # check that the value isn't zero and not the start of the next macro
+                            if pac_struct.bytes[y] and pac_struct.bytes[y] != macro_start:
+                                action.append(get_ipac_series_mapping_key(pac_struct.bytes[y]))
+                            else:
+                                macro['action'] = action
+                                macros.append(macro)
+                                break
+                else:
+                    # No more macros defined, end the loop
+                    break
+        if len(macros):
+            json_obj['macros'] = macros
+
+        # pins
+        pins = []
+        for key in PinMapping:
+            action_index, alternate_action_index, shift_index = PinMapping[key]
+            pin = {}
+            if pac_struct.bytes[action_index]:
+                pin['name'] = key
+                pin['action'] = get_ipac_series_mapping_key(pac_struct.bytes[action_index])
+                if pac_struct.bytes[alternate_action_index]:
+                    pin['alternate_action'] = get_ipac_series_mapping_key(pac_struct.bytes[alternate_action_index])
+                if pac_struct.bytes[shift_index]:
+                    pin['shift'] = True
+                pins.append(pin)
+        json_obj['pins'] = pins
+
+        return json_obj if self.validate_config(json_obj, 'mini-pac.schema') else None
+
+    def get_device_config(self, indent=None, file=None):
+        """ Return a json string of the device configuration """
+        config = self.get_current_configuration()
+        json_obj = self.to_json_str(config)
+        if file:
+            try:
+                with open(file, 'w') as h:
+                    json.dump(json_obj, h, indent=indent)
+            except FileNotFoundError as err:
+                return err
+            return _('Wrote Mini-pac configuration to file.')
+        else:
+            return json.dumps(json_obj, indent=indent) if config else None
+
     def get_current_configuration(self):
         """ Return the current Mini-PAC pins configuration """
         request = PacHeaderStruct(0x59, 0xdd, 0x0f, 0)
         ret = self.write(USBRequestCode.SET_CONFIGURATION, int(0x03), MINI_PAC_INDEX,
                          request, ct.sizeof(request))
+        return self.read_interrupt(0x84, PacStruct()) if ret else None
 
-        if ret:
-            return self.read_interrupt(0x84, PacStruct())
-
-    def set_config(self, config_file):
+    def set_config(self, config_file, use_current):
         """ Write a new configuration to the current Mini-PAC device """
+
         # Get the current configuration from the device
-        cur_config = self.get_current_configuration()
+        cur_config = self.get_current_configuration() if use_current else None
 
         # Insert the new configuration into the PacStruct data object
-        res, data = self._create_message_(config_file)
+        res, data = self._create_message_(config_file, cur_config)
         return self.write_alt(USBRequestCode.SET_CONFIGURATION, int(0x03), MINI_PAC_INDEX, data, ct.sizeof(data)) \
             if res else False
 
     def _create_message_(self, config_file, cur_device_config=None):
         """ Create the message to be sent to the device """
-        data = PacStruct()
+        data = cur_device_config if cur_device_config else PacStruct()
 
         # List of possible 'resourceType' values in the config file for a Mini-pac device.
         resource_types = ['mini-pac-pins']
 
         # Validate against the base schema.
-        config = JSONObject(self.validate_config_base(config_file, resource_types))
-        if not config:
+        valid_config = self.validate_config_base(config_file, resource_types)
+        if not valid_config:
             return False, None
+
+        config = JSONObject(valid_config)
 
         if config.deviceClass != 'mini-pac':
             _logger.error(_('Configuration device class is not "mini-pac".'))
@@ -119,8 +195,44 @@ class MiniPacDevice(USBDeviceHandle):
             data.header.byte_3 = 0x0f
             data.header.byte_4 = header.asByte
 
-            # TODO: Allow macros to be optional and figure out macro naming functionality.
-            #  Does it have to be like the old way?
+            # key: Macro name value: macro value (e0 - fe)
+            macro_dict = {}
+            try:
+                # Macros
+                # Each macro starts with control character e0 - fe.  Total of 30 macros possible
+                # overall total macro characters is 85
+                cur_size_count = 0
+                cur_macro = 0xe0
+                cur_position = MACRO_START_INDEX
+
+                if len(config.macros) > MACRO_MAX_COUNT:
+                    _logger.debug(_(f'There are more than {MACRO_MAX_COUNT} '
+                                    f'macros defined for the Mini-pac device'))
+                    return False, None
+
+                for macro in config.macros:
+                    if len(macro.action) > 0:
+                        # Set the start point of the new macro
+                        data.bytes[cur_position] = cur_macro
+                        macro_dict[macro.name.upper()] = cur_macro
+
+                        cur_position += 1
+                        cur_macro += 1
+                        cur_size_count += 1
+
+                        for action in macro.action:
+                            if action.upper() in IPACSeriesMapping:
+                                data.bytes[cur_position] = IPACSeriesMapping[action.upper()]
+                                cur_position += 1
+                                cur_size_count += 1
+
+                            if cur_size_count > MACRO_MAX_SIZE:
+                                _logger.debug(_(f'There are more than {MACRO_MAX_SIZE} '
+                                                f'macro values defined for the Mini-pac device'))
+                                return False, None
+            except AttributeError:
+                pass
+
             # Pins
             # Places the action value, alternate action value and if assigned as shift key
             # 0x40 in the shift position for all pins designated as shift pins in json config
@@ -128,13 +240,21 @@ class MiniPacDevice(USBDeviceHandle):
                 try:
                     action_index, alternate_action_index, shift_index = PinMapping[pin.name]
                     action = pin.action.upper()
-                    if action:
+                    if action in IPACSeriesMapping:
                         data.bytes[action_index] = IPACSeriesMapping[action]
+                    elif action in macro_dict:
+                        data.bytes[action_index] = macro_dict[action]
+                    else:
+                        _logger.info(_(f'{pin.name} action "{action}" is not a valid value'))
 
                     try:
                         alternate_action = pin.alternate_action.upper()
-                        if alternate_action:
+                        if alternate_action in IPACSeriesMapping:
                             data.bytes[alternate_action_index] = IPACSeriesMapping[alternate_action]
+                        elif alternate_action in macro_dict:
+                            data.bytes[alternate_action_index] = macro_dict[alternate_action]
+                        elif alternate_action:
+                            _logger.info(_(f'{pin.name} alternate action "{alternate_action}" is not a valid value'))
                     except AttributeError:
                         pass
 
@@ -147,36 +267,6 @@ class MiniPacDevice(USBDeviceHandle):
 
                 except KeyError:
                     _logger.debug(_(f'Pin {pin.name} does not exists in Mini-pac device'))
-
-            # Macros
-            # Each macro starts with control character e0 - fe.  Total of 30 macros possible
-            # overall total macro characters is 85
-            max_size = 85
-            max_macro = 30
-            cur_size_count = 0
-            cur_macro_count = 0
-            cur_macro = 0xe0
-            cur_position = 166
-
-            for macro in config.macros:
-                if len(macro.action) > 0:
-                    # Set the start point of the new macro
-                    data.bytes[cur_position] = cur_macro
-                    cur_position += 1
-                    cur_macro += 1
-
-                    if cur_macro_count > max_macro:
-                        _logger.debug(_(f'There are more than {max_macro} macros defined for the Mini-pac device'))
-                        return False, None
-
-                    for action in macro.action:
-                        data.bytes[cur_position] = IPACSeriesMapping[action.upper()]
-                        cur_position += 1
-
-                        if cur_size_count > max_size:
-                            _logger.debug\
-                                (_(f'There are more than {max_size} macro values defined for the Mini-pac device'))
-                            return False, None
 
             return True, data
 

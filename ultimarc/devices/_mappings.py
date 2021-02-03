@@ -173,55 +173,31 @@ IPACSeriesMapping = {
     "TRACKBALL X": 0xC0,
     "TRACKBALL Y": 0xC2,
     "TRACKBALL Z": 0xC4,
-    "m1": 0xe0,
-    "m2": 0xe1,
-    "m3": 0xe2,
     "MUTE": 0xe2,
-    "m4": 0xe3,
     "PLAY/PAUSE": 0xe3,
-    "m5": 0xe4,
     "NEXT": 0xe4,
-    "m6": 0xe5,
     "PREV": 0xe5,
-    "m7": 0xe6,
     "STOP": 0xe6,
-    "m8": 0xe7,
-    "m9": 0xe8,
-    "m10": 0xe9,
-    "m11": 0xea,
-    "m12": 0xeb,
-    "m13": 0xec,
-    "m14": 0xed,
-    "m15": 0xee,
-    "m16": 0xef,
-    "m17": 0xf0,
     "EMAIL": 0xf0,
-    "m18": 0xf1,
     "SEARCH": 0xf1,
-    "m19": 0xf2,
     "BOOKMARKS": 0xf2,
-    "m20": 0xf3,
     "OPEN BROWSER": 0xf3,
-    "m21": 0xf4,
     "WEB BACK": 0xf4,
-    "m22": 0xf5,
     "WEB FORWARD": 0xf5,
-    "m23": 0xf6,
     "WEB STOP": 0xf6,
-    "m24": 0xf7,
     "WEB REFRESH": 0xf7,
-    "m25": 0xf8,
     "MEDIA PLAYER": 0xf8,
-    "m26": 0xf9,
-    "m27": 0xfa,
     "CALCULATOR": 0xfa,
-    "m28": 0xfb,
-    "m29": 0xfc,
     "EXPLORER": 0xfc,
-    "m30": 0xfd,
-    "m31": 0xfe,
     "WAIT 3 SEC": 0xfe,
 }
+
+
+def get_ipac_series_mapping_key(val):
+    for key, value in IPACSeriesMapping.items():
+        if val == value:
+            return key
+
 
 #
 # Pre 2015 IPAC key mapping

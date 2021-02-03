@@ -3,7 +3,6 @@
   "resourceType" : "mini-pac-pins",
   "deviceClass" : "mini-pac",
   "debounce" : "short",
-  "shift_key" : "1start",
   "macros": [
     {"name": "macro #1", "action": 43},
     {"name": "macro #2", "action": ["m", "2", "2"]},
