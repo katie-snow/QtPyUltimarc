@@ -197,6 +197,14 @@ def get_ipac_series_mapping_key(val):
     for key, value in IPACSeriesMapping.items():
         if val == value:
             return key
+    return None
+
+
+def get_ipac_series_macro_mapping_index(val):
+    # Check if it is a Macro entry
+    # Will return None on Macro entries
+    r = range(0xe0, 0xef)
+    return r.index(val) if val in r else None
 
 
 #
