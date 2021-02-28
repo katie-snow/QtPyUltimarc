@@ -182,41 +182,46 @@ class MiniPacDevice(USBDeviceHandle):
 
         action_index, alternate_action_index, shift_index = PinMapping[pin]
         action = pin_config[1].upper()
-        cur_config.bytes[action_index] = None
+        cur_config.bytes[action_index] = 0
         if action in IPACSeriesMapping:
             cur_config.bytes[action_index] = IPACSeriesMapping[action]
         else:
             macro_val = 0xe0
             for x in macros:
-                if x.name.upper() == action:
+                if x['name'].upper() == action:
                     cur_config.bytes[action_index] = macro_val
                 else:
                     macro_val += 1
-        if cur_config.bytes[action_index] is None:
+        if cur_config.bytes[action_index] is 0:
             _logger.info(_(f'{pin} action "{action}" is not a valid value'))
 
         # Pin alternate action
         alternate_action = pin_config[2].upper()
         # Empty string means no value
         if len(alternate_action) > 0:
-            cur_config.bytes[alternate_action_index] = None
+            cur_config.bytes[alternate_action_index] = 0
             if alternate_action in IPACSeriesMapping:
                 cur_config.bytes[alternate_action_index] = IPACSeriesMapping[alternate_action]
             else:
                 macro_val = 0xe0
                 for x in macros:
-                    if x.name.upper() == action:
-                        cur_config.bytes[action_index] = macro_val
+                    if x['name'].upper() == alternate_action:
+                        cur_config.bytes[alternate_action_index] = macro_val
                     else:
                         macro_val += 1
-            if cur_config.bytes[alternate_action_index] is None:
+            if cur_config.bytes[alternate_action_index] is 0:
                 _logger.info(_(f'{pin} alternate action "{alternate_action}" is not a valid value'))
         else:
             # No Alternate Value
             cur_config.bytes[alternate_action_index] = 0
 
         # Pin designated as shift
-        cur_config.bytes[shift_index] = 0x40 if pin_config[3] else 0x0
+        cur_config.bytes[shift_index] = 0x40 if pin_config[3].lower() in ['true', '1', 't', 'y'] else 0x0
+
+        # Header - Setup to send back to device
+        cur_config.header.type = 0x50
+        cur_config.header.byte_2 = 0xdd
+        cur_config.header.byte_3 = 0x0f
 
         return self.write_alt(USBRequestCode.SET_CONFIGURATION, int(0x03), MINI_PAC_INDEX,
                               cur_config, ct.sizeof(cur_config))
