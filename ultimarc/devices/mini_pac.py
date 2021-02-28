@@ -8,7 +8,8 @@ import logging
 
 from ultimarc import translate_gettext as _
 from ultimarc.devices._device import USBDeviceHandle, USBRequestCode
-from ultimarc.devices._mappings import IPACSeriesMapping, get_ipac_series_mapping_key
+from ultimarc.devices._mappings import IPACSeriesMapping, get_ipac_series_mapping_key, \
+    get_ipac_series_macro_mapping_index
 from ultimarc.devices._structures import PacHeaderStruct, PacStruct, PacConfigUnion
 from ultimarc.system_utils import JSONObject
 
@@ -68,14 +69,7 @@ class MiniPacDevice(USBDeviceHandle):
     class_descr = _('Mini-PAC')
     interface = 2
 
-    def to_json_str(self, pac_struct):
-        """ Converts a PacStruct to a json object """
-        json_obj = {'schemaVersion': 2.0, 'resourceType': 'mini-pac-pins', 'deviceClass': self.class_id}
-
-        # debounce
-        # TODO - fully implement debounce behavior
-        json_obj['debounce'] = 'standard'
-
+    def _create_macro_array_(self, pac_struct):
         # macros
         macros = []
         macro_start = 0xe0
@@ -103,6 +97,18 @@ class MiniPacDevice(USBDeviceHandle):
                 else:
                     # No more macros defined, end the loop
                     break
+        return macros
+
+    def to_json_str(self, pac_struct):
+        """ Converts a PacStruct to a json object """
+        json_obj = {'schemaVersion': 2.0, 'resourceType': 'mini-pac-pins', 'deviceClass': self.class_id}
+
+        # debounce
+        # TODO - fully implement debounce behavior
+        json_obj['debounce'] = 'standard'
+
+        # macros
+        macros = self._create_macro_array_(pac_struct)
         if len(macros):
             json_obj['macros'] = macros
 
@@ -114,8 +120,20 @@ class MiniPacDevice(USBDeviceHandle):
             if pac_struct.bytes[action_index]:
                 pin['name'] = key
                 pin['action'] = get_ipac_series_mapping_key(pac_struct.bytes[action_index])
+                if pin['action'] is None:
+                    mi = get_ipac_series_macro_mapping_index(pac_struct.bytes[action_index])
+                    if mi is not None:
+                        pin['action'] = macros[mi]['name']
+                    else:
+                        _logger.debug(_(f'{key} action is not a valid value'))
                 if pac_struct.bytes[alternate_action_index]:
-                    pin['alternate_action'] = get_ipac_series_mapping_key(pac_struct.bytes[alternate_action_index])
+                    alt_action = get_ipac_series_mapping_key(pac_struct.bytes[alternate_action_index])
+                    if alt_action is None:
+                        mi = get_ipac_series_macro_mapping_index(pac_struct.bytes[alternate_action_index])
+                        if mi is not None:
+                            pin['alternate_action'] = macros[mi]['name']
+                    else:
+                        pin['alternate_action'] = alt_action
                 if pac_struct.bytes[shift_index]:
                     pin['shift'] = True
                 pins.append(pin)
@@ -154,6 +172,59 @@ class MiniPacDevice(USBDeviceHandle):
         res, data = self._create_message_(config_file, cur_config)
         return self.write_alt(USBRequestCode.SET_CONFIGURATION, int(0x03), MINI_PAC_INDEX, data, ct.sizeof(data)) \
             if res else False
+
+    def set_pin(self, pin_config):
+        """ Write a pin to the current Mini-pac device """
+        pin = pin_config[0]
+        # Get the current configuration from the device
+        cur_config = self.get_current_configuration()
+        macros = self._create_macro_array_(cur_config)
+
+        action_index, alternate_action_index, shift_index = PinMapping[pin]
+        action = pin_config[1].upper()
+        cur_config.bytes[action_index] = 0
+        if action in IPACSeriesMapping:
+            cur_config.bytes[action_index] = IPACSeriesMapping[action]
+        else:
+            macro_val = 0xe0
+            for x in macros:
+                if x['name'].upper() == action:
+                    cur_config.bytes[action_index] = macro_val
+                else:
+                    macro_val += 1
+        if cur_config.bytes[action_index] is 0:
+            _logger.info(_(f'{pin} action "{action}" is not a valid value'))
+
+        # Pin alternate action
+        alternate_action = pin_config[2].upper()
+        # Empty string means no value
+        if len(alternate_action) > 0:
+            cur_config.bytes[alternate_action_index] = 0
+            if alternate_action in IPACSeriesMapping:
+                cur_config.bytes[alternate_action_index] = IPACSeriesMapping[alternate_action]
+            else:
+                macro_val = 0xe0
+                for x in macros:
+                    if x['name'].upper() == alternate_action:
+                        cur_config.bytes[alternate_action_index] = macro_val
+                    else:
+                        macro_val += 1
+            if cur_config.bytes[alternate_action_index] is 0:
+                _logger.info(_(f'{pin} alternate action "{alternate_action}" is not a valid value'))
+        else:
+            # No Alternate Value
+            cur_config.bytes[alternate_action_index] = 0
+
+        # Pin designated as shift
+        cur_config.bytes[shift_index] = 0x40 if pin_config[3].lower() in ['true', '1', 't', 'y'] else 0x0
+
+        # Header - Setup to send back to device
+        cur_config.header.type = 0x50
+        cur_config.header.byte_2 = 0xdd
+        cur_config.header.byte_3 = 0x0f
+
+        return self.write_alt(USBRequestCode.SET_CONFIGURATION, int(0x03), MINI_PAC_INDEX,
+                              cur_config, ct.sizeof(cur_config))
 
     def _create_message_(self, config_file, cur_device_config=None):
         """ Create the message to be sent to the device """
@@ -194,6 +265,14 @@ class MiniPacDevice(USBDeviceHandle):
             data.header.byte_2 = 0xdd
             data.header.byte_3 = 0x0f
             data.header.byte_4 = header.asByte
+
+            # TODO: Current limitation, macros are not kept between configurations.  To prevent lingering macro
+            #  values in pac structure
+
+            # Clear current macro structure
+            if cur_device_config is not None:
+                for x in range (MACRO_START_INDEX, MACRO_MAX_COUNT):
+                    data.bytes[x] = 0
 
             # key: Macro name value: macro value (e0 - fe)
             macro_dict = {}
