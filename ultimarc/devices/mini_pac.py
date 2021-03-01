@@ -9,7 +9,7 @@ import logging
 from ultimarc import translate_gettext as _
 from ultimarc.devices._device import USBDeviceHandle, USBRequestCode
 from ultimarc.devices._mappings import IPACSeriesMapping, get_ipac_series_mapping_key, \
-    get_ipac_series_macro_mapping_index
+    get_ipac_series_macro_mapping_index, IPACSeriesDebounce, get_ipac_series_debounce_key
 from ultimarc.devices._structures import PacHeaderStruct, PacStruct, PacConfigUnion
 from ultimarc.system_utils import JSONObject
 
@@ -103,9 +103,15 @@ class MiniPacDevice(USBDeviceHandle):
         """ Converts a PacStruct to a json object """
         json_obj = {'schemaVersion': 2.0, 'resourceType': 'mini-pac-pins', 'deviceClass': self.class_id}
 
-        # debounce
-        # TODO - fully implement debounce behavior
-        json_obj['debounce'] = 'standard'
+        # header configuration
+        header = PacConfigUnion()
+        header.asByte = pac_struct.header.byte_4
+        debounce = get_ipac_series_debounce_key(header.config.debounce)
+        if debounce is not None:
+            json_obj['debounce'] = debounce
+        else:
+            json_obj['debounce'] = 'standard'
+            _logger.info(_(f'"{header.config.debounce}" debounce value is not a valid value'))
 
         # macros
         macros = self._create_macro_array_(pac_struct)
@@ -192,7 +198,7 @@ class MiniPacDevice(USBDeviceHandle):
                     cur_config.bytes[action_index] = macro_val
                 else:
                     macro_val += 1
-        if cur_config.bytes[action_index] is 0:
+        if cur_config.bytes[action_index] == 0:
             _logger.info(_(f'{pin} action "{action}" is not a valid value'))
 
         # Pin alternate action
@@ -209,7 +215,7 @@ class MiniPacDevice(USBDeviceHandle):
                         cur_config.bytes[alternate_action_index] = macro_val
                     else:
                         macro_val += 1
-            if cur_config.bytes[alternate_action_index] is 0:
+            if cur_config.bytes[alternate_action_index] == 0:
                 _logger.info(_(f'{pin} alternate action "{alternate_action}" is not a valid value'))
         else:
             # No Alternate Value
@@ -217,6 +223,29 @@ class MiniPacDevice(USBDeviceHandle):
 
         # Pin designated as shift
         cur_config.bytes[shift_index] = 0x40 if pin_config[3].lower() in ['true', '1', 't', 'y'] else 0x0
+
+        # Header - Setup to send back to device
+        cur_config.header.type = 0x50
+        cur_config.header.byte_2 = 0xdd
+        cur_config.header.byte_3 = 0x0f
+
+        return self.write_alt(USBRequestCode.SET_CONFIGURATION, int(0x03), MINI_PAC_INDEX,
+                              cur_config, ct.sizeof(cur_config))
+
+    def set_debounce(self, debounce):
+        """ Set debounce value to the current Mini-pac device """
+        val = debounce.lower()
+        if val in IPACSeriesDebounce:
+            # Get the current configuration from the device
+            cur_config = self.get_current_configuration()
+
+            header = PacConfigUnion()
+            header.config.debounce = IPACSeriesDebounce[val]
+
+            cur_config.header.byte_4 = header.asByte
+        else:
+            _logger.info(_(f'"{debounce}" is not a valid debounce value'))
+            return None
 
         # Header - Setup to send back to device
         cur_config.header.type = 0x50
@@ -260,18 +289,26 @@ class MiniPacDevice(USBDeviceHandle):
             data.bytes[147] = 0x01
 
             # Header
-            header = PacConfigUnion()
             data.header.type = 0x50
             data.header.byte_2 = 0xdd
             data.header.byte_3 = 0x0f
-            data.header.byte_4 = header.asByte
 
-            # TODO: Current limitation, macros are not kept between configurations.  To prevent lingering macro
-            #  values in pac structure
+            # Header configuration options
+            val = config.debounce.lower()
+            if val in IPACSeriesDebounce:
+                header = PacConfigUnion()
+                header.config.debounce = IPACSeriesDebounce[val]
 
+                data.header.byte_4 = header.asByte
+            else:
+                _logger.info(_(f'"{config.debounce}" is not a valid debounce value'))
+                return False, None
+
+            # bug: Current limitation, macros are not kept between configurations.  To prevent lingering macro
+            #   values in pac structure
             # Clear current macro structure
             if cur_device_config is not None:
-                for x in range (MACRO_START_INDEX, MACRO_MAX_COUNT):
+                for x in range(MACRO_START_INDEX, MACRO_MAX_COUNT):
                     data.bytes[x] = 0
 
             # key: Macro name value: macro value (e0 - fe)

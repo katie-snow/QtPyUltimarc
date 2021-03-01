@@ -35,11 +35,7 @@ class MiniPACClass(object):
         Main program process
         :return: Exit code value
         """
-        # TODO: write program main process here after setting 'tool_cmd' and 'tool_desc'...
-        #   Arguments:
-        #       Debounce change only, read in config and adjust the debounce
-        #       Single pin change (action, alternate_action, shift), reading in config and making the one change
-        cur_config = None
+        # write program main process here after setting 'tool_cmd' and 'tool_desc'...
 
         # Get devices we want to work with based on filters.
         devices = [dev for dev in
@@ -49,6 +45,15 @@ class MiniPACClass(object):
         if not devices:
             _logger.error(_('No Mini-PAC devices found, aborting'))
             return -1
+
+        # Set debounce value
+        if self.args.set_debounce:
+            for dev in devices:
+                with dev as dev_h:
+                    response = dev_h.set_debounce(self.args.set_debounce)
+                    if response:
+                        _logger.info(f'{dev.dev_key} ({dev.bus},{dev.address}): ' +
+                                     _('debounce successfully applied to device.'))
 
         # Get config from device
         if self.args.get_config:
@@ -71,6 +76,8 @@ class MiniPACClass(object):
             for dev in devices:
                 with dev as dev_h:
                     dev_h.set_pin(self.args.set_pin)
+                    _logger.info(f'{dev.dev_key} ({dev.bus},{dev.address}): ' +
+                                 _('pin successfully applied to device.'))
 
         return 0
 
@@ -81,7 +88,8 @@ def run():
     parser = ToolContextManager.get_argparser(tool_cmd, tool_desc)
     group = parser.add_argument_group()
 
-    # TODO:  Setup additional program arguments here.
+    # Setup additional program arguments here.
+
     group.add_argument('--get-config', help=_('Get Mini-pac device config'), default=False, action='store_true')
     group.add_argument('--indent', help=_('Set the json indent level for the output of the device configuration'),
                        default=None, metavar='INT')
@@ -92,6 +100,7 @@ def run():
     group.add_argument('--current',
                        help=_('Use Mini-pac current config when applying config from file'), default=False,
                        action='store_true')
+    group.add_argument('--set-debounce', help=_('Set Mini-pac debounce value'), type=str, metavar='STR')
     group.add_argument('--set-pin', help=_('Set single Mini-pac pin'), type=str,
                        default=None, metavar=('PIN', 'ACTION', 'ALT_ACTION', 'IS_SHIFT'), nargs=4)
     args = parser.parse_args()
