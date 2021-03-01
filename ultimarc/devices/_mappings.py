@@ -7,6 +7,23 @@
 #
 
 #
+# PAC 2015 or newer debounce values
+#
+IPACSeriesDebounce = {
+    'standard': 0,
+    'none': 0x01,
+    'short': 0x02,
+    'long': 0x03
+}
+
+
+def get_ipac_series_debounce_key(val):
+    for key, value in IPACSeriesDebounce.items():
+        if val == value:
+            return key
+    return None
+
+#
 # IPAC 2015 or newer key mapping.
 #
 IPACSeriesMapping = {
