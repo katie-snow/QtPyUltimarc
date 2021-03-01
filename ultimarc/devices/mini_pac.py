@@ -106,12 +106,7 @@ class MiniPacDevice(USBDeviceHandle):
         # header configuration
         header = PacConfigUnion()
         header.asByte = pac_struct.header.byte_4
-        debounce = get_ipac_series_debounce_key(header.config.debounce)
-        if debounce is not None:
-            json_obj['debounce'] = debounce
-        else:
-            json_obj['debounce'] = 'standard'
-            _logger.info(_(f'"{header.config.debounce}" debounce value is not a valid value'))
+        json_obj['debounce'] = get_ipac_series_debounce_key(header.config.debounce)
 
         # macros
         macros = self._create_macro_array_(pac_struct)

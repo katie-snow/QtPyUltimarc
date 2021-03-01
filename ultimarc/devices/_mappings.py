@@ -5,7 +5,11 @@
 #
 # Mappings for devices.
 #
+import logging
 
+from ultimarc import translate_gettext as _
+
+_logger = logging.getLogger('ultimarc')
 #
 # PAC 2015 or newer debounce values
 #
@@ -21,7 +25,8 @@ def get_ipac_series_debounce_key(val):
     for key, value in IPACSeriesDebounce.items():
         if val == value:
             return key
-    return None
+    _logger.info(_(f'"{val}" debounce value is not a valid value'))
+    return 'standard'
 
 #
 # IPAC 2015 or newer key mapping.
