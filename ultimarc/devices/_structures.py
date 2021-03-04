@@ -66,19 +66,19 @@ class PacHeaderStruct(UltimarcStruct):
 class PacConfigStruct(UltimarcStruct):
     """ Defines the bit values for the configuration byte """
     _fields_ = [
-        ('high_current_output', ct.c_int, 1),
-        ('accelerometer', ct.c_int, 1),
-        ('paclink', ct.c_int, 1),
-        ('debounce', ct.c_int, 2),
-        ('expand_interface', ct.c_int, 1),
-        ('reserved', ct.c_int, 2)
+        ('high_current_output', ct.c_uint, 1),
+        ('accelerometer', ct.c_uint, 1),
+        ('paclink', ct.c_uint, 1),
+        ('debounce', ct.c_uint, 2),
+        ('expand_interface', ct.c_uint, 1),
+        ('reserved', ct.c_uint, 2)
     ]
 
 
 class PacConfigUnion(ct.Union):
     _fields_ = [
         ('config', PacConfigStruct),
-        ('asByte', ct.c_ubyte)
+        ('asByte', ct.c_uint)
     ]
 
 

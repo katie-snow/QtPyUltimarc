@@ -11,6 +11,7 @@ from jsonschema.exceptions import ValidationError
 from unittest import TestCase
 
 from ultimarc.devices._device import USBDeviceHandle
+from ultimarc.devices._mappings import get_ipac_series_debounce_key
 from ultimarc.devices.mini_pac import MiniPacDevice
 from ultimarc.system_utils import git_project_root
 
@@ -157,3 +158,16 @@ class MiniPacDeviceTest(TestCase):
         valid, data = dev._create_message_(config_file)
         self.assertFalse(valid)
         self.assertIsNone(data)
+
+    def test_get_ipac_series_debounce_key(self):
+        """ Test the get_ipac_series_debounce_key function returns valid values """
+
+        # valid values
+        self.assertTrue(get_ipac_series_debounce_key(0x0) == 'standard')
+        self.assertTrue(get_ipac_series_debounce_key(0x1) == 'none')
+        self.assertTrue(get_ipac_series_debounce_key(0x2) == 'short')
+        self.assertTrue(get_ipac_series_debounce_key(0x3) == 'long')
+
+        # invalid value given
+        self.assertTrue(get_ipac_series_debounce_key(0xff) == 'standard')
+        self.assertTrue(get_ipac_series_debounce_key(0x05) == 'standard')
