@@ -119,18 +119,13 @@ FocusScope {
         z: -1
         clip: true
         radius: 6
-        color: "lightblue"
-        Component.onCompleted: console.log("whiteBackground: ",
-            _releases.front_page, moveUp.running, adjustedHeight(),
-            _releases.front_page || moveUp.running)
+        color: "transparent"
         y: _releases.front_page || moveUp.running ? parent.height / 2 - height / 2 : 54
-        //y: 54
         Behavior on y {
             id: moveUp
             enabled: false
 
             NumberAnimation {
-                Component.onCompleted: console.log("NumberAnimation: ", moveUp.enabled)
                 onStopped: moveUp.enabled = false
             }
         }
@@ -312,7 +307,7 @@ FocusScope {
                 height: _units.grid_unit * 2
                 anchors.horizontalCenter: parent.horizontalCenter
                 y: Math.round(_units.grid_unit * 4.5) * 3 + 1
-                z: -1
+                z: 1
                 Rectangle {
                     anchors.fill: parent
                     anchors.topMargin: -_units.large_spacing
@@ -379,7 +374,6 @@ FocusScope {
                     }
                     onClicked: {
                         action()
-                        // Not Working
                     }
                     function action() {
                         moveUp.enabled = true
