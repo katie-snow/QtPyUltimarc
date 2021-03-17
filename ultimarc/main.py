@@ -13,6 +13,8 @@ from ultimarc.ui.devices_list_proxy_model import DeviceListProxyModel
 from ultimarc.ui.devices_model import DevicesModel
 from ultimarc.ui.units import Units
 
+import ultimarc.qml.rc_assets
+
 _logger = logging.getLogger('ultimarc')
 
 _tool_cmd = _('ui')
@@ -20,6 +22,10 @@ _tool_title = _('Ultimarc Editor')
 
 if __name__ == '__main__':
     """ Main entry point """
+    app = QtWidgets.QApplication(sys.argv)
+    # QtQuickControls2.QQuickStyle('org.fedoraproject.AdwaitaTheme')
+    # QtQuickControls2.QQuickStyle('Fusion')
+
     ToolContextManager.initialize_logging('ultimarc')  # Configure logging
 
     # Setup default argparser arguments.
@@ -31,10 +37,6 @@ if __name__ == '__main__':
     QtCore.QCoreApplication.setOrganizationDomain('SnowyWhitewater.org')
     QtCore.QCoreApplication.setOrganizationName('SnowyWhitewater.org')
     QtCore.QCoreApplication.setApplicationName('UltimarcEditor')
-
-    app = QtWidgets.QApplication(sys.argv)
-    # QtQuickControls2.QQuickStyle('org.fedoraproject.AdwaitaTheme')
-    #QtQuickControls2.QQuickStyle('Fusion')
     engine = QtQml.QQmlApplicationEngine()
 
     with ToolContextManager(_tool_cmd, args) as tool_env:
