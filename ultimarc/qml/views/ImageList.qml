@@ -129,7 +129,7 @@ FocusScope {
                 onStopped: moveUp.enabled = false
             }
         }
-        height: !_releases.frontPage ? adjustedHeight() : parent.height
+        height: !_releases.frontPage ? adjustedHeight(_deviceModel.device_count) : parent.height
         anchors {
             left: parent.left
             right: parent.right
@@ -137,8 +137,8 @@ FocusScope {
             leftMargin: anchors.rightMargin
         }
 
-        function adjustedHeight() {
-            var height = Math.round(_units.grid_unit * 4.5) * 3 + (_units.grid_unit * 2)
+        function adjustedHeight(count) {
+            var height = Math.round(_units.grid_unit * 4.5) * count + (_units.grid_unit * 2)
             if (height % 2) {
                 return height + 1
             } else {
@@ -306,7 +306,7 @@ FocusScope {
                 width: osListView.width - 2
                 height: _units.grid_unit * 2
                 anchors.horizontalCenter: parent.horizontalCenter
-                y: Math.round(_units.grid_unit * 4.5) * 3 + 1
+                y: Math.round(_units.grid_unit * 4.5) * _deviceModel.device_count + 1
                 z: 1
                 Rectangle {
                     anchors.fill: parent
