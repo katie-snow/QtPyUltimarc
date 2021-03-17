@@ -4,19 +4,18 @@
 #
 import logging
 
-from PySide6.QtCore import Property, Signal, QIdentityProxyModel, QModelIndex
+from PySide6.QtCore import Property, Signal, QIdentityProxyModel, QModelIndex, QObject
 
 _logger = logging.getLogger('ultimarc')
 
 
-class DeviceListProxyModel(QIdentityProxyModel):
+class DeviceListProxyModel(QIdentityProxyModel, QObject):
 
     _changed_front_page = Signal(bool)
     _changed_filter_text = Signal(str)
-    _changed = Signal()
+
     _front_page = True
-    _filter_text = ""
-    _category = ""
+    _filter_text = ''
 
     def __init__(self):
         super().__init__()
@@ -38,10 +37,6 @@ class DeviceListProxyModel(QIdentityProxyModel):
             self._filter_text = filter
             self._changed_filter_text.emit(self._filter_text)
 
-    def get_category(self):
-        return self._category
-
-    category = Property(str, get_category, constant=True)
     front_page = Property(bool, get_front_page, set_front_page, notify=_changed_front_page)
     filter_text = Property(str, get_filter_text, set_filter_text, notify=_changed_filter_text)
 
