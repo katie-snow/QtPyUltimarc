@@ -39,6 +39,7 @@ class DevicesModel(QAbstractListModel, QObject):
             tmp = UIDeviceInfo()
 
             # TODO: Add new images
+            #   Run to get new resource file: pyside6-rcc assets.qrc  -o rc_assets.py
             if dev.class_id == DeviceClassID.MiniPac.value:
                 tmp.icon = 'qrc:/logos/workstation'
             else:
