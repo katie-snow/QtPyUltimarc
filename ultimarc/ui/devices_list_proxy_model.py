@@ -27,7 +27,6 @@ class DeviceListSortProxyModel(QSortFilterProxyModel, QObject):
 
 
 class DeviceListProxyModel(QSortFilterProxyModel, QObject):
-
     _changed_front_page = Signal(bool)
     _changed_filter_text = Signal(str)
 
@@ -53,17 +52,26 @@ class DeviceListProxyModel(QSortFilterProxyModel, QObject):
         if self._filter_text != filter:
             self._filter_text = filter
             self._changed_filter_text.emit(self._filter_text)
+            self.invalidateFilter()
 
     front_page = Property(bool, get_front_page, set_front_page, notify=_changed_front_page)
     filter_text = Property(str, get_filter_text, set_filter_text, notify=_changed_filter_text)
 
-    def filterAcceptsRow(self, source_row, source_parent:QModelIndex):
+    def filterAcceptsRow(self, source_row, source_parent: QModelIndex):
+        index = self.sourceModel().index(source_row, 0, source_parent)
         if self.front_page:
-            index = self.sourceModel().index(source_row, 0, source_parent)
             connected = index.data(DeviceRoles.CONNECTED)
             if connected:
                 return True if source_row < 4 else False
             else:
                 return False
         else:
-            return True
+            if len(self._filter_text) == 0:
+                return True
+            else:
+                name = index.data(DeviceRoles.PRODUCT_NAME)
+                dev_class = index.data(DeviceRoles.DEVICE_CLASS)
+                key = index.data(DeviceRoles.PRODUCT_KEY)
+                return str(name).find(self._filter_text) > -1 or \
+                       str(dev_class).find(self._filter_text) > -1 or \
+                       str(key).find(self._filter_text) > -1
