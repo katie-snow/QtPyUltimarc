@@ -55,14 +55,15 @@ FocusScope {
             top: parent.top
             left: parent.left
             right: parent.right
-            bottom: searchBox.bottom
+            bottom: searchBoxRow.bottom
             rightMargin: fullList.viewport ? fullList.width - fullList.viewport.width : 0
         }
-        z: 1
+        z: -1
         color: palette.window
     }
 
     RowLayout {
+        id: searchBoxRow
         anchors {
             left: parent.left
             right: parent.right
@@ -77,11 +78,11 @@ FocusScope {
             id: searchBox
             Layout.fillWidth: true
             z: 2
-            enabled: !_releases.frontPage
-            opacity: !_releases.frontPage ? 1.0 : 0.0
+            enabled: !_releases.front_page
+            opacity: !_releases.front_page ? 1.0 : 0.0
             visible: opacity > 0.0
             activeFocusOnTab: visible
-            placeholderText: qsTr("Find an Ultimarc Device")
+            placeholderText: qsTr("Find an Ultimarc Configuration")
             text: _releases.filter_text
             onTextChanged: _releases.filter_text = text
             clip: true
@@ -95,8 +96,8 @@ FocusScope {
 
         QQC2.ComboBox {
             id: archSelect
-            enabled: !_releases.frontPage
-            opacity: !_releases.frontPage ? 1.0 : 0.0
+            enabled: !_releases.front_page
+            opacity: !_releases.front_page ? 1.0 : 0.0
             activeFocusOnTab: visible
             visible: opacity > 0.0
             model: _releases.architectures
@@ -129,7 +130,7 @@ FocusScope {
                 onStopped: moveUp.enabled = false
             }
         }
-        height: !_releases.frontPage ? adjustedHeight(_deviceModel.device_count) : parent.height
+        height: _releases.front_page ? adjustedHeight(4) : parent.height
         anchors {
             left: parent.left
             right: parent.right
@@ -144,29 +145,6 @@ FocusScope {
             } else {
                 return height
             }
-        }
-    }
-
-    Row {
-        anchors.top: whiteBackground.bottom
-        anchors.right: whiteBackground.right
-        anchors.topMargin: _units.small_spacing
-        anchors.rightMargin: _units.large_spacing
-        opacity: _releases.beingUpdated ? 0.8 : 0.0
-        visible: opacity > 0.01
-        spacing: _units.small_spacing
-        Behavior on opacity { NumberAnimation { } }
-
-        // TODO: Adwaita themed component
-        QQC2.BusyIndicator {
-            anchors.verticalCenter: checkingForUpdatesText.verticalCenter
-            height: 24
-            width: 24
-        }
-        QQC2.Label {
-            id: checkingForUpdatesText
-            text: qsTr("Checking for new releases")
-            opacity: 0.6
         }
     }
 
@@ -187,7 +165,7 @@ FocusScope {
 
             clip: true
             focus: true
-            model: _deviceModel
+            model: _releases
 
             delegate: DelegateImage {
                 width: osListView.width
@@ -201,18 +179,18 @@ FocusScope {
                 NumberAnimation { properties: "x,y"; duration: 300 }
             }
             add: Transition {
-                NumberAnimation { properties: releases.frontPage ? "y" : "x"; from: releases.frontPage ? 0 : -width; duration: 300 }
+                NumberAnimation { properties: releases.front_page ? "y" : "x"; from: releases.front_page ? 0 : -width; duration: 300 }
             }
             addDisplaced: Transition {
                 NumberAnimation { properties: "x,y"; duration: 300 }
             }
 
             section {
-                property: "_deviceModel.category"
+                property: "category"
                 criteria: ViewSection.FullString
                 labelPositioning: ViewSection.InlineLabels
                 delegate: Item {
-                    height: section == "main" ? 0 : Math.round(_units.grid_unit * 3.5)
+                    height: section == "" ? 0 : Math.round(_units.grid_unit * 3.5)
                     width: parent.width
                     QQC2.Label {
                         text: section
@@ -306,7 +284,7 @@ FocusScope {
                 width: osListView.width - 2
                 height: _units.grid_unit * 2
                 anchors.horizontalCenter: parent.horizontalCenter
-                y: Math.round(_units.grid_unit * 4.5) * _deviceModel.device_count + 1
+                y: Math.round(_units.grid_unit * 4.5) * 4 + 1
                 z: 1
                 Rectangle {
                     anchors.fill: parent
