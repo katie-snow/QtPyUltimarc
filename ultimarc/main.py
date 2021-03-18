@@ -51,7 +51,7 @@ if __name__ == '__main__':
         # Connect Python to QML
         context = engine.rootContext()
         context.setContextProperty('_ultimarc_version', '0.1')
-        context.setContextProperty('_releases', devices)
+        context.setContextProperty('_releases', device_filter)
         context.setContextProperty('_deviceModel', model)
         context.setContextProperty('_units', units)
 
