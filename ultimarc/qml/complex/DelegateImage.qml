@@ -91,9 +91,8 @@ Item {
                 }
                 QQC2.Label {
                     text: " " + model.name
-                    //visible: !release.isLocal
-                    visible: true
-                }
+                    visible: model.connected
+                   }
             }
             QQC2.Label {
                 Layout.fillWidth: true
@@ -105,8 +104,6 @@ Item {
         }
         Arrow {
             id: arrow
-            //visible: !release.isLocal
-            visible: true
             anchors {
                 verticalCenter: parent.verticalCenter
                 right: parent.right
@@ -179,15 +176,8 @@ Item {
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
         function action() {
-            //if (release.isLocal) {
-            if (false) {
-                releases.selectedIndex = index
-                fileDialog.visible = true
-            }
-            else {
-                imageList.currentIndex = index
-                imageList.stepForward(release.index)
-            }
+            imageList.currentIndex = index
+            imageList.stepForward(release.index)
         }
         onClicked: {
             action()
