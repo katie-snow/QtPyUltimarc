@@ -9,7 +9,7 @@ from PySide6 import QtCore, QtWidgets, QtQml, QtQuick, QtQuickControls2
 
 from ultimarc import translate_gettext as _
 from ultimarc.tools import ToolContextManager
-from ultimarc.ui.devices_list_proxy_model import DeviceListProxyModel
+from ultimarc.ui.devices_list_proxy_model import DeviceListProxyModel, DeviceListSortProxyModel
 from ultimarc.ui.devices_model import DevicesModel
 from ultimarc.ui.units import Units
 
@@ -42,9 +42,11 @@ if __name__ == '__main__':
     with ToolContextManager(_tool_cmd, args) as tool_env:
         # Local class instantiation
         units = Units()
-        devices = DeviceListProxyModel()
+        device_filter = DeviceListProxyModel()
+        device_sort = DeviceListSortProxyModel()
         model = DevicesModel(args, tool_env)
-        devices.setSourceModel(model)
+        device_sort.setSourceModel(model)
+        device_filter.setSourceModel(device_sort)
 
         # Connect Python to QML
         context = engine.rootContext()

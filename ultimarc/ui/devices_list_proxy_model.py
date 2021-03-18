@@ -11,6 +11,21 @@ from ultimarc.ui.devices_model import DeviceRoles, UNKNOWN_DEVICE
 _logger = logging.getLogger('ultimarc')
 
 
+class DeviceListSortProxyModel(QSortFilterProxyModel, QObject):
+    def __init__(self):
+        super().__init__()
+        self.sort(0)
+
+    def lessThan(self, source_left: QModelIndex, source_right: QModelIndex):
+        class_left = source_left.data(DeviceRoles.DEVICE_CLASS)
+        class_right = source_right.data(DeviceRoles.DEVICE_CLASS)
+        connected_left = source_left.data(DeviceRoles.CONNECTED)
+        connected_right = source_right.data(DeviceRoles.CONNECTED)
+        if connected_right == connected_left:
+            return class_left < class_right
+        return connected_right < connected_left
+
+
 class DeviceListProxyModel(QSortFilterProxyModel, QObject):
 
     _changed_front_page = Signal(bool)
@@ -27,7 +42,6 @@ class DeviceListProxyModel(QSortFilterProxyModel, QObject):
 
     def set_front_page(self, fp):
         if self._front_page != fp:
-            _logger.debug('set_front_page called. {fp}')
             self._front_page = fp
             self._changed_front_page.emit(self._front_page)
             self.invalidateFilter()
@@ -43,22 +57,11 @@ class DeviceListProxyModel(QSortFilterProxyModel, QObject):
     front_page = Property(bool, get_front_page, set_front_page, notify=_changed_front_page)
     filter_text = Property(str, get_filter_text, set_filter_text, notify=_changed_filter_text)
 
-    # TODO: Create sort
-    # def lessThan(self, source_left:QModelIndex, source_right:QModelIndex) -> bool:
-    #     connected_left = source_left.data(DeviceRoles.CONNECTED)
-    #     connected_right = source_right.data(DeviceRoles.CONNECTED)
-    #     if connected_right is True and connected_left is True:
-    #         device_class = index.data(DeviceRoles.DEVICE_CLASS)
-    #         if device_class == UNKNOWN_DEVICE:
-    #             return False
-    #     else:
-
     def filterAcceptsRow(self, source_row, source_parent:QModelIndex):
         if self.front_page:
             index = self.sourceModel().index(source_row, 0, source_parent)
             connected = index.data(DeviceRoles.CONNECTED)
             if connected:
-                _logger.debug(source_row)
                 return True if source_row < 4 else False
             else:
                 return False
