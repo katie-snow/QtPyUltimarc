@@ -5,10 +5,11 @@
 import logging
 import sys
 
-from PySide6 import QtCore, QtWidgets, QtQml, QtQuick, QtQuickControls2
+from PySide6 import QtCore, QtWidgets, QtQml
 
 from ultimarc import translate_gettext as _
 from ultimarc.tools import ToolContextManager
+from ultimarc.ui.device_class_model import DeviceClassModel
 from ultimarc.ui.devices_list_proxy_model import DeviceListProxyModel, DeviceListSortProxyModel
 from ultimarc.ui.devices_model import DevicesModel
 from ultimarc.ui.units import Units
@@ -44,15 +45,18 @@ if __name__ == '__main__':
         units = Units()
         device_filter = DeviceListProxyModel()
         device_sort = DeviceListSortProxyModel()
-        model = DevicesModel(args, tool_env)
-        device_sort.setSourceModel(model)
+        devices = DevicesModel(args, tool_env)
+        # Provide the list to the string model from the filter model
+        device_class = DeviceClassModel()
+        device_sort.setSourceModel(devices)
         device_filter.setSourceModel(device_sort)
 
         # Connect Python to QML
         context = engine.rootContext()
         context.setContextProperty('_ultimarc_version', '0.1')
         context.setContextProperty('_releases', device_filter)
-        context.setContextProperty('_deviceModel', model)
+        context.setContextProperty('_deviceModel', devices)
+        context.setContextProperty('_device_class', device_class)
         context.setContextProperty('_units', units)
 
         url = QtCore.QUrl.fromLocalFile('qml/main.qml')
