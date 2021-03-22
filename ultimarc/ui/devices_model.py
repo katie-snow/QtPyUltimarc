@@ -25,7 +25,7 @@ class DeviceRoles(QMetaEnum):
     DEVICE_CLASS_ID = 7
 
 
-class UIDeviceInfo():
+class UIDeviceInfo:
     """ Class fpr holding additional device data for the UI """
     name = ''
     class_descr = ''
@@ -76,7 +76,7 @@ class DevicesModel(QAbstractListModel, QObject):
             tmp.setup_icon(dev.class_id)
             self._ui_dev_info.append(tmp)
 
-        # Configuration Options for non connected devices
+        # Configuration for non connected devices
         for device_class in DeviceClassID:
             tmp = UIDeviceInfo(False, class_descr=device_class.name)
             tmp.setup_icon(device_class.value)
@@ -171,7 +171,6 @@ class DevicesModel(QAbstractListModel, QObject):
         return self._category
 
     def get_device_count(self):
-        _logger.debug(self._device_count)
         return self._device_count if self._device_count < 4 else 4
 
     device_count = Property(int, get_device_count, constant=True)
