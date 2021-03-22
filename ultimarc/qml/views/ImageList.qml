@@ -101,9 +101,15 @@ FocusScope {
             activeFocusOnTab: visible
             visible: opacity > 0.0
             model: _device_class
+            textRole: "class_name"
+            valueRole: "class_value"
 
-            onCurrentIndexChanged:  {
-                _releases.filter_class = textAt(currentIndex)
+            onActivated:  {
+                _releases.filter_class = currentValue
+            }
+
+            Component.onCompleted: {
+                _releases.filter_class = currentValue
             }
 
             Behavior on opacity {

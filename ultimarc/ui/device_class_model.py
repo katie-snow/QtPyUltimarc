@@ -12,18 +12,22 @@ class DeviceClassModel(QAbstractListModel, QObject):
         super().__init__()
 
         self.classes = []
-        self.classes.append('All')
+        self.classes.append({'name': 'All', 'value': 'all'})
         for name, value in DeviceClassID.__members__.items():
-            self.classes.append(value.value)
+            self.classes.append({'name': name, 'value': value.value})
 
     class DeviceClassRoles(QMetaEnum):
-        DEVICE_CLASS = 1
+        DEVICE_CLASS_NAME = 1
+        DEVICE_CLASS_VALUE = 2
 
     def roleNames(self):
         # TODO: Add device information to role dict
-        _class_descr = 'class_descr'.encode('utf-8')
+        _class_name = 'class_name'.encode('utf-8')
+        _class_value = 'class_value'.encode('utf-8')
+
         roles = {
-            self.DeviceClassRoles.DEVICE_CLASS: _class_descr
+            self.DeviceClassRoles.DEVICE_CLASS_NAME: _class_name,
+            self.DeviceClassRoles.DEVICE_CLASS_VALUE: _class_value
         }
         return roles
 
@@ -34,5 +38,9 @@ class DeviceClassModel(QAbstractListModel, QObject):
         if not index.isValid():
             return None
 
-        if role == self.DeviceClassRoles.DEVICE_CLASS:
-            return self.classes[index.row()]
+        if role == self.DeviceClassRoles.DEVICE_CLASS_NAME:
+            return self.classes[index.row()]['name']
+
+        if role == self.DeviceClassRoles.DEVICE_CLASS_VALUE:
+            return self.classes[index.row()]['value']
+
