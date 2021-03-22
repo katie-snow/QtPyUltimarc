@@ -55,9 +55,10 @@ if __name__ == '__main__':
         # Connect Python to QML
         context = engine.rootContext()
         context.setContextProperty('_ultimarc_version', '0.1')
-        context.setContextProperty('_releases', device_filter)
-        context.setContextProperty('_deviceModel', devices)
-        context.setContextProperty('_device_class', device_class)
+        context.setContextProperty('_devices', device_filter)
+        # devices is only used to calculate the position by the number of devices connected in the QML.
+        context.setContextProperty('_d', devices)
+        context.setContextProperty('_classes', device_class)
         context.setContextProperty('_units', units)
 
         url = QtCore.QUrl.fromLocalFile('qml/main.qml')

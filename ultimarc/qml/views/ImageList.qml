@@ -20,7 +20,6 @@
 import QtQuick 2.2
 import QtQuick.Controls 2.2 as QQC2
 import QtQuick.Layouts 1.12
-//import MediaWriter 1.0
 
 import "../simple"
 import "../complex"
@@ -78,13 +77,13 @@ FocusScope {
             id: searchBox
             Layout.fillWidth: true
             z: 2
-            enabled: !_releases.front_page
-            opacity: !_releases.front_page ? 1.0 : 0.0
+            enabled: !_devices.front_page
+            opacity: !_devices.front_page ? 1.0 : 0.0
             visible: opacity > 0.0
             activeFocusOnTab: visible
             placeholderText: qsTr("Find an Ultimarc Configuration")
-            text: _releases.filter_text
-            onTextChanged: _releases.filter_text = text
+            text: _devices.filter_text
+            onTextChanged: _devices.filter_text = text
             clip: true
 
             Behavior on opacity {
@@ -96,20 +95,20 @@ FocusScope {
 
         QQC2.ComboBox {
             id: deviceClassSelect
-            enabled: !_releases.front_page
-            opacity: !_releases.front_page ? 1.0 : 0.0
+            enabled: !_devices.front_page
+            opacity: !_devices.front_page ? 1.0 : 0.0
             activeFocusOnTab: visible
             visible: opacity > 0.0
-            model: _device_class
+            model: _classes
             textRole: "class_name"
             valueRole: "class_value"
 
             onActivated:  {
-                _releases.filter_class = currentValue
+                _devices.filter_class = currentValue
             }
 
             Component.onCompleted: {
-                _releases.filter_class = currentValue
+                _devices.filter_class = currentValue
             }
 
             Behavior on opacity {
@@ -127,7 +126,7 @@ FocusScope {
         clip: true
         radius: 6
         color: "transparent"
-        y: _releases.front_page || moveUp.running ? parent.height / 2 - height / 2 : 54
+        y: _devices.front_page || moveUp.running ? parent.height / 2 - height / 2 : 54
         Behavior on y {
             id: moveUp
             enabled: false
@@ -136,7 +135,7 @@ FocusScope {
                 onStopped: moveUp.enabled = false
             }
         }
-        height: _releases.front_page ? adjustedHeight(_deviceModel.device_count) : parent.height
+        height: _devices.front_page ? adjustedHeight(_d.device_count) : parent.height
         anchors {
             left: parent.left
             right: parent.right
@@ -171,7 +170,7 @@ FocusScope {
 
             clip: true
             focus: true
-            model: _releases
+            model: _devices
 
             delegate: DelegateImage {
                 width: osListView.width
@@ -185,7 +184,7 @@ FocusScope {
                 NumberAnimation { properties: "x,y"; duration: 300 }
             }
             add: Transition {
-                NumberAnimation { properties: _releases.front_page ? "y" : "x"; from: _releases.front_page ? 0 : -width; duration: 300 }
+                NumberAnimation { properties: _devices.front_page ? "y" : "x"; from: _devices.front_page ? 0 : -width; duration: 300 }
             }
             addDisplaced: Transition {
                 NumberAnimation { properties: "x,y"; duration: 300 }
@@ -213,13 +212,13 @@ FocusScope {
 
             footer: Item {
                 id: footerRoot
-                height: !_releases.front_page ? aboutColumn.height + (_units.grid_unit * 4) : _units.grid_unit * 2
+                height: !_devices.front_page ? aboutColumn.height + (_units.grid_unit * 4) : _units.grid_unit * 2
                 width: osListView.width
                 z: 0
                 Column {
                     id: aboutColumn
                     width: parent.width
-                    visible: !_releases.front_page
+                    visible: !_devices.front_page
                     spacing: 0
                     Item {
                         width: parent.width
@@ -282,7 +281,7 @@ FocusScope {
             Rectangle {
                 id: threeDotWrapper
                 clip: true
-                visible: _releases.front_page
+                visible: _devices.front_page
                 enabled: visible
                 activeFocusOnTab: true
                 radius: 3
@@ -290,7 +289,7 @@ FocusScope {
                 width: osListView.width - 2
                 height: _units.grid_unit * 2
                 anchors.horizontalCenter: parent.horizontalCenter
-                y: Math.round(_units.grid_unit * 4.5) * _deviceModel.device_count + 1
+                y: Math.round(_units.grid_unit * 4.5) * _d.device_count + 1
                 z: 1
                 Rectangle {
                     anchors.fill: parent
@@ -361,7 +360,7 @@ FocusScope {
                     }
                     function action() {
                         moveUp.enabled = true
-                        _releases.front_page = false
+                        _devices.front_page = false
                     }
                 }
             }
