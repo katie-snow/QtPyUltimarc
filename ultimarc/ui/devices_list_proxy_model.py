@@ -77,7 +77,7 @@ class DeviceListProxyModel(QSortFilterProxyModel, QObject):
             connected = index.data(DeviceRoles.CONNECTED)
             return True if connected and source_row < 4 else False
         else:
-            if len(self._filter_text) == 0 and self._filter_class == 'All':
+            if len(self._filter_text) == 0 and self._filter_class == 'all':
                 return True
             else:
                 name = index.data(DeviceRoles.PRODUCT_NAME)
