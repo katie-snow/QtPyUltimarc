@@ -4,8 +4,7 @@
 #
 import logging
 
-from PySide6.QtCore import QAbstractListModel, QModelIndex, QMetaEnum, QObject, Property, Signal
-from PySide6.QtGui import QPixmap, QIcon
+from PySide6.QtCore import QAbstractListModel, QModelIndex, QMetaEnum, QObject, Property
 
 from ultimarc.devices import DeviceClassID
 from ultimarc.tools import ToolEnvironmentObject
