@@ -69,7 +69,8 @@ class DevicesFilterProxyModel(QSortFilterProxyModel, QObject):
                 key = index.data(DeviceRoles.PRODUCT_KEY)
 
                 cb_filter = dev_class_id == self._filter_class_
-                return cb_filter and (str(name).find(self._filter_text_) > -1 or
-                                      str(dev_class).find(
-                                          self._filter_text_) > -1 or
-                                      str(key).find(self._filter_text_) > -1)
+                str_filter = str(name).find(self._filter_text_) > -1 or \
+                            str(dev_class).find(self._filter_text_) > -1 or \
+                            str(key).find(self._filter_text_) > -1
+
+                return cb_filter and str_filter
