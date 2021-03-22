@@ -11,7 +11,7 @@ from ultimarc.ui.devices_model import DeviceRoles
 _logger = logging.getLogger('ultimarc')
 
 
-class DeviceListProxyModel(QSortFilterProxyModel, QObject):
+class DevicesFilterProxyModel(QSortFilterProxyModel, QObject):
     _changed_front_page_ = Signal(bool)
     _changed_filter_class_ = Signal(str)
     _changed_filter_text_ = Signal(str)
