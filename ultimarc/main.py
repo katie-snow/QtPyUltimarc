@@ -10,7 +10,7 @@ from PySide6 import QtCore, QtWidgets, QtQml
 from ultimarc import translate_gettext as _
 from ultimarc.tools import ToolContextManager
 from ultimarc.ui.device_class_model import DeviceClassModel
-from ultimarc.ui.devices_list_proxy_model import DevicesFilterProxyModel
+from ultimarc.ui.devices_filter_proxy_model import DevicesFilterProxyModel
 from ultimarc.ui.devices_model import DevicesModel
 from ultimarc.ui.devices_sort_proxy_model import DevicesSortProxyModel
 from ultimarc.ui.units import Units
