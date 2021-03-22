@@ -44,6 +44,9 @@ class UIDeviceInfo:
             self.class_descr = UNKNOWN_DEVICE
 
     def setup_icon(self, class_id):
+        """ Assign an icon to each device entry
+        @param class_id: str
+        """
         self.class_id = class_id
         # TODO: Add new images
         #   Run to get new resource file: pyside6-rcc assets.qrc  -o rc_assets.py
@@ -54,33 +57,31 @@ class UIDeviceInfo:
 
 
 class DevicesModel(QAbstractListModel, QObject):
+    """ List model that accesses the devices for the view """
     def __init__(self, args, env: (ToolEnvironmentObject, None)):
         super().__init__()
 
         self.args = args
         self.env = env
         self._device_count = self.env.devices.device_count
-        _logger.debug(self._device_count)
-        self.config_count = len(DeviceClassID)
-        self._ui_dev_info = []
+        self._category_ = ''
+        self._ui_dev_info_ = []
 
         self.setup_info()
 
-        _changed = Signal()
-        self._category = ''
-
     def setup_info(self):
+        """ setup up meta data for the devices and configurations """
         for dev in self.get_devices():
             tmp = UIDeviceInfo(name=dev.product_name, class_descr=dev.class_descr,
                                key=dev.dev_key)
             tmp.setup_icon(dev.class_id)
-            self._ui_dev_info.append(tmp)
+            self._ui_dev_info_.append(tmp)
 
         # Configuration for non connected devices
         for device_class in DeviceClassID:
             tmp = UIDeviceInfo(False, class_descr=device_class.name)
             tmp.setup_icon(device_class.value)
-            self._ui_dev_info.append(tmp)
+            self._ui_dev_info_.append(tmp)
 
     def get_devices(self):
         """ Return a list of devices we should show information for. """
@@ -88,21 +89,21 @@ class DevicesModel(QAbstractListModel, QObject):
 
     def roleNames(self):
         # TODO: Add device information to role dict
-        _class_descr = 'class_descr'.encode('utf-8')
-        _class_id = 'class_id'.encode('utf-8')
-        _name = 'name'.encode('utf-8')
-        _key = 'key'.encode('utf-8')
-        _category = 'category'.encode('utf-8')
-        _icon = 'icon'.encode('utf-8')
-        _connected = 'connected'.encode('utf-8')
+        class_descr = 'class_descr'.encode('utf-8')
+        class_id = 'class_id'.encode('utf-8')
+        name = 'name'.encode('utf-8')
+        key = 'key'.encode('utf-8')
+        category = 'category'.encode('utf-8')
+        icon = 'icon'.encode('utf-8')
+        connected = 'connected'.encode('utf-8')
         roles = {
-            DeviceRoles.DEVICE_CLASS: _class_descr,
-            DeviceRoles.DEVICE_CLASS_ID: _class_id,
-            DeviceRoles.PRODUCT_NAME: _name,
-            DeviceRoles.PRODUCT_KEY: _key,
-            DeviceRoles.CATEGORY: _category,
-            DeviceRoles.ICON: _icon,
-            DeviceRoles.CONNECTED: _connected
+            DeviceRoles.DEVICE_CLASS: class_descr,
+            DeviceRoles.DEVICE_CLASS_ID: class_id,
+            DeviceRoles.PRODUCT_NAME: name,
+            DeviceRoles.PRODUCT_KEY: key,
+            DeviceRoles.CATEGORY: category,
+            DeviceRoles.ICON: icon,
+            DeviceRoles.CONNECTED: connected
         }
 
         return roles
@@ -110,7 +111,7 @@ class DevicesModel(QAbstractListModel, QObject):
     def rowCount(self, parent):
         if parent.isValid():
             return 0
-        return len(self._ui_dev_info)
+        return len(self._ui_dev_info_)
 
     def data(self, index: QModelIndex, role):
         if not index.isValid():
@@ -118,28 +119,28 @@ class DevicesModel(QAbstractListModel, QObject):
 
         if role == DeviceRoles.DEVICE_CLASS:
             i = 0
-            for ui_dev in self._ui_dev_info:
+            for ui_dev in self._ui_dev_info_:
                 if i == index.row():
                     return ui_dev.class_descr
                 i = i + 1
 
         if role == DeviceRoles.DEVICE_CLASS_ID:
             i = 0
-            for ui_dev in self._ui_dev_info:
+            for ui_dev in self._ui_dev_info_:
                 if i == index.row():
                     return ui_dev.class_id
                 i = i + 1
 
         if role == DeviceRoles.PRODUCT_NAME:
             i = 0
-            for ui_dev in self._ui_dev_info:
+            for ui_dev in self._ui_dev_info_:
                 if i == index.row():
                     return ui_dev.name
                 i = i + 1
 
         if role == DeviceRoles.PRODUCT_KEY:
             i = 0
-            for ui_dev in self._ui_dev_info:
+            for ui_dev in self._ui_dev_info_:
                 if i == index.row():
                     return ui_dev.key
                 i = i + 1
@@ -149,14 +150,14 @@ class DevicesModel(QAbstractListModel, QObject):
 
         if role == DeviceRoles.ICON:
             i = 0
-            for ui_dev in self._ui_dev_info:
+            for ui_dev in self._ui_dev_info_:
                 if i == index.row():
                     return ui_dev.icon
                 i = i + 1
 
         if role == DeviceRoles.CONNECTED:
             i = 0
-            for ui_dev in self._ui_dev_info:
+            for ui_dev in self._ui_dev_info_:
                 if i == index.row():
                     return ui_dev.connected
                 i = i + 1
@@ -168,7 +169,7 @@ class DevicesModel(QAbstractListModel, QObject):
         return False
 
     def get_category(self):
-        return self._category
+        return self._category_
 
     def get_device_count(self):
         return self._device_count if self._device_count < 4 else 4
