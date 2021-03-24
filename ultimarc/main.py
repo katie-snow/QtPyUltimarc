@@ -10,7 +10,7 @@ from PySide6 import QtCore, QtWidgets, QtQml
 from ultimarc import translate_gettext as _
 from ultimarc.tools import ToolContextManager
 from ultimarc.ui.device_class_model import DeviceClassModel
-from ultimarc.ui.devices_filter_proxy_model import DevicesFilterProxyModel
+from ultimarc.ui.devices_filter_proxy_model import DevicesFilterProxyModel, ClassFilterProxyModel
 from ultimarc.ui.devices_model import DevicesModel
 from ultimarc.ui.devices_sort_proxy_model import DevicesSortProxyModel
 from ultimarc.ui.units import Units
@@ -45,16 +45,19 @@ if __name__ == '__main__':
         # Local class instantiation
         units = Units()
         device_filter = DevicesFilterProxyModel()
+        class_filter = ClassFilterProxyModel()
         device_sort = DevicesSortProxyModel()
         devices = DevicesModel(args, tool_env)
         # Provide the list to the string model from the filter model
         device_class = DeviceClassModel()
         device_sort.setSourceModel(devices)
-        device_filter.setSourceModel(device_sort)
+        class_filter.setSourceModel(device_sort)
+        device_filter.setSourceModel(class_filter)
 
         # Connect Python to QML
         context = engine.rootContext()
         context.setContextProperty('_ultimarc_version', '0.1')
+        context.setContextProperty('_class', class_filter)
         context.setContextProperty('_devices', device_filter)
         # devices is only used to calculate the position by the number of devices connected in the QML.
         context.setContextProperty('_d', devices)
