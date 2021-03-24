@@ -63,9 +63,6 @@ class UIDeviceInfo:
 
 class DevicesModel(QAbstractListModel, QObject):
     """ List model that accesses the devices for the view """
-    device_count = None
-    category = None
-
     def __init__(self, args, env: (ToolEnvironmentObject, None)):
         super().__init__()
 
@@ -76,8 +73,6 @@ class DevicesModel(QAbstractListModel, QObject):
         self._ui_dev_info_ = []
 
         self.setup_info()
-        self.device_count = Property(int, self.get_device_count, constant=True)
-        self.category = Property(str, self.get_category, constant=True)
 
     def setup_info(self):
         """ setup up meta data for the devices and configurations """
@@ -132,3 +127,6 @@ class DevicesModel(QAbstractListModel, QObject):
 
     def get_device_count(self):
         return self._device_count if self._device_count < 4 else 4
+
+    device_count = Property(int, get_device_count, constant=True)
+    category = Property(str, get_category, constant=True)
