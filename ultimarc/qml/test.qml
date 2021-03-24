@@ -104,6 +104,7 @@ ApplicationWindow {
             function action() {
                 moveUp.enabled = true
                 _releases.front_page = false
+                _class.front_page = false
             }
             onClicked: {
                 action()
