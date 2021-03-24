@@ -27,7 +27,7 @@ import "../complex"
 FocusScope {
     id: imageList
 
-    property alias currentIndex: osListView.currentIndex
+    property alias currentIndex: deviceListView.currentIndex
     property real fadeDuration: 200
     property int lastIndex: -1
 
@@ -104,7 +104,7 @@ FocusScope {
             valueRole: "class_value"
 
             onActivated:  {
-                _devices.filter_class = currentValue
+                _class.filter_class = currentValue
             }
 
             Component.onCompleted: {
@@ -161,7 +161,7 @@ FocusScope {
         }
 
         ListView {
-            id: osListView
+            id: deviceListView
             anchors {
                 fill: parent
                 leftMargin: mainWindow.margin
@@ -173,7 +173,7 @@ FocusScope {
             model: _devices
 
             delegate: DelegateImage {
-                width: osListView.width
+                width: deviceListView.width
                 focus: true
             }
 
@@ -195,7 +195,7 @@ FocusScope {
                 criteria: ViewSection.FullString
                 labelPositioning: ViewSection.InlineLabels
                 delegate: Item {
-                    height: section == "" ? 0 : Math.round(_units.grid_unit * 3.5)
+                    height: section == "main" ? 0 : Math.round(_units.grid_unit * 3.5)
                     width: parent.width
                     QQC2.Label {
                         text: section
@@ -213,7 +213,7 @@ FocusScope {
             footer: Item {
                 id: footerRoot
                 height: !_devices.front_page ? aboutColumn.height + (_units.grid_unit * 4) : _units.grid_unit * 2
-                width: osListView.width
+                width: deviceListView.width
                 z: 0
                 Column {
                     id: aboutColumn
@@ -286,7 +286,7 @@ FocusScope {
                 activeFocusOnTab: true
                 radius: 3
                 color: palette.window
-                width: osListView.width - 2
+                width: deviceListView.width - 2
                 height: _units.grid_unit * 2
                 anchors.horizontalCenter: parent.horizontalCenter
                 y: Math.round(_units.grid_unit * 4.5) * _d.device_count + 1
@@ -361,6 +361,7 @@ FocusScope {
                     function action() {
                         moveUp.enabled = true
                         _devices.front_page = false
+                        _class.front_page = false
                     }
                 }
             }
