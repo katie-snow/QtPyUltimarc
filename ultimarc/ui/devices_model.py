@@ -63,7 +63,7 @@ class DevicesModel(QAbstractListModel, QObject):
         self.args = args
         self.env = env
         self._device_count = self.env.devices.device_count
-        self._category_ = ''
+        self._category_ = 'Ultimarc Configurations'
         self._ui_dev_info_ = []
 
         self.setup_info()
@@ -145,7 +145,7 @@ class DevicesModel(QAbstractListModel, QObject):
                 i = i + 1
 
         if role == DeviceRoles.CATEGORY:
-            return '' if index.row() < self._device_count else 'Ultimarc Configurations'
+            return 'main' if index.row() < self._device_count else self._category_
 
         if role == DeviceRoles.ICON:
             i = 0
