@@ -18,9 +18,8 @@
  */
 
 import QtQuick 2.4
-import QtQuick.Controls 2.12 as QQC2
+import QtQuick.Controls 2.15 as QQC2
 import QtQuick.Layouts 1.12
-//import MediaWriter 1.0
 
 import "../simple"
 
@@ -30,16 +29,10 @@ Item {
     height: Math.round(_units.grid_unit * 4.5)
     activeFocusOnTab: true
 
-    readonly property bool isTop: false
-    readonly property bool isBottom: true
-    //readonly property bool isTop: !_releases.get(index-1) || (_release.category !== _releases.get(index-1).category)
-    //readonly property bool isBottom:
-//        typeof _release !== 'undefined' &&
-//        !_releases.front_page &&
-//        (!_releases.get(index+1) ||
-//         typeof _releases.get(index+1) == 'undefined' ||
-//         (_release && _release.category !== _releases.get(index+1).category)
-//        )
+    // TODO Bug: Need to fix this properties
+    readonly property bool isTop: (!deviceListView.itemAtIndex(index-1) || !deviceListView.itemAtIndex(index)) || (deviceListView.itemAtIndex(index).category !== deviceListView.itemAtIndex(index-1).category)
+    readonly property bool isBottom: (!_devices.front_page && index+1 === deviceListView.count) &&
+                    ((!deviceListView.itemAtIndex(index+1) || !deviceListView.itemAtIndex(index)) || (deviceListView.itemAtIndex(index).category !== deviceListView.itemAtIndex(index+1).category))
 
     property color color: delegateMouse.containsPress ? Qt.darker(palette.button, 1.2) : delegateMouse.containsMouse ? palette.button : palette.background
     Behavior on color { ColorAnimation { duration: 120 } }
@@ -87,7 +80,13 @@ Item {
                 spacing: 0
                 QQC2.Label {
                     verticalAlignment: Text.AlignBottom
-                    text: model.class_descr
+//                    For debugging
+//                    text: " Count: " + deviceListView.count +
+//                          " isTop: " + isTop +
+//                          " isBottom: " + isBottom +
+//                          " category: '" + model.category +
+//                          "' " + model.class_descr
+                      text: model.class_descr
                 }
                 QQC2.Label {
                     text: " " + model.name
