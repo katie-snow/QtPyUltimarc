@@ -85,18 +85,18 @@ Item {
 //                          " isTop: " + isTop +
 //                          " isBottom: " + isBottom +
 //                          " category: '" + model.category +
-//                          "' " + model.class_descr
-                      text: model.class_descr
+//                          "' " + model.device_class
+                      text: model.device_class
                 }
                 QQC2.Label {
-                    text: " " + model.name
+//                    text: " " + model.product_name
                     visible: model.connected
                    }
             }
             QQC2.Label {
                 Layout.fillWidth: true
                 verticalAlignment: Text.AlignTop
-                text: model.key
+                text: model.product_key
                 wrapMode: Text.Wrap
                 opacity: 0.6
             }
