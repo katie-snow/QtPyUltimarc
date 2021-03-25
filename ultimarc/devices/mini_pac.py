@@ -325,7 +325,7 @@ class MiniPacDevice(USBDeviceHandle):
                     if len(macro.action) > 0:
                         # Set the start point of the new macro
                         data.bytes[cur_position] = cur_macro
-                        macro_dict[macro.product_name.upper()] = cur_macro
+                        macro_dict[macro.name.upper()] = cur_macro
 
                         cur_position += 1
                         cur_macro += 1
@@ -349,14 +349,14 @@ class MiniPacDevice(USBDeviceHandle):
             # 0x40 in the shift position for all pins designated as shift pins in json config
             for pin in config.pins:
                 try:
-                    action_index, alternate_action_index, shift_index = PinMapping[pin.product_name]
+                    action_index, alternate_action_index, shift_index = PinMapping[pin.name]
                     action = pin.action.upper()
                     if action in IPACSeriesMapping:
                         data.bytes[action_index] = IPACSeriesMapping[action]
                     elif action in macro_dict:
                         data.bytes[action_index] = macro_dict[action]
                     else:
-                        _logger.info(_(f'{pin.product_name} action "{action}" is not a valid value'))
+                        _logger.info(_(f'{pin.name} action "{action}" is not a valid value'))
 
                     try:
                         alternate_action = pin.alternate_action.upper()
@@ -365,7 +365,7 @@ class MiniPacDevice(USBDeviceHandle):
                         elif alternate_action in macro_dict:
                             data.bytes[alternate_action_index] = macro_dict[alternate_action]
                         elif alternate_action:
-                            _logger.info(_(f'{pin.product_name} alternate action "{alternate_action}" is not a valid value'))
+                            _logger.info(_(f'{pin.name} alternate action "{alternate_action}" is not a valid value'))
                     except AttributeError:
                         pass
 
@@ -377,7 +377,7 @@ class MiniPacDevice(USBDeviceHandle):
                         pass
 
                 except KeyError:
-                    _logger.debug(_(f'Pin {pin.product_name} does not exists in Mini-pac device'))
+                    _logger.debug(_(f'Pin {pin.name} does not exists in Mini-pac device'))
 
             return True, data
 
