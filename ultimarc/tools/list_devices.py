@@ -31,7 +31,7 @@ class ListDevicesClass(object):
 
     def get_devices(self):
         """ Return a list of devices we should show information for. """
-        return self.env.devices.filter(class_id=self.args.class_id, bus=self.args.bus, address=self.args.address)
+        return self.env.devices.filter(class_id=self.args.device_class_id, bus=self.args.bus, address=self.args.address)
 
     def list_devices_found(self):
         """ List all the devices found. """
@@ -87,9 +87,9 @@ def run():
     args = parser.parse_args()
 
     # Verify class id is valid by looking in the Enum by value.
-    if args.class_id:
+    if args.device_class_id:
         try:
-            DeviceClassID(args.class_id)
+            DeviceClassID(args.device_class_id)
         except ValueError:
             _logger.error('Invalid class id argument value.')
             return -1

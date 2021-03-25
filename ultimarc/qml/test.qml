@@ -137,10 +137,10 @@ ApplicationWindow {
             height: childrenRect.height
 
             Text {
-                text: "Hi " + model.class + " " + model.name + " " + model.key
+                text: "Hi " + model.class + " " + model.product_name + " " + model.product_key
                 anchors.fill: parent
                 font.pixelSize: 18
-                Component.onCompleted: console.log("Welcome", model.index, model.name)
+                Component.onCompleted: console.log("Welcome", model.index, model.product_name)
             }
         }
     }

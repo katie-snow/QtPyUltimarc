@@ -52,8 +52,8 @@ class ClassFilterProxyModel(QSortFilterProxyModel, QObject):
             if self._filter_class_ == 'all':
                 return True
             else:
-                dev_class_id = index.data(DeviceRoles.DEVICE_CLASS_ID)
-                cb_filter = dev_class_id == self._filter_class_
+                device_class_id = index.data(DeviceRoles.DEVICE_CLASS_ID)
+                cb_filter = device_class_id == self._filter_class_
                 return cb_filter
 
 
@@ -109,15 +109,15 @@ class DevicesFilterProxyModel(QSortFilterProxyModel, QObject):
             if len(self._filter_text_) == 0:
                 return True
             else:
-                name = index.data(DeviceRoles.PRODUCT_NAME)
-                dev_class = index.data(DeviceRoles.DEVICE_CLASS)
-                dev_class_id = index.data(DeviceRoles.DEVICE_CLASS_ID)
-                key = index.data(DeviceRoles.PRODUCT_KEY)
+                product_name = index.data(DeviceRoles.PRODUCT_NAME)
+                device_class = index.data(DeviceRoles.DEVICE_CLASS)
+                device_class_id = index.data(DeviceRoles.DEVICE_CLASS_ID)
+                product_key = index.data(DeviceRoles.PRODUCT_KEY)
 
-                cb_filter = dev_class_id == self._filter_class_
-                re_name = re.search(self._filter_text_, name, re.IGNORECASE) is not None
-                re_class = re.search(self._filter_text_, dev_class, re.IGNORECASE) is not None
-                re_key = re.search(self._filter_text_, key, re.IGNORECASE) is not None
+                cb_filter = device_class_id == self._filter_class_
+                re_name = re.search(self._filter_text_, product_name, re.IGNORECASE) is not None
+                re_class = re.search(self._filter_text_, device_class, re.IGNORECASE) is not None
+                re_key = re.search(self._filter_text_, product_key, re.IGNORECASE) is not None
                 re_filter = re_name or re_class or re_key
                 # _logger.debug(f're filter ({name}: {re_filter}')
                 return re_filter
