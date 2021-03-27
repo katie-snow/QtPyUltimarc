@@ -133,7 +133,7 @@ ApplicationWindow {
                 }
                 Connections {
                     target: contentLoader.item
-                    onStepForward: {
+                    function onStepForward(index) {
                         contentList.currentIndex++
                         canGoBack = true
                         releases.selectedIndex = index

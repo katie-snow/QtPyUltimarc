@@ -176,7 +176,7 @@ Item {
         cursorShape: Qt.PointingHandCursor
         function action() {
             imageList.currentIndex = index
-            imageList.stepForward(release.index)
+            imageList.stepForward(deviceListView.index)
         }
         onClicked: {
             action()

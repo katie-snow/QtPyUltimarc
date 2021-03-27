@@ -33,7 +33,7 @@ FocusScope {
 
     property bool focused: contentList.currentIndex === 0
     signal stepForward(int index)
-    onStepForward: lastIndex = index
+    function onStepForward() {lastIndex = index}
     enabled: focused
 
     anchors.fill: parent
