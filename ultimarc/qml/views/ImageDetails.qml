@@ -69,12 +69,12 @@ Item {
         Item {
             x: mainWindow.margin
             implicitWidth: root.width - 2 * mainWindow.margin
-            implicitHeight: childrenRect.height + Math.round(units.gridUnit * 3.5) + units.gridUnit * 2
+            implicitHeight: childrenRect.height + Math.round(_units.grid_unit * 3.5) + _units.grid_unit * 2
 
             ColumnLayout {
-                y: units.gridUnit
+                y: _units.grid_unit
                 width: parent.width
-                spacing: units.largeSpacing * 3
+                spacing: _units.large_spacing * 3
 
                 RowLayout {
                     id: tools
@@ -107,14 +107,14 @@ Item {
 
                 RowLayout {
                     z: 1 // so the popover stays over the text below
-                    spacing: units.largeSpacing
+                    spacing: _units.large_spacing
                     Item {
-                        Layout.preferredWidth: Math.round(units.gridUnit * 3.5) + units.gridUnit
-                        Layout.preferredHeight: Math.round(units.gridUnit * 3.5)
+                        Layout.preferredWidth: Math.round(_units.grid_unit * 3.5) + _units.grid_unit
+                        Layout.preferredHeight: Math.round(_units.grid_unit * 3.5)
                         Layout.alignment: Qt.AlignHCenter
                         IndicatedImage {
                             anchors.fill: parent
-                            x: units.gridUnit
+                            x: _units.grid_unit
                             source: releases.selected.icon ? releases.selected.icon: ""
                             fillMode: Image.PreserveAspectFit
                             sourceSize.width: parent.width
@@ -123,7 +123,7 @@ Item {
                     }
                     ColumnLayout {
                         Layout.fillHeight: true
-                        spacing: units.largeSpacing
+                        spacing: _units.large_spacing
                         RowLayout {
                             Layout.fillWidth: true
                             QQC2.Label {
@@ -157,7 +157,7 @@ Item {
                         }
                         ColumnLayout {
                             width: parent.width
-                            spacing: units.largeSpacing
+                            spacing: _units.large_spacing
                             opacity: releases.selected.isLocal ? 0.0 : 1.0
                             QQC2.Label {
                                 font.pointSize: referenceLabel.font.pointSize + 1
@@ -205,7 +205,7 @@ Item {
                                     // TODO: Adwaita themed component
                                     QQC2.BusyIndicator {
                                         anchors.right: parent.left
-                                        anchors.rightMargin: units.smallSpacing
+                                        anchors.rightMargin: _units.small_spacing
                                         anchors.verticalCenter: parent.verticalCenter
                                         height: 24
                                         width: 24
@@ -233,7 +233,7 @@ Item {
                                         anchors {
                                             horizontalCenter: parent.horizontalCenter
                                             top: parent.bottom
-                                            topMargin: units.smallSpacing + opacity * units.gridUnit
+                                            topMargin: _units.small_spacing + opacity * _units.grid_unit
                                         }
 
                                         onOpenChanged: {
@@ -243,7 +243,7 @@ Item {
                                         }
 
                                         ColumnLayout {
-                                            spacing: units.largeSpacing
+                                            spacing: _units.large_spacing
 
                                             Repeater {
                                                 id: versionRepeater
@@ -322,7 +322,7 @@ Item {
                                         anchors {
                                             horizontalCenter: parent.horizontalCenter
                                             top: parent.bottom
-                                            topMargin: units.smallSpacing + opacity * units.gridUnit
+                                            topMargin: _units.small_spacing + opacity * _units.grid_unit
                                         }
 
                                         onOpenChanged: {
@@ -332,7 +332,7 @@ Item {
                                         }
 
                                         ColumnLayout {
-                                            spacing: units.largeSpacing
+                                            spacing: _units.large_spacing
 
                                             Repeater {
                                                 model: releases.selected.version.variants
