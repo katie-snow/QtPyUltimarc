@@ -20,10 +20,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12 as QQC2
 import QtQuick.Layouts 1.12
-//import QtQuick.Dialogs 1.3
 import QtQuick.Window 2.12
-
-//import MediaWriter 1.0
 
 import "../simple"
 import "../complex"
@@ -115,7 +112,7 @@ Item {
                         IndicatedImage {
                             anchors.fill: parent
                             x: _units.grid_unit
-                            source: releases.selected.icon ? releases.selected.icon: ""
+                            source: _devices.selected_icon ? _devices.selected_icon: ""
                             fillMode: Image.PreserveAspectFit
                             sourceSize.width: parent.width
                             sourceSize.height: parent.height
@@ -129,227 +126,30 @@ Item {
                             QQC2.Label {
                                 Layout.fillWidth: true
                                 font.pointSize: referenceLabel.font.pointSize + 4
-                                text: releases.selected.name
+                                text: {_devices.selected_product_name !== "Unknown Name" ? _devices.selected_product_name :
+                                       _devices.selected_device_class
+                                      }
                             }
                             QQC2.Label {
                                 font.pointSize: referenceLabel.font.pointSize + 2
-                                property double size: releases.variant.size
-                                text: size <= 0 ? "" :
-                                                  (size < 1024) ? (size + " B") :
-                                                                  (size < (1024 * 1024)) ? ((size / 1024).toFixed(1) + " KB") :
-                                                                                           (size < (1024 * 1024 * 1024)) ? ((size / 1024 / 1024).toFixed(1) + " MB") :
-                                                                                                                           ((size / 1024 / 1024 / 1024).toFixed(1) + " GB")
-                                opacity: 0.6
-                            }
-                            QQC2.Label {
-                                font.pointSize: referenceLabel.font.pointSize + 2
-                                visible: releases.variant.realSize != releases.variant.size && releases.variant.realSize > 0.1
-                                property double size: releases.variant.realSize
-                                property string sizeString: size <= 0 ? "" :
-                                                                        (size < 1024) ? (size + " B") :
-                                                                                        (size < (1024 * 1024)) ? ((size / 1024).toFixed(1) + " KB") :
-                                                                                                                 (size < (1024 * 1024 * 1024)) ? ((size / 1024 / 1024).toFixed(1) + " MB") :
-                                                                                                                                                 ((size / 1024 / 1024 / 1024).toFixed(1) + " GB")
-                                //: The downloaded image is compressed, this refers to the size which it will take after being decompressed and written to the drive
-                                text: qsTr("(%1 after writing)").arg(sizeString)
+                                text: _devices.selected_device_class
                                 opacity: 0.6
                             }
                         }
                         ColumnLayout {
                             width: parent.width
                             spacing: _units.large_spacing
-                            opacity: releases.selected.isLocal ? 0.0 : 1.0
                             QQC2.Label {
                                 font.pointSize: referenceLabel.font.pointSize + 1
-                                visible: typeof releases.selected.version !== 'undefined'
-                                text: releases.variant.name
+                                visible: _devices.selected_connected
+                                text: _devices.selected_product_key
                                 opacity: 0.6
                             }
                             QQC2.Label {
                                 font.pointSize: referenceLabel.font.pointSize - 1
                                 visible: releases.selected.version && releases.variant
-                                text: releases.variant.arch.details
+                                text: "Description"
                                 opacity: 0.6
-                            }
-                            RowLayout {
-                                spacing: 0
-                                width: parent.width
-                                QQC2.Label {
-                                    font.pointSize: referenceLabel.font.pointSize - 1
-                                    text: qsTr("Version %1").arg(releases.selected.version.name)
-                                    color: versionMouse.containsPress ? Qt.lighter(palette.link, 1.5) : versionMouse.containsMouse ? Qt.darker(palette.link, 1.5) : palette.link
-                                    opacity: versionRepeater.count <= 1 ? 0.6 : 1
-
-                                    Behavior on color { ColorAnimation { duration: 100 } }
-                                    MouseArea {
-                                        id: versionMouse
-                                        activeFocusOnTab: true
-                                        enabled: versionRepeater.count > 1
-                                        anchors.fill: parent
-                                        hoverEnabled: true
-                                        cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-                                        function action() {
-                                            versionPopover.open = !versionPopover.open
-                                        }
-                                        onClicked: {
-                                            action()
-                                        }
-                                        Keys.onSpacePressed: action()
-                                        FocusRectangle {
-                                            anchors.fill: parent
-                                            anchors.margins: -2
-                                            visible: parent.activeFocus
-                                        }
-                                    }
-
-                                    // TODO: Adwaita themed component
-                                    QQC2.BusyIndicator {
-                                        anchors.right: parent.left
-                                        anchors.rightMargin: _units.small_spacing
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        height: 24
-                                        width: 24
-                                        opacity: releases.beingUpdated ? 0.6 : 0.0
-                                        visible: opacity > 0.01
-                                        Behavior on opacity { NumberAnimation { } }
-                                    }
-
-                                    Rectangle {
-                                        visible: versionRepeater.count > 1
-                                        anchors {
-                                            left: parent.left
-                                            right: parent.right
-                                            top: parent.bottom
-                                        }
-                                        radius: height / 2
-                                        color: parent.color
-                                        antialiasing: true
-                                        height: 1
-                                    }
-
-                                    AdwaitaPopOver {
-                                        id: versionPopover
-                                        z: 2
-                                        anchors {
-                                            horizontalCenter: parent.horizontalCenter
-                                            top: parent.bottom
-                                            topMargin: _units.small_spacing + opacity * _units.grid_unit
-                                        }
-
-                                        onOpenChanged: {
-                                            if (open) {
-                                                archPopover.open = false
-                                            }
-                                        }
-
-                                        ColumnLayout {
-                                            spacing: _units.large_spacing
-
-                                            Repeater {
-                                                id: versionRepeater
-                                                model: releases.selected.versions
-                                                QQC2.RadioButton {
-                                                    text: name
-                                                    Layout.alignment: Qt.AlignVCenter
-                                                    checked: index == releases.selected.versionIndex
-                                                    onCheckedChanged: {
-                                                        if (checked)
-                                                            releases.selected.versionIndex = index
-                                                        versionPopover.open = false
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                QQC2.Label {
-                                    // I'm sorry, everyone, I can't find a better way to determine if the date is valid
-                                    visible: releases.selected.version.releaseDate.toLocaleDateString().length > 0
-                                    text: qsTr(", released on %1").arg(releases.selected.version.releaseDate.toLocaleDateString())
-                                    font.pointSize: referenceLabel.font.pointSize - 1
-                                    opacity: 0.6
-                                }
-                                Item {
-                                    Layout.fillWidth: true
-                                }
-                                QQC2.Label {
-                                    Layout.alignment: Qt.AlignRight
-                                    visible: releases.selected.version.variants.length > 1
-                                    text: qsTr("Other variants...")
-                                    font.pointSize: referenceLabel.font.pointSize - 1
-                                    color: archMouse.containsPress ? Qt.lighter(palette.link, 1.5) : archMouse.containsMouse ? Qt.darker(palette.link, 1.5) : palette.link
-
-                                    Behavior on color { ColorAnimation { duration: 100 } }
-                                    MouseArea {
-                                        id: archMouse
-                                        activeFocusOnTab: parent.visible
-                                        anchors.fill: parent
-                                        hoverEnabled: true
-                                        cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-                                        function action() {
-                                            if (versionPopover.open) {
-                                                versionPopover.open = false
-                                            }
-                                            else {
-                                                archPopover.open = !archPopover.open
-                                            }
-                                        }
-                                        Keys.onSpacePressed: action()
-                                        onClicked: {
-                                            action()
-                                        }
-                                        FocusRectangle {
-                                            anchors.fill: parent
-                                            anchors.margins: -2
-                                            visible: parent.activeFocus
-                                        }
-                                    }
-
-                                    Rectangle {
-                                        anchors {
-                                            left: parent.left
-                                            right: parent.right
-                                            top: parent.bottom
-                                        }
-                                        radius: height / 2
-                                        color: parent.color
-                                        height: 1
-                                    }
-
-                                    AdwaitaPopOver {
-                                        id: archPopover
-                                        z: 2
-                                        anchors {
-                                            horizontalCenter: parent.horizontalCenter
-                                            top: parent.bottom
-                                            topMargin: _units.small_spacing + opacity * _units.grid_unit
-                                        }
-
-                                        onOpenChanged: {
-                                            if (open) {
-                                                versionPopover.open = false
-                                            }
-                                        }
-
-                                        ColumnLayout {
-                                            spacing: _units.large_spacing
-
-                                            Repeater {
-                                                model: releases.selected.version.variants
-                                                QQC2.RadioButton {
-                                                    text: name
-                                                    Layout.alignment: Qt.AlignVCenter
-                                                    checked: index == releases.selected.version.variantIndex
-                                                    onCheckedChanged: {
-                                                        if (checked)
-                                                            releases.selected.version.variantIndex = index
-                                                        archPopover.open = false
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
                             }
                         }
                     }
@@ -358,7 +158,7 @@ Item {
                     Layout.fillWidth: true
                     width: Layout.width
                     wrapMode: Text.WordWrap
-                    text: releases.selected.description
+                    text: "Board Data"
                     textFormat: Text.RichText
                 }
                 Repeater {
