@@ -6,7 +6,7 @@ import logging
 from collections import OrderedDict
 
 from enum import IntEnum
-from PySide6.QtCore import QAbstractListModel, QModelIndex, QObject, Property
+from PySide6.QtCore import QAbstractListModel, QModelIndex, QObject, Property, Signal
 
 from ultimarc.devices import DeviceClassID
 from ultimarc.tools import ToolEnvironmentObject
@@ -30,8 +30,8 @@ class DeviceRoles(IntEnum):
 DeviceRolePropertyMap = OrderedDict(zip(list(DeviceRoles), [k.name.lower() for k in DeviceRoles]))
 
 
-class UIDeviceInfo:
-    """ Class fpr holding additional device data for the UI """
+class UIDeviceInfo():
+    """ Class for holding additional device data for the UI """
     product_name = ''
     device_class = ''
     device_class_id = None
@@ -68,7 +68,7 @@ class DevicesModel(QAbstractListModel, QObject):
 
         self.args = args
         self.env = env
-        self._device_count = self.env.devices.device_count
+        self._device_count_ = self.env.devices.device_count
         self._category_ = 'Ultimarc Configurations'
         self._ui_dev_info_ = []
 
@@ -110,7 +110,7 @@ class DevicesModel(QAbstractListModel, QObject):
             return None
 
         if role == DeviceRoles.CATEGORY:
-            return 'main' if index.row() < self._device_count else self._category_
+            return 'main' if index.row() < self._device_count_ else self._category_
 
         for x in range(len(self._ui_dev_info_)):
             if x == index.row():
@@ -126,7 +126,7 @@ class DevicesModel(QAbstractListModel, QObject):
         return self._category_
 
     def get_device_count(self):
-        return self._device_count if self._device_count < 4 else 4
+        return self._device_count_ if self._device_count_ < 4 else 4
 
     device_count = Property(int, get_device_count, constant=True)
     category = Property(str, get_category, constant=True)
