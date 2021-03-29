@@ -29,11 +29,10 @@ FocusScope {
 
     property alias currentIndex: deviceListView.currentIndex
     property real fadeDuration: 200
-    property int lastIndex: -1
 
     property bool focused: contentList.currentIndex === 0
     signal stepForward(int index)
-    function onStepForward() {lastIndex = index}
+
     enabled: focused
 
     anchors.fill: parent
