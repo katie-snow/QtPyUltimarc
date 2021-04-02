@@ -26,7 +26,7 @@ import "../simple"
 import "../complex"
 
 Item {
-    id: root
+    id: device_details
     anchors.fill: parent
 
     property bool focused: contentList.currentIndex === 1
@@ -39,8 +39,6 @@ Item {
         }
 
     function toMainScreen() {
-        archPopover.open = false
-        versionPopover.open = false
         canGoBack = false
         contentList.currentIndex--
     }
@@ -65,7 +63,7 @@ Item {
 
         Item {
             x: mainWindow.margin
-            implicitWidth: root.width - 2 * mainWindow.margin
+            implicitWidth: device_details.width - 2 * mainWindow.margin
             implicitHeight: childrenRect.height + Math.round(_units.grid_unit * 3.5) + _units.grid_unit * 2
 
             ColumnLayout {
@@ -112,7 +110,9 @@ Item {
                         IndicatedImage {
                             anchors.fill: parent
                             x: _units.grid_unit
-                            source: _devices.selected_icon ? _devices.selected_icon: ""
+                            source: { _devices.selected_index
+                                      _devices.get_property("ICON") ? _devices.get_property("ICON") : ""
+                                    }
                             fillMode: Image.PreserveAspectFit
                             sourceSize.width: parent.width
                             sourceSize.height: parent.height
@@ -126,13 +126,17 @@ Item {
                             QQC2.Label {
                                 Layout.fillWidth: true
                                 font.pointSize: referenceLabel.font.pointSize + 4
-                                text: {_devices.selected_product_name !== "Unknown Name" ? _devices.selected_product_name :
-                                       _devices.selected_device_class
-                                      }
+                                text: { _devices.selected_index
+                                        _devices.get_property("PRODUCT_NAME") !== "Unknown Name" ?
+                                                           _devices.get_property("PRODUCT_NAME") :
+                                                           _devices.get_property("DEVICE_CLASS")
+                                }
                             }
                             QQC2.Label {
                                 font.pointSize: referenceLabel.font.pointSize + 2
-                                text: _devices.selected_device_class
+                                text: {_devices.selected_index
+                                       _devices.get_property("DEVICE_CLASS")
+                                      }
                                 opacity: 0.6
                             }
                         }
@@ -141,8 +145,12 @@ Item {
                             spacing: _units.large_spacing
                             QQC2.Label {
                                 font.pointSize: referenceLabel.font.pointSize + 1
-                                visible: _devices.selected_connected
-                                text: _devices.selected_product_key
+                                visible: {_devices.selected_index
+                                          _devices.get_property("CONNECTED")
+                                }
+                                text: {_devices.selected_index
+                                       _devices.get_property("PRODUCT_KEY")
+                                }
                                 opacity: 0.6
                             }
                             QQC2.Label {
