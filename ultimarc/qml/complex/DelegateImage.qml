@@ -81,7 +81,8 @@ Item {
                 QQC2.Label {
                     verticalAlignment: Text.AlignBottom
 //                    For debugging
-//                    text: " Count: " + deviceListView.count +
+//                    text: " Index: " + index +
+//                          " Count: " + deviceListView.count +
 //                          " isTop: " + isTop +
 //                          " isBottom: " + isBottom +
 //                          " category: '" + model.category +
@@ -89,7 +90,7 @@ Item {
                       text: model.device_class
                 }
                 QQC2.Label {
-//                    text: " " + model.product_name
+                    text: " " + model.product_name
                     visible: model.connected
                    }
             }
@@ -176,7 +177,7 @@ Item {
         cursorShape: Qt.PointingHandCursor
         function action() {
             imageList.currentIndex = index
-            imageList.stepForward(release.index)
+            imageList.stepForward(index)
         }
         onClicked: {
             action()
