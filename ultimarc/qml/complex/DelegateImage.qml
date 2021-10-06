@@ -31,7 +31,7 @@ Item {
 
     // TODO Bug: Need to fix this properties
     readonly property bool isTop: (!deviceListView.itemAtIndex(index-1) || !deviceListView.itemAtIndex(index)) || (deviceListView.itemAtIndex(index).category !== deviceListView.itemAtIndex(index-1).category)
-    readonly property bool isBottom: (!_devices.front_page && index+1 === deviceListView.count) &&
+    readonly property bool isBottom: (!_pages.front_page && index+1 === deviceListView.count) &&
                     ((!deviceListView.itemAtIndex(index+1) || !deviceListView.itemAtIndex(index)) || (deviceListView.itemAtIndex(index).category !== deviceListView.itemAtIndex(index+1).category))
 
     property color color: delegateMouse.containsPress ? Qt.darker(palette.button, 1.2) : delegateMouse.containsMouse ? palette.button : palette.background

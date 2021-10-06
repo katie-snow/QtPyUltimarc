@@ -7,29 +7,22 @@ import re
 
 from PySide6.QtCore import Property, Signal, QModelIndex, QObject, QSortFilterProxyModel, Slot
 
+from ultimarc.ui.pages import Pages
 from ultimarc.ui.devices_model import DeviceRoles
 
 _logger = logging.getLogger('ultimarc')
 
 
 class ClassFilterProxyModel(QSortFilterProxyModel, QObject):
-    _changed_front_page_ = Signal(bool)
     _changed_filter_class_ = Signal(str)
 
-    _front_page_ = True
     _filter_class_ = 'all'
 
-    def __init__(self):
+    def __init__(self, _pages):
         super().__init__()
 
-    def get_front_page(self):
-        return self._front_page_
-
-    def set_front_page(self, fp):
-        if self._front_page_ != fp:
-            self._front_page_ = fp
-            self._changed_front_page_.emit(self._front_page_)
-            self.invalidateFilter()
+        assert isinstance(_pages, Pages)
+        self.pages = _pages
 
     def get_filter_class(self):
         return self._filter_class_
@@ -41,12 +34,11 @@ class ClassFilterProxyModel(QSortFilterProxyModel, QObject):
             self._changed_filter_class_.emit(self._filter_class_)
             self.invalidateFilter()
 
-    front_page = Property(bool, get_front_page, set_front_page, notify=_changed_front_page_)
     filter_class = Property(str, get_filter_class, set_filter_class, notify=_changed_filter_class_)
 
     def filterAcceptsRow(self, source_row, source_parent: QModelIndex):
         index = self.sourceModel().index(source_row, 0, source_parent)
-        if self.front_page:
+        if self.pages.get_front():
             return True
         else:
             if self._filter_class_ == 'all':
@@ -54,31 +46,26 @@ class ClassFilterProxyModel(QSortFilterProxyModel, QObject):
             else:
                 device_class_id = index.data(DeviceRoles.DEVICE_CLASS_ID)
                 cb_filter = device_class_id == self._filter_class_
+                # _logger.debug(f'cb_filter {device_class_id}, {self._filter_class_}: {cb_filter}')
                 return cb_filter
 
 
 class DevicesFilterProxyModel(QSortFilterProxyModel, QObject):
-    _changed_front_page_ = Signal(bool)
-    _changed_filter_class_ = Signal(str)
     _changed_filter_text_ = Signal(str)
     _changed_selected_index_ = Signal()
 
-    _front_page_ = True
     _filter_text_ = ''
-    _filter_class_ = 0
     _selected_index_ = -1
 
-    def __init__(self):
+    def __init__(self, _pages):
         super().__init__()
 
-    def get_front_page(self):
-        return self._front_page_
+        assert isinstance(_pages, Pages)
+        self.pages = _pages
 
-    def set_front_page(self, fp):
-        if self._front_page_ != fp:
-            self._front_page_ = fp
-            self._changed_front_page_.emit(self._front_page_)
-            self.invalidateFilter()
+    def custom_invalidate_filter(self):
+        self.invalidateFilter()
+        return None
 
     def get_filter_text(self):
         return self._filter_text_
@@ -87,15 +74,6 @@ class DevicesFilterProxyModel(QSortFilterProxyModel, QObject):
         if self._filter_text_ != new_filter:
             self._filter_text_ = new_filter
             self._changed_filter_text_.emit(self._filter_text_)
-            self.invalidateFilter()
-
-    def get_filter_class(self):
-        return self._filter_class_
-
-    def set_filter_class(self, new_filter):
-        if self._filter_class_ != new_filter:
-            self._filter_class_ = new_filter
-            self._changed_filter_class_.emit(self._filter_class_)
             self.invalidateFilter()
 
     def set_selected_index(self, row):
@@ -113,12 +91,12 @@ class DevicesFilterProxyModel(QSortFilterProxyModel, QObject):
         return index.data(DeviceRoles[p])
 
     selected_index = Property(int, get_selected_index, set_selected_index, notify=_changed_selected_index_)
-    front_page = Property(bool, get_front_page, set_front_page, notify=_changed_front_page_)
+    invalidate_filter = Property(int, custom_invalidate_filter, constant=True)
     filter_text = Property(str, get_filter_text, set_filter_text, notify=_changed_filter_text_)
 
     def filterAcceptsRow(self, source_row, source_parent: QModelIndex):
         index = self.sourceModel().index(source_row, 0, source_parent)
-        if self.front_page:
+        if self.pages.get_front():
             connected = index.data(DeviceRoles.CONNECTED)
             return True if connected and source_row < 4 else False
         else:
@@ -133,5 +111,5 @@ class DevicesFilterProxyModel(QSortFilterProxyModel, QObject):
                 re_class = re.search(self._filter_text_, device_class, re.IGNORECASE) is not None
                 re_key = re.search(self._filter_text_, product_key, re.IGNORECASE) is not None
                 re_filter = re_name or re_class or re_key
-                # _logger.debug(f're filter ({name}: {re_filter}')
+                # _logger.debug(f're filter ({device_class}: {re_filter}')
                 return re_filter
