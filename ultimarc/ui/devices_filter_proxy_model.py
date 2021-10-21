@@ -8,7 +8,7 @@ import re
 from PySide6.QtCore import Property, Signal, QModelIndex, QObject, QSortFilterProxyModel, Slot
 
 from ultimarc.ui.pages import Pages
-from ultimarc.ui.devices_model import DeviceRoles
+from ultimarc.ui.devices_model import DevicesRoles
 
 _logger = logging.getLogger('ultimarc')
 
@@ -44,8 +44,8 @@ class ClassFilterProxyModel(QSortFilterProxyModel, QObject):
             if self._filter_class_ == 'all':
                 return True
             else:
-                device_class_id = index.data(DeviceRoles.DEVICE_CLASS_ID)
-                cb_filter = device_class_id == self._filter_class_
+                device_class_id = index.data(DevicesRoles.DEVICE_CLASS_ID)
+                cb_filter = device_class_id.value == self._filter_class_
                 # _logger.debug(f'cb_filter {device_class_id}, {self._filter_class_}: {cb_filter}')
                 return cb_filter
 
@@ -84,12 +84,6 @@ class DevicesFilterProxyModel(QSortFilterProxyModel, QObject):
     def get_selected_index(self):
         return self._selected_index_
 
-    @Slot(str, result=str)
-    def get_property(self, p):
-        index = self.sourceModel().index(self._selected_index_, 0)
-        # _logger.debug(f'get_property slot: {p}, {DeviceRoles[p]}, {index.data(DeviceRoles[p])}')
-        return index.data(DeviceRoles[p])
-
     selected_index = Property(int, get_selected_index, set_selected_index, notify=_changed_selected_index_)
     invalidate_filter = Property(int, custom_invalidate_filter, constant=True)
     filter_text = Property(str, get_filter_text, set_filter_text, notify=_changed_filter_text_)
@@ -97,15 +91,15 @@ class DevicesFilterProxyModel(QSortFilterProxyModel, QObject):
     def filterAcceptsRow(self, source_row, source_parent: QModelIndex):
         index = self.sourceModel().index(source_row, 0, source_parent)
         if self.pages.get_front():
-            connected = index.data(DeviceRoles.CONNECTED)
+            connected = index.data(DevicesRoles.ATTACHED)
             return True if connected and source_row < 4 else False
         else:
             if len(self._filter_text_) == 0:
                 return True
             else:
-                product_name = index.data(DeviceRoles.PRODUCT_NAME)
-                device_class = index.data(DeviceRoles.DEVICE_CLASS)
-                product_key = index.data(DeviceRoles.PRODUCT_KEY)
+                product_name = index.data(DevicesRoles.DEVICE_NAME)
+                device_class = index.data(DevicesRoles.DEVICE_CLASS_DESCR)
+                product_key = index.data(DevicesRoles.DEVICE_KEY)
 
                 re_name = re.search(self._filter_text_, product_name, re.IGNORECASE) is not None
                 re_class = re.search(self._filter_text_, device_class, re.IGNORECASE) is not None

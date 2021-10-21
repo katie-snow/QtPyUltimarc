@@ -27,7 +27,7 @@ import "../complex"
 FocusScope {
     id: imageList
 
-    property alias currentIndex: deviceListView.currentIndex
+    property alias currentIndex: devicesListView.currentIndex
     property real fadeDuration: 200
 
     property bool focused: contentList.currentIndex === 0
@@ -106,10 +106,6 @@ FocusScope {
                 _class.filter_class = currentValue
             }
 
-            Component.onCompleted: {
-                _devices.filter_class = currentValue
-            }
-
             Behavior on opacity {
                 NumberAnimation {
                     duration: imageList.fadeDuration
@@ -160,7 +156,7 @@ FocusScope {
         }
 
         ListView {
-            id: deviceListView
+            id: devicesListView
             anchors {
                 fill: parent
                 leftMargin: mainWindow.margin
@@ -172,7 +168,7 @@ FocusScope {
             model: _devices
 
             delegate: DelegateImage {
-                width: deviceListView.width
+                width: devicesListView.width
                 focus: true
             }
 
@@ -212,7 +208,7 @@ FocusScope {
             footer: Item {
                 id: footerRoot
                 height: !_pages.front_page ? aboutColumn.height + (_units.grid_unit * 4) : _units.grid_unit * 2
-                width: deviceListView.width
+                width: devicesListView.width
                 z: 0
                 Column {
                     id: aboutColumn
@@ -285,7 +281,7 @@ FocusScope {
                 activeFocusOnTab: true
                 radius: 3
                 color: palette.window
-                width: deviceListView.width - 2
+                width: devicesListView.width - 2
                 height: _units.grid_unit * 2
                 anchors.horizontalCenter: parent.horizontalCenter
                 y: Math.round(_units.grid_unit * 4.5) * _d.device_count + 1
