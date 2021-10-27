@@ -99,16 +99,16 @@ ApplicationWindow {
                     threeDotTimer.stop()
                     threeDotDots.hidden = false
                 }
-                console.log("Hover: ", _releases.front_page, moveUp.running)
+                console.log("Hover: ", _pages.front_page, moveUp.running)
             }
             function action() {
                 moveUp.enabled = true
-                _releases.front_page = false
-                _class.front_page = false
+                _pages.front_page = false
+                _devices.invalidate_filter
             }
             onClicked: {
                 action()
-                console.log("mouseArea: ", _releases.front_page, moveUp.running)
+                console.log("mouseArea: ", _pages.front_page, moveUp.running)
             }
         }
     }

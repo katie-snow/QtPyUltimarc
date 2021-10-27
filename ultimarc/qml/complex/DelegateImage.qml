@@ -30,9 +30,9 @@ Item {
     activeFocusOnTab: true
 
     // TODO Bug: Need to fix this properties
-    readonly property bool isTop: (!deviceListView.itemAtIndex(index-1) || !deviceListView.itemAtIndex(index)) || (deviceListView.itemAtIndex(index).category !== deviceListView.itemAtIndex(index-1).category)
-    readonly property bool isBottom: (!_devices.front_page && index+1 === deviceListView.count) &&
-                    ((!deviceListView.itemAtIndex(index+1) || !deviceListView.itemAtIndex(index)) || (deviceListView.itemAtIndex(index).category !== deviceListView.itemAtIndex(index+1).category))
+    readonly property bool isTop: (!devicesListView.itemAtIndex(index-1) || !devicesListView.itemAtIndex(index)) || (devicesListView.itemAtIndex(index).category !== devicesListView.itemAtIndex(index-1).category)
+    readonly property bool isBottom: (!_pages.front_page && index+1 === devicesListView.count) &&
+                    ((!devicesListView.itemAtIndex(index+1) || !devicesListView.itemAtIndex(index)) || (devicesListView.itemAtIndex(index).category !== devicesListView.itemAtIndex(index+1).category))
 
     property color color: delegateMouse.containsPress ? Qt.darker(palette.button, 1.2) : delegateMouse.containsMouse ? palette.button : palette.background
     Behavior on color { ColorAnimation { duration: 120 } }
@@ -87,17 +87,17 @@ Item {
 //                          " isBottom: " + isBottom +
 //                          " category: '" + model.category +
 //                          "' " + model.device_class
-                      text: model.device_class
+                      text: model.device_class_descr
                 }
                 QQC2.Label {
-                    text: " " + model.product_name
-                    visible: model.connected
+                    text: " " + model.device_name
+                    visible: model.attached
                    }
             }
             QQC2.Label {
                 Layout.fillWidth: true
                 verticalAlignment: Text.AlignTop
-                text: model.product_key
+                text: model.device_key
                 wrapMode: Text.Wrap
                 opacity: 0.6
             }
@@ -178,6 +178,7 @@ Item {
         function action() {
             imageList.currentIndex = index
             imageList.stepForward(index)
+            model.selected_device = index
         }
         onClicked: {
             action()

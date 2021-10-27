@@ -10,59 +10,33 @@ from PySide6.QtCore import QAbstractListModel, QModelIndex, QObject, Property, S
 
 from ultimarc.devices import DeviceClassID
 from ultimarc.tools import ToolEnvironmentObject
+from ultimarc.ui.device import Device
+from ultimarc.ui.device_model import DeviceModel
 
 _logger = logging.getLogger('ultimarc')
 
 UNKNOWN_DEVICE = 'Ultimarc Device'
 
 
-class DeviceRoles(IntEnum):
-    DEVICE_CLASS = 1
-    PRODUCT_NAME = 2
-    PRODUCT_KEY = 3
-    CATEGORY = 4
-    ICON = 5
-    CONNECTED = 6
-    DEVICE_CLASS_ID = 7
+class DevicesRoles(IntEnum):
+    DEVICE_CLASS_DESCR = 1
+    DEVICE_CLASS_ID = 2
+    DEVICE_NAME = 3
+    DEVICE_KEY = 4
+    CATEGORY = 5
+    ICON = 6
+    ATTACHED = 7
+    SELECTED_DEVICE = 8
+    DEVICE = 9
 
 
 # Map Role Enum values to class property names.
-DeviceRolePropertyMap = OrderedDict(zip(list(DeviceRoles), [k.name.lower() for k in DeviceRoles]))
-
-
-class UIDeviceInfo():
-    """ Class for holding additional device data for the UI """
-    product_name = ''
-    device_class = ''
-    device_class_id = None
-    product_key = ''
-    icon = ''
-    connected = True
-
-    def __init__(self, connected=True, device_class='Unknown class', product_name='Unknown Name', product_key=''):
-        self.connected = connected
-        self.product_name = product_name
-        self.device_class = device_class
-        self.product_key = product_key
-
-        if len(self.device_class) == 0:
-            self.device_class = UNKNOWN_DEVICE
-
-    def setup_icon(self, class_id):
-        """ Assign an icon to each device entry
-        @param class_id: str
-        """
-        self.device_class_id = class_id
-        # TODO: Add new images
-        #   Run to get new resource file: pyside6-rcc assets.qrc  -o rc_assets.py
-        if class_id == DeviceClassID.MiniPac.value:
-            self.icon = 'qrc:/logos/workstation'
-        else:
-            self.icon = 'qrc:/logos/placeholder'
+DeviceRolePropertyMap = OrderedDict(zip(list(DevicesRoles), [k.name.lower() for k in DevicesRoles]))
 
 
 class DevicesModel(QAbstractListModel, QObject):
     """ List model that accesses the devices for the view """
+
     def __init__(self, args, env: (ToolEnvironmentObject, None)):
         super().__init__()
 
@@ -70,30 +44,29 @@ class DevicesModel(QAbstractListModel, QObject):
         self.env = env
         self._device_count_ = self.env.devices.device_count
         self._category_ = 'Ultimarc Configurations'
-        self._ui_dev_info_ = []
+        self._devices_ = []
+        self._device_model_ = DeviceModel()
+        self.selected_row = -1
 
         self.setup_info()
 
     def setup_info(self):
         """ setup up meta data for the devices and configurations """
         for dev in self.get_devices():
-            tmp = UIDeviceInfo(product_name=dev.product_name, device_class=dev.class_descr,
-                               product_key=dev.dev_key)
-            tmp.setup_icon(dev.class_id)
-            self._ui_dev_info_.append(tmp)
+            device = Device(True, DeviceClassID(dev.class_id), dev.product_name, dev.class_descr, dev.dev_key)
+            self._devices_.append(device)
 
         # Configuration for non connected devices
         for device_class in DeviceClassID:
-            tmp = UIDeviceInfo(False, device_class=device_class.name)
-            tmp.setup_icon(device_class.value)
-            self._ui_dev_info_.append(tmp)
+            tmp = Device(attached=False, device_class_id=device_class)
+            self._devices_.append(tmp)
 
     def get_devices(self):
         """ Return a list of devices we should show information for. """
         return self.env.devices.filter()
 
     def roleNames(self):
-        """ Just return the DeviceRolePropertyMap dict, but convert key values to byte arrays first for QT. """
+        """ Return the DeviceRolePropertyMap dict, but convert key values to byte arrays first for QT. """
         # TODO: Add device information to role dict
         roles = OrderedDict()
         for k, v in DeviceRolePropertyMap.items():
@@ -103,23 +76,33 @@ class DevicesModel(QAbstractListModel, QObject):
     def rowCount(self, parent):
         if parent.isValid():
             return 0
-        return len(self._ui_dev_info_)
+        return len(self._devices_)
 
     def data(self, index: QModelIndex, role):
         if not index.isValid():
             return None
 
-        if role == DeviceRoles.CATEGORY:
+        if role == DevicesRoles.CATEGORY:
             return 'main' if index.row() < self._device_count_ else self._category_
 
-        for x in range(len(self._ui_dev_info_)):
+        if role == DevicesRoles.DEVICE:
+            return self._device_model_
+
+        for x in range(len(self._devices_)):
             if x == index.row():
-                dev_cls = self._ui_dev_info_[x]
+                dev_cls = self._devices_[x]
                 return getattr(dev_cls, DeviceRolePropertyMap[role])
         return None
 
     def setData(self, index: QModelIndex, value, role: int = ...):
         # TODO: Implement for writing GUI -> Device
+        if not index.isValid():
+            return False
+
+        if role == DevicesRoles.SELECTED_DEVICE:
+            self.selected_row = index.row()
+            self._device_model_.set_device(self._devices_[index.row()])
+            return True
         return False
 
     def get_category(self):
@@ -128,5 +111,9 @@ class DevicesModel(QAbstractListModel, QObject):
     def get_device_count(self):
         return self._device_count_ if self._device_count_ < 4 else 4
 
+    def get_device(self):
+        return self._device_model_
+
+    device = Property(QObject, get_device, constant=True)
     device_count = Property(int, get_device_count, constant=True)
     category = Property(str, get_category, constant=True)

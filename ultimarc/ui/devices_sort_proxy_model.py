@@ -6,7 +6,7 @@ import logging
 
 from PySide6.QtCore import QModelIndex, QObject, QSortFilterProxyModel
 
-from ultimarc.ui.devices_model import DeviceRoles
+from ultimarc.ui.devices_model import DevicesRoles
 
 _logger = logging.getLogger('ultimarc')
 
@@ -17,10 +17,10 @@ class DevicesSortProxyModel(QSortFilterProxyModel, QObject):
         self.sort(0)
 
     def lessThan(self, source_left: QModelIndex, source_right: QModelIndex):
-        class_left = source_left.data(DeviceRoles.DEVICE_CLASS)
-        class_right = source_right.data(DeviceRoles.DEVICE_CLASS)
-        connected_left = source_left.data(DeviceRoles.CONNECTED)
-        connected_right = source_right.data(DeviceRoles.CONNECTED)
+        class_left = source_left.data(DevicesRoles.DEVICE_CLASS_DESCR)
+        class_right = source_right.data(DevicesRoles.DEVICE_CLASS_DESCR)
+        connected_left = source_left.data(DevicesRoles.ATTACHED)
+        connected_right = source_right.data(DevicesRoles.ATTACHED)
         if connected_right == connected_left:
             return class_left < class_right
         return connected_right < connected_left

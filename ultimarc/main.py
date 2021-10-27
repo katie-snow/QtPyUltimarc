@@ -13,6 +13,7 @@ from ultimarc.ui.device_class_model import DeviceClassModel
 from ultimarc.ui.devices_filter_proxy_model import DevicesFilterProxyModel, ClassFilterProxyModel
 from ultimarc.ui.devices_model import DevicesModel
 from ultimarc.ui.devices_sort_proxy_model import DevicesSortProxyModel
+from ultimarc.ui.pages import Pages
 from ultimarc.ui.units import Units
 
 import ultimarc.qml.rc_assets
@@ -44,8 +45,10 @@ if __name__ == '__main__':
     with ToolContextManager(_tool_cmd, args) as tool_env:
         # Local class instantiation
         units = Units()
-        device_filter = DevicesFilterProxyModel()
-        class_filter = ClassFilterProxyModel()
+        pages = Pages()
+
+        device_filter = DevicesFilterProxyModel(pages)
+        class_filter = ClassFilterProxyModel(pages)
         device_sort = DevicesSortProxyModel()
         devices = DevicesModel(args, tool_env)
         # Provide the list to the string model from the filter model
@@ -63,6 +66,7 @@ if __name__ == '__main__':
         context.setContextProperty('_d', devices)
         context.setContextProperty('_classes', device_class)
         context.setContextProperty('_units', units)
+        context.setContextProperty('_pages', pages)
 
         url = QtCore.QUrl.fromLocalFile('qml/main.qml')
 

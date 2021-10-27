@@ -20,13 +20,12 @@
 import QtQuick 2.4
 import QtQuick.Controls 2.2
 import QtQuick.Window 2.12
-import Qt.labs.platform 1.1
 import QtQuick.Layouts 1.12
 import QtQml 2.12
 //import QtQuick.Controls.Fusion 2.1
 import Qt.labs.platform 1.1
 
-import "dialogs"
+
 import "simple"
 import "complex"
 import "views"
@@ -156,20 +155,6 @@ ApplicationWindow {
     //RestoreDialog {
     //    id: restoreDialog
     //}
-
-    //DownloadDialog {
-    //    id: dlDialog
-    //}
-
-    FileDialog {
-        id: fileDialog
-        folder: StandardPaths.writableLocation(StandardPaths.HomeLocation)
-        nameFilters: [ qsTr("Image files") + " (*.iso *.raw *.xz)", qsTr("All files (*)")]
-        onAccepted: {
-            releases.setLocalFile(fileUrl)
-            dlDialog.visible = true
-        }
-    }
 
     FullscreenViewer {
         id: fullscreenViewer
