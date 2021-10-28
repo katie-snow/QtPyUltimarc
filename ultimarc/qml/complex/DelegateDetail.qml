@@ -113,10 +113,27 @@ Item {
                     }
                     QQC2.Label {
                         font.pointSize: referenceLabel.font.pointSize - 1
-                        text: "Description"
+                        text: model.description
                         opacity: 0.6
                     }
                 }
+            }
+        }
+        Grid {
+            Component {
+                id: rectangleComponent2
+
+                Rectangle {
+                        width: 80; height: 30
+                        color: "green"
+                        Text { text: model.index + " " + model.name  }
+                }
+            }
+            columns: 3; spacing: 20
+            Repeater {
+                model: _d.device_details
+                delegate: rectangleComponent2
+                //Rectangle { width: 20; height: 20; radius: 10; color: "green" }
             }
         }
     }

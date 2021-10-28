@@ -3,14 +3,17 @@
 # file 'LICENSE', which is part of this source code package.
 #
 import logging
+import typing
 from enum import Enum
+
+from PySide6.QtCore import QModelIndex
 
 from ultimarc.devices import DeviceClassID
 
 _logger = logging.getLogger('ultimarc')
 
 
-class Device:
+class Device():
     """ Holds the information for a single device """
     attached = False  # True if hardware is attached
     device_name = 'Unknown Name'  # USB_PRODUCT_DESCRIPTIONS
@@ -40,14 +43,17 @@ class Device:
 
         self.device_key = key
         self.attached = attached
-        self._set_icon_()
 
-    def _set_icon_(self):
-        #   Run to get new resource file: pyside6-rcc assets.qrc  -o rc_assets.py
-        if self.device_class_id == DeviceClassID.MiniPac:
-            self.icon = 'qrc:/logos/workstation'
-        else:
-            self.icon = 'qrc:/logos/placeholder'
+    # Implement this function in child classes
+    def rowCount(self):
+        return 0
+
+    # Implement this function in child classes
+    def data(self, index: QModelIndex, role: int = ...) -> typing.Any:
+        return None
+
+    def get_description(self):
+        return 'Device class implementation'
 
     def get_attached(self):
         return self.attached

@@ -8,9 +8,10 @@ import typing
 from collections import OrderedDict
 from enum import IntEnum
 
-from PySide6.QtCore import QObject, QAbstractListModel, QModelIndex
+from PySide6.QtCore import QObject, QAbstractListModel, QModelIndex, Property
 
 from ultimarc.ui.device import Device
+from ultimarc.ui.device_details_model import DeviceDataModel
 
 _logger = logging.getLogger('ultimarc')
 
@@ -23,6 +24,7 @@ class DeviceRoles(IntEnum):
     DEVICE_KEY = 5
     ICON = 6
     ATTACHED = 7
+    DESCRIPTION = 8
 
 
 # Map Role Enum values to class property names.
@@ -39,6 +41,7 @@ class DeviceModel(QAbstractListModel, QObject):
     def __init__(self):
         super().__init__()
         self._device_ = Device(False, '')
+        self._details_model_ = DeviceDataModel()  # This is a class level variable
 
     def roleNames(self) -> typing.Dict:
         roles = OrderedDict()
@@ -67,10 +70,15 @@ class DeviceModel(QAbstractListModel, QObject):
             return self._device_.get_device_key()
         if role == DeviceRoles.ICON:
             return self._device_.get_icon()
-
+        if role == DeviceRoles.DESCRIPTION:
+            return self._device_.get_description()
         return None
 
     def set_device(self, device):
         self.beginResetModel()
         self._device_ = device
         self.endResetModel()
+        self._details_model_.set_device(device)
+
+    def get_details(self):
+        return self._details_model_

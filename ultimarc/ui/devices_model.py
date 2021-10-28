@@ -12,6 +12,7 @@ from ultimarc.devices import DeviceClassID
 from ultimarc.tools import ToolEnvironmentObject
 from ultimarc.ui.device import Device
 from ultimarc.ui.device_model import DeviceModel
+from ultimarc.ui.mini_pac import MiniPacUI
 
 _logger = logging.getLogger('ultimarc')
 
@@ -53,12 +54,18 @@ class DevicesModel(QAbstractListModel, QObject):
     def setup_info(self):
         """ setup up meta data for the devices and configurations """
         for dev in self.get_devices():
-            device = Device(True, DeviceClassID(dev.class_id), dev.product_name, dev.class_descr, dev.dev_key)
+            if dev.class_id == DeviceClassID.MiniPac:
+                device = MiniPacUI(True, DeviceClassID(dev.class_id), dev.product_name, dev.class_descr, dev.dev_key)
+            else:
+                device = Device(True, DeviceClassID(dev.class_id), dev.product_name, dev.class_descr, dev.dev_key)
             self._devices_.append(device)
 
         # Configuration for non connected devices
         for device_class in DeviceClassID:
-            tmp = Device(attached=False, device_class_id=device_class)
+            if device_class == DeviceClassID.MiniPac:
+                tmp = MiniPacUI(attached=False, device_class_id=device_class)
+            else:
+                tmp = Device(attached=False, device_class_id=device_class)
             self._devices_.append(tmp)
 
     def get_devices(self):
@@ -114,6 +121,10 @@ class DevicesModel(QAbstractListModel, QObject):
     def get_device(self):
         return self._device_model_
 
+    def get_device_details(self):
+        return self._device_model_.get_details()
+
     device = Property(QObject, get_device, constant=True)
+    device_details = Property(QObject, get_device_details, constant=True)
     device_count = Property(int, get_device_count, constant=True)
     category = Property(str, get_category, constant=True)
