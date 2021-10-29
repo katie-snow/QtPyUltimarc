@@ -13,7 +13,7 @@ Fedora
 
 ::
 
-    $ sudo dnf install qt5-devel qt5-qtquick* qt5*examples qt-creator libusb-devel libudev-devel hidapi-devel
+    $ sudo dnf install qt5-devel qt5-qtquick* qt5*examples qt-creator libusb-devel libudev-devel hidapi-devel libglvnd-opengl
 
 2. Clone repository
 
