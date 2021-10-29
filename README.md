@@ -1,6 +1,6 @@
 Ultimarc Configurator
 =
-A cross platform tool for configuring Ultimarc USB devices.
+A cross-platform tool for configuring Ultimarc USB devices.
 
 
 Development Environment Setup
@@ -53,3 +53,10 @@ Fedora
 
     $ cd QtPyUltimarc
     $ python setup.py extract_messages
+
+
+## Troubleshooting
+
+**libusb error -3: Access denied.**
+
+*Add "ultimarc/udev/95-ultimarc.rules" to /etc/udev/rules.d/ directory and reload udev rules.*

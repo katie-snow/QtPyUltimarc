@@ -172,7 +172,12 @@ class USBDeviceInfo:
                 ret = usb.open(dev, ct.byref(dev_handle))
                 if ret == usb.LIBUSB_SUCCESS:
                     return dev_handle
-                usb_error(ret, _('Failed to open device') + f' {self.dev_key}.')
+                # Error codes: https://libusb.sourceforge.io/api-1.0/group__libusb__misc.html
+                # TODO: Create dictionary of error codes for easy lookup?
+                if ret == -3:
+                    usb_error(ret, _('Access denied, failed to open device') + f' {self.dev_key}.')
+                else:
+                    usb_error(ret, _('Failed to open device') + f' {self.dev_key}.')
 
         self._close_device_list_handle()
         _logger.debug(_('Device was not found on host when trying to open it.'))
