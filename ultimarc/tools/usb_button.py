@@ -134,7 +134,7 @@ def run():
 
     if args.set_config:
         # Always force absolute path for config files.
-        args.set_config = os.path.abspath(args.set_config)
+        args.set_config = ToolContextManager.clean_config_path(args.set_config)
         if not os.path.exists(args.set_config):
             _logger.error(_('Unable to find configuration file specified in argument.'))
             return -1

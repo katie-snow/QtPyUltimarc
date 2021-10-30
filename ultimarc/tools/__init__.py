@@ -4,6 +4,7 @@
 #
 import argparse
 import logging
+import os.path
 import sys
 import traceback
 
@@ -109,3 +110,21 @@ class ToolContextManager(object):
         parser.add_argument('--bus', help=_('filter by usb device bus number'), type=int, default=None)
         parser.add_argument('--address', help=_('filter by usb device address number'), type=int, default=None)
         return parser
+
+    @staticmethod
+    def clean_config_path(config_path):
+        """
+        Convert a config file path to an absolute path. Use 'ultimarc' directory as starting point for converting
+        relative path to absolute.
+        :param config_path: user provided path to config file.
+        :return: absolute path to config file.
+        """
+        if os.path.isabs(config_path):
+            return config_path
+        # get ultimarc directory
+        um_root = os.path.abspath(os.path.join('..', os.path.dirname(os.getcwd())))
+        if not um_root.endswith('ultimarc'):
+            raise EnvironmentError('Unable to determine path to the "ultimarc" root directory.')
+        tmp_path = os.path.abspath(os.path.join(um_root, config_path))
+        _logger.debug(f'config path: {tmp_path}.')
+        return tmp_path
