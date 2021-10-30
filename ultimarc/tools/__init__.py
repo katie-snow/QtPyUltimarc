@@ -122,7 +122,12 @@ class ToolContextManager(object):
         if os.path.isabs(config_path):
             return config_path
         # get ultimarc directory
-        um_root = os.path.abspath(os.path.join('..', os.path.dirname(os.getcwd())))
+        um_root = os.path.realpath(__file__)
+        # Walk backward directories until we hit the 'ultimarc' directory.
+        count = 0
+        while count < 4 and not um_root.endswith('ultimarc'):
+            um_root = os.path.dirname(um_root)
+            count += 1
         if not um_root.endswith('ultimarc'):
             raise EnvironmentError('Unable to determine path to the "ultimarc" root directory.')
         tmp_path = os.path.abspath(os.path.join(um_root, config_path))
