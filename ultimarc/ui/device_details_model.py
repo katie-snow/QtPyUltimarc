@@ -45,7 +45,6 @@ class DeviceDataModel(QAbstractListModel, QObject):
             return self.device.data(index, role)
 
     def set_device(self, device):
-        _logger.debug('Resetting the Device Data Model')
         self.beginResetModel()
         self.device = device
         self.endResetModel()
