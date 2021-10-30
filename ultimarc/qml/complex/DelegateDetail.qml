@@ -1,5 +1,5 @@
 import QtQuick 2.4
-import QtQuick.Controls 2.2 as QQC2
+import QtQuick.Controls 2.5 as QQC2
 import QtQuick.Layouts 1.15
 
 import "../simple"
@@ -119,21 +119,109 @@ Item {
                 }
             }
         }
-        Grid {
-            Component {
-                id: rectangleComponent2
 
-                Rectangle {
-                        width: 80; height: 30
-                        color: "green"
-                        Text { text: model.index + " " + model.name  }
+        Rectangle {
+            color: "transparent"
+            border.color: "gray"
+            border.width: 2
+            width: childrenRect.width + _units.large_spacing
+            height: childrenRect.height
+            RowLayout {
+                spacing: _units.large_spacing
+
+                QQC2.Label {
+                    leftPadding: _units.grid_unit
+                    font.pointSize: referenceLabel.font.pointSize + 1
+                    text: "Selected Pin"
+                }
+                QQC2.CheckBox {
+                    font.pointSize: referenceLabel.font.pointSize - 1
+                    text: qsTr("Shift")
+                }
+                QQC2.Label {
+                    color: "blue"
+                    font.pointSize: referenceLabel.font.pointSize - 1
+                    text: "Primary Action:"
+                }
+                QQC2.ComboBox {
+                    implicitWidth: 75
+                    model: ["A", "B", "C", "D"]
+                }
+                QQC2.Label {
+                    color: "red"
+                    font.pointSize: referenceLabel.font.pointSize - 1
+                    text: "Alternative Action:"
+                }
+                QQC2.ComboBox {
+                    implicitWidth: 75
+                    model: ["A", "B", "C", "D"]
                 }
             }
-            columns: 3; spacing: 20
+        }
+        Grid {
+            x: mainWindow.margin
+            y: _units.grid_unit - 3
+            columns: 6
+            spacing: _units.small_spacing
+            flow: Grid.TopToBottom
+
+            Component {
+                id: deviceDetailsComponent
+
+                Rectangle {
+                        color: "transparent"
+                        border.color: "gray"
+                        border.width: 1
+
+                        width: childrenRect.width
+                        height: childrenRect.height
+                        ColumnLayout {
+                            spacing: 1
+                            RowLayout {
+                                Layout.fillHeight: true
+                                Layout.fillWidth: true
+                                QQC2.Label {
+                                    leftPadding: 3
+                                    font.pointSize: referenceLabel.font.pointSize + 1
+                                    font.bold: true
+                                    text: qsTr(model.name)
+                                }
+
+                                QQC2.Label {
+                                    text: qsTr("Shift")
+                                    font.pointSize: referenceLabel.font.pointSize - 1
+                                    font.bold: true
+                                }
+
+                            }
+                            RowLayout {
+                                Layout.fillHeight: true
+                                Layout.fillWidth: true
+                                QQC2.Label {
+                                    color: "blue"
+                                    bottomPadding: 3
+                                    leftPadding: 3
+                                    font.pointSize: referenceLabel.font.pointSize - 1
+                                    text: "Shift L"
+                                }
+                                Item {
+                                    Layout.fillWidth: true
+                                }
+                                QQC2.Label {
+                                    color: "red"
+                                    bottomPadding: 3
+                                    rightPadding: 3
+                                    font.pointSize: referenceLabel.font.pointSize - 1
+                                    text: "C"
+                                }
+                            }
+                        }
+                   }
+            }
+
             Repeater {
                 model: _d.device_details
-                delegate: rectangleComponent2
-                //Rectangle { width: 20; height: 20; radius: 10; color: "green" }
+                delegate: deviceDetailsComponent
             }
         }
     }
