@@ -5,6 +5,7 @@
 # Template for Ultimarc CLI tools.
 #
 import logging
+import os
 import sys
 
 from ultimarc import translate_gettext as _
@@ -114,6 +115,13 @@ def run():
     if not args.set_config and args.current:
         _logger.error(_('The --current argument can only be used with the --set_config argument '))
         return -1
+
+    if args.set_config:
+        # Always force absolute path for config files.
+        args.set_config = ToolContextManager.clean_config_path(args.set_config)
+        if not os.path.exists(args.set_config):
+            _logger.error(_('Unable to find configuration file specified in argument.'))
+            return -1
 
     with ToolContextManager(tool_cmd, args) as tool_env:
         process = MiniPACClass(args, tool_env)

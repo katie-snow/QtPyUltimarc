@@ -117,7 +117,7 @@ class USBButtonDevice(USBDeviceHandle):
         data = USBButtonColorStruct(0x01, RGBValueStruct(0x0, 0x0, 0x0))
         ret = self.read(USBRequestCode.CLEAR_FEATURE, USBButtonReportID, USBButtonWIndex, data, ct.sizeof(data))
         if ret:
-            return data.red, data.green, data.blue
+            return data.rgb.red, data.rgb.green, data.rgb.blue
         _logger.error(_('Failed to read color data from usb button.'))
         return None, None, None
 
