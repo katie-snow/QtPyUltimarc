@@ -1,6 +1,6 @@
 Ultimarc Configurator
 =
-A cross platform tool for configuring Ultimarc USB devices.
+A cross-platform tool for configuring Ultimarc USB devices.
 
 
 Development Environment Setup
@@ -13,7 +13,7 @@ Fedora
 
 ::
 
-    $ sudo dnf install qt5-devel qt5-qtquick* qt5*examples qt-creator libusb-devel libudev-devel hidapi-devel
+    $ sudo dnf install qt5-devel qt5-qtquick* qt5*examples qt-creator libusb-devel libudev-devel hidapi-devel libglvnd-opengl
 
 2. Clone repository
 
@@ -53,3 +53,10 @@ Fedora
 
     $ cd QtPyUltimarc
     $ python setup.py extract_messages
+
+
+## Troubleshooting
+
+**libusb error -3: Access denied.**
+
+*Add "ultimarc/udev/95-ultimarc.rules" to /etc/udev/rules.d/ directory and reload udev rules.*
