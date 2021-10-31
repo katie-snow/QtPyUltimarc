@@ -10,6 +10,7 @@ from enum import IntEnum
 
 from PySide6.QtCore import QObject, QAbstractListModel, QModelIndex, Property
 
+from ultimarc.tools import ToolEnvironmentObject
 from ultimarc.ui.device import Device
 from ultimarc.ui.device_details_model import DeviceDataModel
 
@@ -38,9 +39,9 @@ class DeviceModel(QAbstractListModel, QObject):
     # Internal member for the currently displayed device
     _device_ = None
 
-    def __init__(self):
+    def __init__(self, args, env: (ToolEnvironmentObject, None)):
         super().__init__()
-        self._device_ = Device(False, '')
+        self._device_ = Device(args, env, False, '')
         self._details_model_ = DeviceDataModel()  # This is a class level variable
 
     def roleNames(self) -> typing.Dict:
@@ -59,7 +60,8 @@ class DeviceModel(QAbstractListModel, QObject):
         if role == DeviceRoles.DEVICE_CLASS_DESCR:
             return self._device_.get_device_class()
         if role == DeviceRoles.ATTACHED:
-            return 'true' if self._device_.get_attached() else 'false'
+            return self._device_.get_attached()
+            #return 'true' if self._device_.get_attached() else 'false'
         if role == DeviceRoles.DEVICE_NAME:
             return self._device_.get_device_name()
         if role == DeviceRoles.DEVICE_CLASS_NAME:

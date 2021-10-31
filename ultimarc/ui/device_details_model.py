@@ -15,6 +15,9 @@ _logger = logging.getLogger('ultimarc')
 
 class DeviceDataRoles(IntEnum):
     NAME = 1
+    ACTION = 2
+    ALT_ACTION = 3
+    SHIFT = 4
 
 
 # Map Role Enum values to class property names.
@@ -41,8 +44,7 @@ class DeviceDataModel(QAbstractListModel, QObject):
         if not index.isValid():
             return None
 
-        if role == DeviceDataRoles.NAME:
-            return self.device.data(index, role)
+        return self.device.data(index, role)
 
     def set_device(self, device):
         self.beginResetModel()

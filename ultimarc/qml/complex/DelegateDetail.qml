@@ -186,33 +186,49 @@ Item {
                                     font.bold: true
                                     text: qsTr(model.name)
                                 }
-
+                                Item {
+                                        Layout.fillWidth: true
+                                    }
                                 QQC2.Label {
                                     text: qsTr("Shift")
                                     font.pointSize: referenceLabel.font.pointSize - 1
-                                    font.bold: true
+                                    rightPadding: 3
+                                    font.bold: {
+                                        model.shift
+                                    }
                                 }
 
                             }
-                            RowLayout {
-                                Layout.fillHeight: true
-                                Layout.fillWidth: true
-                                QQC2.Label {
-                                    color: "blue"
-                                    bottomPadding: 3
-                                    leftPadding: 3
-                                    font.pointSize: referenceLabel.font.pointSize - 1
-                                    text: "Shift L"
-                                }
-                                Item {
+                            Rectangle {
+                                Layout.preferredWidth: 100
+                                height: childrenRect.height
+
+                                Layout.margins: 2
+                                RowLayout {
                                     Layout.fillWidth: true
-                                }
-                                QQC2.Label {
-                                    color: "red"
-                                    bottomPadding: 3
-                                    rightPadding: 3
-                                    font.pointSize: referenceLabel.font.pointSize - 1
-                                    text: "C"
+                                    //anchors.left: parent.left
+                                    QQC2.Label {
+                                        color: "blue"
+                                        //Layout.alignment: Qt.AlignLeft
+                                        bottomPadding: 3
+                                        leftPadding: 3
+                                        font.pointSize: referenceLabel.font.pointSize
+                                        text: model.action
+                                        font.bold: true
+                                    }
+                                    Item {
+                                        Layout.fillWidth: true
+                                        //Layout.minimumWidth: 15
+                                    }
+                                    QQC2.Label {
+                                        color: "red"
+                                        Layout.alignment: Qt.AlignRight
+                                        bottomPadding: 3
+                                        rightPadding: 3
+                                        font.pointSize: referenceLabel.font.pointSize
+                                        text: model.alt_action
+                                        font.bold: true
+                                    }
                                 }
                             }
                         }

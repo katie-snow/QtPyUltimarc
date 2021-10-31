@@ -22,10 +22,13 @@ class Device():
     device_key = ''  # Key representing the hardware attached
     icon = 'qrc:/logos/placeholder'  # Unknown product icon
 
-    def __init__(self, attached,
+    def __init__(self, args, env, attached,
                  device_class_id,
                  name=None, device_class_descr=None,
                  key=''):
+
+        self.env = env
+        self.args = args
 
         if isinstance(device_class_id, DeviceClassID):
             if attached:

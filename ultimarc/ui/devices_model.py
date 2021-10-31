@@ -46,7 +46,7 @@ class DevicesModel(QAbstractListModel, QObject):
         self._device_count_ = self.env.devices.device_count
         self._category_ = 'Ultimarc Configurations'
         self._devices_ = []
-        self._device_model_ = DeviceModel()
+        self._device_model_ = DeviceModel(args, env)
         self.selected_row = -1
 
         self.setup_info()
@@ -54,18 +54,20 @@ class DevicesModel(QAbstractListModel, QObject):
     def setup_info(self):
         """ setup up meta data for the devices and configurations """
         for dev in self.get_devices():
-            if dev.class_id == DeviceClassID.MiniPac:
-                device = MiniPacUI(True, DeviceClassID(dev.class_id), dev.product_name, dev.class_descr, dev.dev_key)
+            if dev.class_id == DeviceClassID.MiniPac.value:
+                device = MiniPacUI(self.args, self.env, True, DeviceClassID(dev.class_id), dev.product_name,
+                                   dev.class_descr, dev.dev_key)
             else:
-                device = Device(True, DeviceClassID(dev.class_id), dev.product_name, dev.class_descr, dev.dev_key)
+                device = Device(self.args, self.env, True, DeviceClassID(dev.class_id), dev.product_name,
+                                dev.class_descr, dev.dev_key)
             self._devices_.append(device)
 
         # Configuration for non connected devices
         for device_class in DeviceClassID:
             if device_class == DeviceClassID.MiniPac:
-                tmp = MiniPacUI(attached=False, device_class_id=device_class)
+                tmp = MiniPacUI(self.args, self.env, False, device_class)
             else:
-                tmp = Device(attached=False, device_class_id=device_class)
+                tmp = Device(self.args, self.env, False, device_class)
             self._devices_.append(tmp)
 
     def get_devices(self):
