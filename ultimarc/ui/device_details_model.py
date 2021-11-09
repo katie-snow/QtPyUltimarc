@@ -50,3 +50,11 @@ class DeviceDataModel(QAbstractListModel, QObject):
         self.beginResetModel()
         self.device = device
         self.endResetModel()
+
+    def setData(self, index: QModelIndex, value, role: int = ...):
+        if not index.isValid():
+            return None
+
+        val = self.device.setData(index, value, role)
+        self.dataChanged.emit(index, index, [])
+        return val
