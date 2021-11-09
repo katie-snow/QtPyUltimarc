@@ -55,6 +55,14 @@ class Device():
     def data(self, index: QModelIndex, role: int = ...) -> typing.Any:
         return None
 
+    # Implement this function in child classes
+    def setData(self, index: QModelIndex, value, role: int = ...):
+        return None
+
+    # Implement this function in child classes
+    def get_qml(self):
+        return ''
+
     def get_description(self):
         return 'Device class implementation'
 
@@ -75,3 +83,4 @@ class Device():
 
     def get_icon(self):
         return self.icon
+

@@ -26,6 +26,7 @@ class DeviceRoles(IntEnum):
     ICON = 6
     ATTACHED = 7
     DESCRIPTION = 8
+    QML = 9
 
 
 # Map Role Enum values to class property names.
@@ -74,7 +75,11 @@ class DeviceModel(QAbstractListModel, QObject):
             return self._device_.get_icon()
         if role == DeviceRoles.DESCRIPTION:
             return self._device_.get_description()
+        if role == DeviceRoles.QML:
+            return self._device_.get_qml()
         return None
+
+    #def setData(self, index:PySide6.QtCore.QModelIndex, value:typing.Any, role:int=...) -> bool:
 
     def set_device(self, device):
         self.beginResetModel()
