@@ -49,7 +49,7 @@ ApplicationWindow {
     }
 
     Component.onCompleted: {
-        width = 800
+        width = 860
         height = 480
     }
 
