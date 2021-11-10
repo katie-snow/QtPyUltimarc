@@ -1,5 +1,5 @@
 import QtQuick 2.4
-import QtQuick.Controls 2.2 as QQC2
+import QtQuick.Controls 2.5 as QQC2
 import QtQuick.Layouts 1.15
 
 import "../simple"
@@ -113,11 +113,17 @@ Item {
                     }
                     QQC2.Label {
                         font.pointSize: referenceLabel.font.pointSize - 1
-                        text: "Description"
+                        text: model.description
                         opacity: 0.6
                     }
                 }
             }
         }
+        Loader {
+            id: detailLoader
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            source: model.qml
+       }
     }
 }

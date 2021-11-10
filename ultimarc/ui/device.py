@@ -3,14 +3,17 @@
 # file 'LICENSE', which is part of this source code package.
 #
 import logging
+import typing
 from enum import Enum
+
+from PySide6.QtCore import QModelIndex
 
 from ultimarc.devices import DeviceClassID
 
 _logger = logging.getLogger('ultimarc')
 
 
-class Device:
+class Device():
     """ Holds the information for a single device """
     attached = False  # True if hardware is attached
     device_name = 'Unknown Name'  # USB_PRODUCT_DESCRIPTIONS
@@ -19,10 +22,13 @@ class Device:
     device_key = ''  # Key representing the hardware attached
     icon = 'qrc:/logos/placeholder'  # Unknown product icon
 
-    def __init__(self, attached,
+    def __init__(self, args, env, attached,
                  device_class_id,
                  name=None, device_class_descr=None,
                  key=''):
+
+        self.env = env
+        self.args = args
 
         if isinstance(device_class_id, DeviceClassID):
             if attached:
@@ -40,14 +46,25 @@ class Device:
 
         self.device_key = key
         self.attached = attached
-        self._set_icon_()
 
-    def _set_icon_(self):
-        #   Run to get new resource file: pyside6-rcc assets.qrc  -o rc_assets.py
-        if self.device_class_id == DeviceClassID.MiniPac:
-            self.icon = 'qrc:/logos/workstation'
-        else:
-            self.icon = 'qrc:/logos/placeholder'
+    # Implement this function in child classes
+    def rowCount(self):
+        return 0
+
+    # Implement this function in child classes
+    def data(self, index: QModelIndex, role: int = ...) -> typing.Any:
+        return None
+
+    # Implement this function in child classes
+    def setData(self, index: QModelIndex, value, role: int = ...):
+        return None
+
+    # Implement this function in child classes
+    def get_qml(self):
+        return ''
+
+    def get_description(self):
+        return 'Device class implementation'
 
     def get_attached(self):
         return self.attached
@@ -66,3 +83,4 @@ class Device:
 
     def get_icon(self):
         return self.icon
+
