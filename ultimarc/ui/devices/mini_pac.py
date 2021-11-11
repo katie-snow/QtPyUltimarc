@@ -8,9 +8,9 @@ import typing
 from PySide6.QtCore import QModelIndex
 
 from ultimarc.devices import DeviceClassID
-from ultimarc.devices.mini_pac import PinMapping, MiniPacDevice
+from ultimarc.devices.mini_pac import PinMapping
 from ultimarc.system_utils import JSONObject
-from ultimarc.ui.device import Device
+from ultimarc.ui.devices.device import Device
 from ultimarc.ui.device_details_model import DeviceDataRoles
 
 _logger = logging.getLogger('ultimarc')

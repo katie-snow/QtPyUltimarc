@@ -8,10 +8,10 @@ import typing
 from collections import OrderedDict
 from enum import IntEnum
 
-from PySide6.QtCore import QObject, QAbstractListModel, QModelIndex, Property
+from PySide6.QtCore import QObject, QAbstractListModel, QModelIndex
 
 from ultimarc.tools import ToolEnvironmentObject
-from ultimarc.ui.device import Device
+from ultimarc.ui.devices.device import Device
 from ultimarc.ui.device_details_model import DeviceDataModel
 
 _logger = logging.getLogger('ultimarc')

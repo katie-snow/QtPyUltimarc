@@ -6,13 +6,13 @@ import logging
 from collections import OrderedDict
 
 from enum import IntEnum
-from PySide6.QtCore import QAbstractListModel, QModelIndex, QObject, Property, Signal
+from PySide6.QtCore import QAbstractListModel, QModelIndex, QObject, Property
 
 from ultimarc.devices import DeviceClassID
 from ultimarc.tools import ToolEnvironmentObject
-from ultimarc.ui.device import Device
+from ultimarc.ui.devices.device import Device
 from ultimarc.ui.device_model import DeviceModel
-from ultimarc.ui.mini_pac import MiniPacUI
+from ultimarc.ui.devices.mini_pac import MiniPacUI
 
 _logger = logging.getLogger('ultimarc')
 
