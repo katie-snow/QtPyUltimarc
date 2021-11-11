@@ -26,22 +26,25 @@ class MiniPacUI(Device):
         self.icon = 'qrc:/logos/workstation'
         self.config = None
 
-        if attached:
-            devices = [dev for dev in
-                       self.env.devices.filter(class_id=DeviceClassID.MiniPac, bus=self.args.bus,
-                                               address=self.args.address)]
-            for dev in devices:
-                with dev as dev_h:
-                    self.config = JSONObject(dev_h.to_json_str(dev_h.get_current_configuration()))
-                    # _logger.info(self.config)
-        else:
-            self.config = JSONObject({'schemaVersion': 2.0, 'resourceType': 'mini-pac-pins',
-                              'deviceClass': self.device_class_id, 'debounce': 'standard', 'pins': []})
-
     def get_description(self):
         return 'This is the description of the Mini-pac device'
 
+    def load_config(self):
+        if self.config is None:
+            if self.attached:
+                devices = [dev for dev in
+                           self.env.devices.filter(class_id=DeviceClassID.MiniPac, bus=self.args.bus,
+                                                   address=self.args.address)]
+                for dev in devices:
+                    with dev as dev_h:
+                        self.config = JSONObject(dev_h.to_json_str(dev_h.get_current_configuration()))
+                        # _logger.info(self.config)
+            else:
+                self.config = JSONObject({'schemaVersion': 2.0, 'resourceType': 'mini-pac-pins',
+                                          'deviceClass': self.device_class_id, 'debounce': 'standard', 'pins': []})
+
     def get_qml(self):
+        self.load_config()
         return 'PinDetail.qml'
 
     def rowCount(self):
