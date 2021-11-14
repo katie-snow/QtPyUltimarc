@@ -27,6 +27,8 @@ class DeviceRoles(IntEnum):
     ATTACHED = 7
     DESCRIPTION = 8
     QML = 9
+    WRITE_DEVICE = 10
+    SAVE_LOCATION = 11
 
 
 # Map Role Enum values to class property names.
@@ -77,9 +79,19 @@ class DeviceModel(QAbstractListModel, QObject):
             return self._device_.get_description()
         if role == DeviceRoles.QML:
             return self._device_.get_qml()
+        if role == DeviceRoles.WRITE_DEVICE:
+            return self._device_.write_device()
         return None
 
-    #def setData(self, index:PySide6.QtCore.QModelIndex, value:typing.Any, role:int=...) -> bool:
+    def setData(self, index: QModelIndex, value: typing.Any, role: int = ...) -> bool:
+        if not index.isValid():
+            return False
+
+        if role == DeviceRoles.SAVE_LOCATION:
+            ret = self._device_.write_file(value)
+            self.dataChanged.emit(index, index, [])
+            return ret
+        return False
 
     def set_device(self, device):
         self.beginResetModel()
