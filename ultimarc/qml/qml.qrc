@@ -1,8 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>dialogs/DownloadDialog.qml</file>
-        <file>dialogs/RestoreDialog.qml</file>
-        <file>views/FullscreenViewer.qml</file>
         <file>views/ImageDetails.qml</file>
         <file>views/ImageList.qml</file>
         <file>complex/PinDetail.qml</file>
