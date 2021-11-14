@@ -105,6 +105,8 @@ Item {
                     cursorShape: Qt.PointingHandCursor
                     function mouseAction() {
                         grid.currentIndex = index
+                        // Make sure the grid has the focus again
+                        grid.focus = true
 
                         selectedName.text = model.name
                         selectedShift.checked = model.shift
