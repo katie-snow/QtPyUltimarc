@@ -63,6 +63,14 @@ class Device:
     def get_qml(self):
         return ''
 
+    # Implement this function in child classes
+    def write_device(self):
+        return None
+
+    # Implement this function in child classes
+    def write_file(self, file):
+        return False
+
     def get_description(self):
         return 'Device class implementation'
 
