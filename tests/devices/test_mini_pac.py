@@ -56,7 +56,7 @@ class MiniPacDeviceTest(TestCase):
         self.assertTrue(data.header.type == 0x50)
         self.assertTrue(data.header.byte_2 == 0xdd)
         self.assertTrue(data.header.byte_3 == 0x0f)
-        self.assertTrue(data.header.byte_4 == 0)
+        self.assertTrue(data.header.byte_4 == 0x10)
 
         # pins
         # prep work check
