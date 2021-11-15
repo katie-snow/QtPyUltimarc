@@ -142,6 +142,35 @@ class MiniPacDeviceTest(TestCase):
 
     @patch.object(USBDeviceHandle, '_get_descriptor_fields', return_value=None)
     @patch('libusb.get_device', return_value='pointer')
+    def test_mini_pac_pin_ui_connection(self, dev_handle_mock, lib_usb_mock):
+        """ Test that optional parameters are handled correctly """
+        dev = USBDeviceHandle('test_handle', '0000:0000')
+        self.assertTrue(dev)
+
+        dev.__class__ = MiniPacDevice
+
+        config_file = os.path.join(git_project_root(), 'tests/test-data/mini-pac-pin-optional.json')
+        # Validate against the base schema.
+        resource_types = ['mini-pac-pins']
+        json_dict = dev.validate_config_base(config_file, resource_types)
+
+        valid, data = dev._create_message_dict_(json_dict)
+
+        # pin 1up values, has both optional values
+        self.assertTrue(data.bytes[10] == 0x52)
+        self.assertTrue(data.bytes[60] == 0x35)
+        self.assertTrue(data.bytes[110] == 0x40)
+
+        # pin 1sw2 values no optional values
+        self.assertTrue(data.bytes[11] == 0x72)
+        self.assertTrue(data.bytes[61] == 0)
+        self.assertTrue(data.bytes[111] == 0)
+
+        # macros
+        self.assertTrue(data.bytes[166] == 0)
+
+    @patch.object(USBDeviceHandle, '_get_descriptor_fields', return_value=None)
+    @patch('libusb.get_device', return_value='pointer')
     def test_mini_pac_large_macro_entries(self, dev_handle_mock, lib_usb_mock):
         """ Test that faults happen when the number of macros is to great
         and the number of actions doesn't exceed 85 with control characters """

@@ -142,17 +142,25 @@ class MiniPacDevice(USBDeviceHandle):
 
         return json_obj if self.validate_config(json_obj, 'mini-pac.schema') else None
 
+    @classmethod
+    def write_to_file(cls, data: dict, file_path, indent=None):
+        try:
+            with open(file_path, 'w') as h:
+                json.dump(data, h, indent=indent)
+                return True
+        except FileNotFoundError as err:
+            _logger.debug(err)
+            return False
+
     def get_device_config(self, indent=None, file=None):
         """ Return a json string of the device configuration """
         config = self.get_current_configuration()
         json_obj = self.to_json_str(config)
         if file:
-            try:
-                with open(file, 'w') as h:
-                    json.dump(json_obj, h, indent=indent)
-            except FileNotFoundError as err:
-                return err
-            return _('Wrote Mini-pac configuration to file.')
+            if self.write_to_file(file, indent):
+                return _('Wrote Mini-pac configuration to file.')
+            else:
+                return _('Failed to write Mini-pac configuration to file.')
         else:
             return json.dumps(json_obj, indent=indent) if config else None
 
@@ -250,9 +258,16 @@ class MiniPacDevice(USBDeviceHandle):
         return self.write_alt(USBRequestCode.SET_CONFIGURATION, int(0x03), MINI_PAC_INDEX,
                               cur_config, ct.sizeof(cur_config))
 
-    def _create_message_(self, config_file, cur_device_config=None):
+    def set_config_ui(self, config_dict: dict):
+        """ Write a new configuration from UI to the current Mini-PAC device """
+
+        # Insert the new configuration into the PacStruct data object
+        res, data = self._create_message_dict_(config_dict)
+        return self.write_alt(USBRequestCode.SET_CONFIGURATION, int(0x03), MINI_PAC_INDEX, data, ct.sizeof(data)) \
+            if res else False
+
+    def _create_message_(self, config_file: str, cur_device_config=None):
         """ Create the message to be sent to the device """
-        data = cur_device_config if cur_device_config else PacStruct()
 
         # List of possible 'resourceType' values in the config file for a Mini-pac device.
         resource_types = ['mini-pac-pins']
@@ -262,7 +277,11 @@ class MiniPacDevice(USBDeviceHandle):
         if not valid_config:
             return False, None
 
-        config = JSONObject(valid_config)
+        return self._create_message_dict_(valid_config, cur_device_config)
+
+    def _create_message_dict_(self, json_config: dict, cur_device_config=None):
+        data = cur_device_config if cur_device_config else PacStruct()
+        config = JSONObject(json_config)
 
         if config.deviceClass != 'mini-pac':
             _logger.error(_('Configuration device class is not "mini-pac".'))
