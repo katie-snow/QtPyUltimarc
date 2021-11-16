@@ -29,6 +29,8 @@ class DeviceRoles(IntEnum):
     QML = 9
     WRITE_DEVICE = 10
     SAVE_LOCATION = 11
+    # TODO: Create role to return result of writes
+    #  Role to load json file into UI
 
 
 # Map Role Enum values to class property names.
@@ -64,7 +66,6 @@ class DeviceModel(QAbstractListModel, QObject):
             return self._device_.get_device_class()
         if role == DeviceRoles.ATTACHED:
             return self._device_.get_attached()
-            #return 'true' if self._device_.get_attached() else 'false'
         if role == DeviceRoles.DEVICE_NAME:
             return self._device_.get_device_name()
         if role == DeviceRoles.DEVICE_CLASS_NAME:
