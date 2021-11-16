@@ -1,9 +1,11 @@
 import QtQuick 2.4
 import QtQuick.Controls 2.5 as QQC2
 import QtQuick.Layouts 1.15
+import Qt.labs.platform 1.1
 
 import "../simple"
 import "../complex"
+import "../dialogs"
 
 Item {
     id: deviceDelegate
@@ -18,6 +20,18 @@ Item {
         visible: false
         opacity: 0
     }
+
+    FileDialog {
+        id: fileDialog
+    }
+    Connections {
+        target: fileDialog
+        function onAccepted() {
+            model.save_location = fileDialog.file
+            console.log(fileDialog.file)
+        }
+    }
+
 
     function toMainScreen() {
         canGoBack = false
@@ -53,20 +67,18 @@ Item {
             }
             QQC2.Button {
                 text: {
-                    "Write to..."
+                    "Write Device"
                 }
                 highlighted: true
-
-                onClicked:
-                {
-                    // Not Working
-                    if (writeBoardDialog.visible)
-                        return
-                    if (model.attached)
-                        writeBoardDialog.visible = true
-                    else
-                        fileDialog.open()
+                visible: model.attached
+                onClicked: model.write_device
+            }
+            QQC2.Button {
+                text: {
+                    "Write File"
                 }
+                highlighted: true
+                onClicked: fileDialog.open()
             }
         }
         RowLayout {
