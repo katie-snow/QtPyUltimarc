@@ -8,10 +8,10 @@ import typing
 from collections import OrderedDict
 from enum import IntEnum
 
-from PySide6.QtCore import QObject, QAbstractListModel, QModelIndex, Property
+from PySide6.QtCore import QObject, QAbstractListModel, QModelIndex
 
 from ultimarc.tools import ToolEnvironmentObject
-from ultimarc.ui.device import Device
+from ultimarc.ui.devices.device import Device
 from ultimarc.ui.device_details_model import DeviceDataModel
 
 _logger = logging.getLogger('ultimarc')
@@ -27,6 +27,10 @@ class DeviceRoles(IntEnum):
     ATTACHED = 7
     DESCRIPTION = 8
     QML = 9
+    WRITE_DEVICE = 10
+    SAVE_LOCATION = 11
+    # TODO: Create role to return result of writes
+    #  Role to load json file into UI
 
 
 # Map Role Enum values to class property names.
@@ -62,7 +66,6 @@ class DeviceModel(QAbstractListModel, QObject):
             return self._device_.get_device_class()
         if role == DeviceRoles.ATTACHED:
             return self._device_.get_attached()
-            #return 'true' if self._device_.get_attached() else 'false'
         if role == DeviceRoles.DEVICE_NAME:
             return self._device_.get_device_name()
         if role == DeviceRoles.DEVICE_CLASS_NAME:
@@ -77,9 +80,19 @@ class DeviceModel(QAbstractListModel, QObject):
             return self._device_.get_description()
         if role == DeviceRoles.QML:
             return self._device_.get_qml()
+        if role == DeviceRoles.WRITE_DEVICE:
+            return self._device_.write_device()
         return None
 
-    #def setData(self, index:PySide6.QtCore.QModelIndex, value:typing.Any, role:int=...) -> bool:
+    def setData(self, index: QModelIndex, value: typing.Any, role: int = ...) -> bool:
+        if not index.isValid():
+            return False
+
+        if role == DeviceRoles.SAVE_LOCATION:
+            ret = self._device_.write_file(value)
+            self.dataChanged.emit(index, index, [])
+            return ret
+        return False
 
     def set_device(self, device):
         self.beginResetModel()

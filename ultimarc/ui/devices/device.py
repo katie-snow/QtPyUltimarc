@@ -13,7 +13,7 @@ from ultimarc.devices import DeviceClassID
 _logger = logging.getLogger('ultimarc')
 
 
-class Device():
+class Device:
     """ Holds the information for a single device """
     attached = False  # True if hardware is attached
     device_name = 'Unknown Name'  # USB_PRODUCT_DESCRIPTIONS
@@ -62,6 +62,14 @@ class Device():
     # Implement this function in child classes
     def get_qml(self):
         return ''
+
+    # Implement this function in child classes
+    def write_device(self):
+        return None
+
+    # Implement this function in child classes
+    def write_file(self, file):
+        return False
 
     def get_description(self):
         return 'Device class implementation'

@@ -27,13 +27,13 @@ Item {
 
             RowLayout {
                 spacing: _units.large_spacing
-
+                anchors.right: parent.right
                 QQC2.Label {
                     id: selectedName
                     leftPadding: _units.grid_unit
                     font.pointSize: referenceLabel.font.pointSize + 1
                     font.bold: true
-                    text: qsTr('         ')
+                    text: qsTr('Pin Name')
                 }
 
                 QQC2.CheckBox {
@@ -48,8 +48,8 @@ Item {
                 }
                 QQC2.ComboBox {
                     id: selectedAction
-                    implicitWidth: 75
-                    model: ["A", "B", "C", "D"]
+                    implicitWidth: 130
+                    model: _actions
                     onCurrentIndexChanged: {
                         if(activeFocus) {
                             model.action = selectedAction.textAt(currentIndex)
@@ -63,8 +63,8 @@ Item {
                 }
                 QQC2.ComboBox {
                     id: selectedAltAction
-                    implicitWidth: 75
-                    model: ["A", "B", "C", "D", "P", "TAB"]
+                    implicitWidth: 130
+                    model: _alt_actions
                     onCurrentIndexChanged: {
                         if (activeFocus) {
                             model.action = selectedAltAction.textAt(currentIndex)
@@ -105,6 +105,8 @@ Item {
                     cursorShape: Qt.PointingHandCursor
                     function mouseAction() {
                         grid.currentIndex = index
+                        // Make sure the grid has the focus again
+                        grid.focus = true
 
                         selectedName.text = model.name
                         selectedShift.checked = model.shift
@@ -158,6 +160,7 @@ Item {
                             QQC2.Label {
                                 id: action
                                 color: "blue"
+                                Layout.fillWidth: true
                                 bottomPadding: 3
                                 leftPadding: 3
                                 font.pointSize: referenceLabel.font.pointSize
@@ -179,6 +182,7 @@ Item {
                             QQC2.Label {
                                 id: altAction
                                 color: "red"
+                                Layout.fillWidth: true
                                 Layout.alignment: Qt.AlignRight
                                 bottomPadding: 3
                                 rightPadding: 3

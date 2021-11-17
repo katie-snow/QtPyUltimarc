@@ -152,14 +152,6 @@ ApplicationWindow {
 //        onAccepted: Qt.openUrlExternally(_versionChecker.url)
 //    }
 
-    //RestoreDialog {
-    //    id: restoreDialog
-    //}
-
-    FullscreenViewer {
-        id: fullscreenViewer
-    }
-
 //    Rectangle {
 //        id: fatalErrorOverlay
 //        opacity: _drives.isBroken ? 1.0 : 0.0

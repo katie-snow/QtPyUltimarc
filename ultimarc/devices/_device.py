@@ -372,7 +372,8 @@ class USBDeviceHandle:
 
         return response
 
-    def load_config_schema(self, schema_file):
+    @classmethod
+    def load_config_schema(cls, schema_file):
         """
         Load the requested schema file.
         :param schema_file: Schema file name only, no path included.
@@ -395,14 +396,15 @@ class USBDeviceHandle:
         with open(schema_path) as h:
             return json.loads(h.read())
 
-    def validate_config(self, config, schema_file):
+    @classmethod
+    def validate_config(cls, config, schema_file):
         """
         Validate a configuration dict against a schema file.
         :param config: dict
         :param schema_file: relative or abspath of schema.
         :return: True if valid otherwise False.
         """
-        schema = self.load_config_schema(schema_file)
+        schema = cls.load_config_schema(schema_file)
         if not schema:
             return False
 
@@ -415,7 +417,8 @@ class USBDeviceHandle:
 
         return True
 
-    def validate_config_base(self, config_file, resource_types):
+    @classmethod
+    def validate_config_base(cls, config_file, resource_types):
         """
         Validate the configuration file against the base schema.
         :param config_file: Absolute path to configuration json file.
@@ -423,7 +426,7 @@ class USBDeviceHandle:
         :return: config dict.
         """
         # Read the base schema, all json configs must validate against this schema.
-        base_schema = self.load_config_schema('base.schema')
+        base_schema = cls.load_config_schema('base.schema')
         if not base_schema:
             return None
 
