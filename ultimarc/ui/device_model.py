@@ -29,8 +29,8 @@ class DeviceRoles(IntEnum):
     QML = 9
     WRITE_DEVICE = 10
     SAVE_LOCATION = 11
-    # TODO: Create role to return result of writes
-    #  Role to load json file into UI
+    LOAD_LOCATION = 12
+    # TODO: Create role to return result of writes and loads
 
 
 # Map Role Enum values to class property names.
@@ -91,6 +91,12 @@ class DeviceModel(QAbstractListModel, QObject):
         if role == DeviceRoles.SAVE_LOCATION:
             ret = self._device_.write_file(value)
             self.dataChanged.emit(index, index, [])
+            return ret
+        if role == DeviceRoles.LOAD_LOCATION:
+            # do the model reset since we are changing all the config data
+            self.beginResetModel()
+            ret = self._device_.load_file(value)
+            self.endResetModel()
             return ret
         return False
 

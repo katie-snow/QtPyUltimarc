@@ -66,6 +66,17 @@ class MiniPacUI(Device):
             return True
         return False
 
+    def load_file(self, file):
+        resource_types = ['mini-pac-pins']
+        config = MiniPacDevice.validate_config_base(file.toLocalFile(), resource_types)
+
+        if config is not None:
+            if MiniPacDevice.validate_config(config, 'mini-pac.schema'):
+                self.config = config
+                self._json_obj = JSONObject(self.config)
+                return True
+        return False
+
     def rowCount(self):
         return len(PinMapping)
 

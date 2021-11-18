@@ -22,13 +22,24 @@ Item {
     }
 
     FileDialog {
-        id: fileDialog
+        id: loadFileDialog
     }
     Connections {
-        target: fileDialog
+        target: loadFileDialog
         function onAccepted() {
-            model.save_location = fileDialog.file
-            console.log(fileDialog.file)
+            model.load_location = loadFileDialog.file
+            console.log(loadFileDialog.file)
+        }
+    }
+
+    FileDialog {
+        id: saveFileDialog
+    }
+    Connections {
+        target: saveFileDialog
+        function onAccepted() {
+            model.save_location = saveFileDialog.file
+            console.log(saveFileDialog.file)
         }
     }
 
@@ -67,6 +78,16 @@ Item {
             }
             QQC2.Button {
                 text: {
+                    "Load File"
+                }
+                highlighted: true
+                onClicked: {
+                    loadFileDialog.fileMode = FileDialog.OpenFile
+                    loadFileDialog.open()
+                }
+            }
+            QQC2.Button {
+                text: {
                     "Write Device"
                 }
                 highlighted: true
@@ -78,7 +99,10 @@ Item {
                     "Write File"
                 }
                 highlighted: true
-                onClicked: fileDialog.open()
+                onClicked: {
+                    saveFileDialog.fileMode = FileDialog.SaveFile
+                    saveFileDialog.open()
+                }
             }
         }
         RowLayout {

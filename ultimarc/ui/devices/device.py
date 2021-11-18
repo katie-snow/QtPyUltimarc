@@ -71,6 +71,10 @@ class Device:
     def write_file(self, file):
         return False
 
+    # Implement this function in child classes
+    def load_file(self, value):
+        return False
+
     def get_description(self):
         return 'Device class implementation'
 

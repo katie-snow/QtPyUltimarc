@@ -6,6 +6,5 @@ FileDialog {
 
     title: "Choose file"
     defaultSuffix: "json"
-    fileMode: FileDialog.SaveFile
     nameFilters: ["Json files (*.json)"]
 }
