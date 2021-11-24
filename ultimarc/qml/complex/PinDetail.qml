@@ -19,55 +19,78 @@ Item {
 
         Rectangle {
             width: parent.width
-            height: childrenRect.height
+            height: childrenRect.height + _units.small_spacing
 
             color: 'transparent'
             border.color: Qt.darker(palette.window, 1.2)
             border.width: 2
 
             RowLayout {
-                spacing: _units.large_spacing
-                anchors.right: parent.right
-                QQC2.Label {
-                    id: selectedName
-                    leftPadding: _units.grid_unit
-                    font.pointSize: referenceLabel.font.pointSize + 1
-                    font.bold: true
-                    text: qsTr('Pin Name')
-                }
+                ColumnLayout {
+                    QQC2.Label {
+                        id: selectedName
+                        Layout.alignment: Qt.AlignHCenter
+                        font.pointSize: referenceLabel.font.pointSize + 1
+                        font.bold: true
+                        text: qsTr('Pin Name')
+                    }
 
-                QQC2.CheckBox {
-                    id: selectedShift
-                    font.pointSize: referenceLabel.font.pointSize - 1
-                    text: qsTr("Shift")
-                }
-                QQC2.Label {
-                    color: "blue"
-                    font.pointSize: referenceLabel.font.pointSize - 1
-                    text: "Primary Action:"
-                }
-                QQC2.ComboBox {
-                    id: selectedAction
-                    implicitWidth: 130
-                    model: _actions
-                    onCurrentIndexChanged: {
-                        if(activeFocus) {
-                            model.action = selectedAction.textAt(currentIndex)
+                    RowLayout {
+                        spacing: _units.large_spacing
+                        QQC2.Label {
+                            leftPadding: _units.small_spacing - 2
+                            font.pointSize: referenceLabel.font.pointSize - 1
+                            text: "Debounce:"
+                        }
+                        QQC2.ComboBox {
+                            id: debounce
+                            implicitWidth: 87
+                            model: ['standard', 'none', 'short', 'long']
+                            Component.onCompleted: {
+                                if(_d.device_details !== null) {
+                                    currentIndex = find(_d.device_details.debounce)
+                                }
+                            }
+
                         }
                     }
                 }
-                QQC2.Label {
-                    color: "red"
-                    font.pointSize: referenceLabel.font.pointSize - 1
-                    text: "Alternative Action:"
-                }
-                QQC2.ComboBox {
-                    id: selectedAltAction
-                    implicitWidth: 130
-                    model: _alt_actions
-                    onCurrentIndexChanged: {
-                        if (activeFocus) {
-                            model.action = selectedAltAction.textAt(currentIndex)
+
+                RowLayout {
+                    Layout.alignment: Qt.AlignTop
+                    QQC2.CheckBox {
+                        id: selectedShift
+                        font.pointSize: referenceLabel.font.pointSize - 1
+                        text: qsTr("Shift")
+                    }
+                    QQC2.Label {
+                        color: "blue"
+                        font.pointSize: referenceLabel.font.pointSize - 1
+                        text: "Primary Action:"
+                    }
+                    QQC2.ComboBox {
+                        id: selectedAction
+                        implicitWidth: 130
+                        model: _actions
+                        onCurrentIndexChanged: {
+                            if(activeFocus) {
+                                model.action = selectedAction.textAt(currentIndex)
+                            }
+                        }
+                    }
+                    QQC2.Label {
+                        color: "red"
+                        font.pointSize: referenceLabel.font.pointSize - 1
+                        text: "Alternative Action:"
+                    }
+                    QQC2.ComboBox {
+                        id: selectedAltAction
+                        implicitWidth: 130
+                        model: _alt_actions
+                        onCurrentIndexChanged: {
+                            if (activeFocus) {
+                                model.action = selectedAltAction.textAt(currentIndex)
+                            }
                         }
                     }
                 }
@@ -85,6 +108,13 @@ Item {
 
             cellWidth: 100
             cellHeight: 43
+
+            Connections {
+                target: debounce
+                function onActivated() {
+                    _d.device_details.debounce = debounce.textAt(debounce.currentIndex)
+                }
+            }
 
             model: _d.device_details
             delegate: Rectangle {
@@ -155,12 +185,14 @@ Item {
                         Layout.margins: 2
 
                         RowLayout {
-                            Layout.fillWidth: true
+                            anchors {
+                                left: parent.left
+                                right: parent.right
+                            }
 
                             QQC2.Label {
                                 id: action
                                 color: "blue"
-                                Layout.fillWidth: true
                                 bottomPadding: 3
                                 leftPadding: 3
                                 font.pointSize: referenceLabel.font.pointSize
@@ -182,8 +214,6 @@ Item {
                             QQC2.Label {
                                 id: altAction
                                 color: "red"
-                                Layout.fillWidth: true
-                                Layout.alignment: Qt.AlignRight
                                 bottomPadding: 3
                                 rightPadding: 3
                                 font.pointSize: referenceLabel.font.pointSize

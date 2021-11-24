@@ -123,3 +123,11 @@ class MiniPacUI(Device):
 
         self._json_obj = JSONObject(self.config)
         return True
+
+    def get_debounce(self):
+        return self._json_obj.debounce
+
+    def set_debounce(self, debounce):
+        self.config['debounce'] = debounce
+        self._json_obj = JSONObject(self.config)
+

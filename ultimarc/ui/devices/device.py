@@ -75,6 +75,12 @@ class Device:
     def load_file(self, value):
         return False
 
+    def get_debounce(self):
+        return None
+
+    def set_debounce(self, debounce):
+        pass
+
     def get_description(self):
         return 'Device class implementation'
 

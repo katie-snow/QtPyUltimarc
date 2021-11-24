@@ -8,7 +8,7 @@ import typing
 from collections import OrderedDict
 from enum import IntEnum
 
-from PySide6.QtCore import QObject, QAbstractListModel, QModelIndex
+from PySide6.QtCore import QObject, QAbstractListModel, QModelIndex, Signal, Property
 
 _logger = logging.getLogger('ultimarc')
 
@@ -26,6 +26,7 @@ DeviceDataRolePropertyMap = OrderedDict(zip(list(DeviceDataRoles), [k.name.lower
 
 class DeviceDataModel(QAbstractListModel, QObject):
     """ Model for populating the QML Repeater in the UI """
+    _changed_debounce_ = Signal(str)
 
     def __init__(self):
         super().__init__()
@@ -58,3 +59,13 @@ class DeviceDataModel(QAbstractListModel, QObject):
         val = self.device.setData(index, value, role)
         self.dataChanged.emit(index, index, [])
         return val
+
+    def get_debounce(self):
+        return self.device.get_debounce() if self.device is not None else None
+
+    def set_debounce(self, debounce):
+        if self.device:
+            self.device.set_debounce(debounce)
+            self._changed_debounce_.emit(debounce)
+
+    debounce = Property(str, get_debounce, set_debounce, notify=_changed_debounce_)
