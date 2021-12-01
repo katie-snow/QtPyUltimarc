@@ -47,31 +47,35 @@ class Device:
         self.device_key = key
         self.attached = attached
 
-    # Implement this function in child classes
+    # Implement function in child class
+    def roleNames(self):
+        return None
+
+    # Implement function in child class
     def rowCount(self):
         return 0
 
-    # Implement this function in child classes
+    # Implement function in child class
     def data(self, index: QModelIndex, role: int = ...) -> typing.Any:
         return None
 
-    # Implement this function in child classes
+    # Implement function in child class
     def setData(self, index: QModelIndex, value, role: int = ...):
         return None
 
-    # Implement this function in child classes
+    # Implement function in child class
     def get_qml(self):
         return ''
 
-    # Implement this function in child classes
+    # Implement function in child class
     def write_device(self):
         return None
 
-    # Implement this function in child classes
+    # Implement function in child class
     def write_file(self, file):
         return False
 
-    # Implement this function in child classes
+    # Implement function in child class
     def load_file(self, value):
         return False
 

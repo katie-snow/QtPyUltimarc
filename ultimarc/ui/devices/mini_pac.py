@@ -5,6 +5,8 @@
 import json
 import logging
 import typing
+from collections import OrderedDict
+from enum import IntEnum
 
 from PySide6.QtCore import QModelIndex
 
@@ -12,10 +14,20 @@ from ultimarc.devices import DeviceClassID
 from ultimarc.devices.mini_pac import PinMapping, MiniPacDevice
 
 from ultimarc.ui.devices.device import Device
-from ultimarc.ui.device_details_model import DeviceDataRoles
 from ultimarc.system_utils import JSONObject
 
 _logger = logging.getLogger('ultimarc')
+
+
+class MiniPacRoles(IntEnum):
+    NAME = 1
+    ACTION = 2
+    ALT_ACTION = 3
+    SHIFT = 4
+
+
+# Map Role Enum values to class property names.
+MiniPacRoleMap = OrderedDict(zip(list(MiniPacRoles), [k.name.lower() for k in MiniPacRoles]))
 
 
 class MiniPacUI(Device):
@@ -77,30 +89,33 @@ class MiniPacUI(Device):
                 return True
         return False
 
+    def roleNames(self):
+        return MiniPacRoleMap.items()
+
     def rowCount(self):
         return len(PinMapping)
 
     def data(self, index: QModelIndex, role: int = ...) -> typing.Any:
         pin_name = list(PinMapping)[index.row()]
-        if role == DeviceDataRoles.NAME:
+        if role == MiniPacRoles.NAME:
             return pin_name
 
         for pin in self._json_obj.pins:
             if pin.name == pin_name:
-                if role == DeviceDataRoles.ACTION:
+                if role == MiniPacRoles.ACTION:
                     return pin.action
-                if role == DeviceDataRoles.ALT_ACTION:
+                if role == MiniPacRoles.ALT_ACTION:
                     try:
                         return pin.alternate_action
                     except AttributeError:
                         return ''
-                if role == DeviceDataRoles.SHIFT:
+                if role == MiniPacRoles.SHIFT:
                     try:
                         return pin.shift
                     except AttributeError:
                         return False
         else:
-            return False if role == DeviceDataRoles.SHIFT else ''
+            return False if role == MiniPacRoles.SHIFT else ''
 
     def setData(self, index: QModelIndex, value, role: int = ...):
         pin_name = list(PinMapping)[index.row()]
@@ -112,13 +127,13 @@ class MiniPacUI(Device):
             pin = {'name': pin_name, 'action': ''}
             self.config['pins'].append(pin)
 
-        if role == DeviceDataRoles.SHIFT:
+        if role == MiniPacRoles.SHIFT:
             pin['shift'] = value
 
-        if role == DeviceDataRoles.ACTION:
+        if role == MiniPacRoles.ACTION:
             pin['action'] = value
 
-        if role == DeviceDataRoles.ALT_ACTION:
+        if role == MiniPacRoles.ALT_ACTION:
             pin['alternate_action'] = value
 
         self._json_obj = JSONObject(self.config)

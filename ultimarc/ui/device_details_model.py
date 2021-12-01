@@ -6,22 +6,10 @@
 import logging
 import typing
 from collections import OrderedDict
-from enum import IntEnum
 
 from PySide6.QtCore import QObject, QAbstractListModel, QModelIndex, Signal, Property
 
 _logger = logging.getLogger('ultimarc')
-
-
-class DeviceDataRoles(IntEnum):
-    NAME = 1
-    ACTION = 2
-    ALT_ACTION = 3
-    SHIFT = 4
-
-
-# Map Role Enum values to class property names.
-DeviceDataRolePropertyMap = OrderedDict(zip(list(DeviceDataRoles), [k.name.lower() for k in DeviceDataRoles]))
 
 
 class DeviceDataModel(QAbstractListModel, QObject):
@@ -34,7 +22,7 @@ class DeviceDataModel(QAbstractListModel, QObject):
 
     def roleNames(self) -> typing.Dict:
         roles = OrderedDict()
-        for k, v in DeviceDataRolePropertyMap.items():
+        for k, v in self.device.roleNames():
             roles[k] = v.encode('utf-8')
         return roles
 
