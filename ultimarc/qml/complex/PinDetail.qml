@@ -43,15 +43,14 @@ Item {
                             text: "Debounce:"
                         }
                         QQC2.ComboBox {
-                            id: debounce
                             implicitWidth: 87
                             model: ['standard', 'none', 'short', 'long']
                             Component.onCompleted: {
-                                if(_d.device_details !== null) {
-                                    currentIndex = find(_d.device_details.debounce)
-                                }
+                                currentIndex = find(_d.device_details.device.debounce)
                             }
-
+                            onActivated: {
+                                _d.device_details.device.debounce = textAt(currentIndex)
+                            }
                         }
                     }
                 }
@@ -71,7 +70,7 @@ Item {
                     QQC2.ComboBox {
                         id: selectedAction
                         implicitWidth: 130
-                        model: _actions
+                        model: _d.device_details.device.actions
                         onCurrentIndexChanged: {
                             if(activeFocus) {
                                 model.action = selectedAction.textAt(currentIndex)
@@ -86,7 +85,7 @@ Item {
                     QQC2.ComboBox {
                         id: selectedAltAction
                         implicitWidth: 130
-                        model: _alt_actions
+                        model: _d.device_details.device.alt_actions
                         onCurrentIndexChanged: {
                             if (activeFocus) {
                                 model.action = selectedAltAction.textAt(currentIndex)
@@ -108,13 +107,6 @@ Item {
 
             cellWidth: 100
             cellHeight: 43
-
-            Connections {
-                target: debounce
-                function onActivated() {
-                    _d.device_details.debounce = debounce.textAt(debounce.currentIndex)
-                }
-            }
 
             model: _d.device_details
             delegate: Rectangle {
