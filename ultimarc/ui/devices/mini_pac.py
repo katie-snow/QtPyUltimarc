@@ -8,10 +8,11 @@ import typing
 from collections import OrderedDict
 from enum import IntEnum
 
-from PySide6.QtCore import QModelIndex
+from PySide6.QtCore import QModelIndex, QObject, Property, Signal
 
 from ultimarc.devices import DeviceClassID
 from ultimarc.devices.mini_pac import PinMapping, MiniPacDevice
+from ultimarc.ui.action_model import ActionModel
 
 from ultimarc.ui.devices.device import Device
 from ultimarc.system_utils import JSONObject
@@ -31,6 +32,8 @@ MiniPacRoleMap = OrderedDict(zip(list(MiniPacRoles), [k.name.lower() for k in Mi
 
 
 class MiniPacUI(Device):
+    _changed_debounce_ = Signal(str)
+
     def __init__(self, args, env, attached,
                  device_class_id,
                  name=None, device_class_descr=None,
@@ -41,6 +44,9 @@ class MiniPacUI(Device):
         self.icon = 'qrc:/logos/workstation'
         self.config = None
         self._json_obj = None
+
+        self._action_model = ActionModel()
+        self._alternate_action_model = ActionModel()
 
     def get_description(self):
         return 'This is the description of the Mini-pac device'
@@ -146,3 +152,12 @@ class MiniPacUI(Device):
         self.config['debounce'] = debounce
         self._json_obj = JSONObject(self.config)
 
+    def get_action_model(self):
+        return self._action_model
+
+    def get_alternate_action_model(self):
+        return self._alternate_action_model
+
+    actions = Property(QObject, get_action_model, constant=True)
+    alt_actions = Property(QObject, get_alternate_action_model, constant=True)
+    debounce = Property(str, get_debounce, set_debounce, notify=_changed_debounce_)
