@@ -9,7 +9,6 @@ from PySide6 import QtCore, QtWidgets, QtQml
 
 from ultimarc import translate_gettext as _
 from ultimarc.tools import ToolContextManager
-from ultimarc.ui.action_model import ActionModel
 from ultimarc.ui.device_class_model import DeviceClassModel
 from ultimarc.ui.devices_filter_proxy_model import DevicesFilterProxyModel, ClassFilterProxyModel
 from ultimarc.ui.devices_model import DevicesModel
@@ -53,9 +52,6 @@ if __name__ == '__main__':
         device_sort = DevicesSortProxyModel()
         devices = DevicesModel(args, tool_env)
 
-        action_model = ActionModel()
-        alternate_action_model = ActionModel()
-
         # Provide the list to the string model from the filter model
         device_class = DeviceClassModel()
         device_sort.setSourceModel(devices)
@@ -71,8 +67,6 @@ if __name__ == '__main__':
         context.setContextProperty('_d', devices)
         context.setContextProperty('_classes', device_class)
 
-        context.setContextProperty('_actions', action_model)
-        context.setContextProperty('_alt_actions', alternate_action_model)
         context.setContextProperty('_units', units)
         context.setContextProperty('_pages', pages)
 
