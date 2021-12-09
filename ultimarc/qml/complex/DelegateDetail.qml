@@ -28,7 +28,7 @@ Item {
         target: loadFileDialog
         function onAccepted() {
             model.load_location = loadFileDialog.file
-            console.log(loadFileDialog.file)
+            //console.log(loadFileDialog.file)
         }
     }
 
@@ -39,7 +39,7 @@ Item {
         target: saveFileDialog
         function onAccepted() {
             model.save_location = saveFileDialog.file
-            console.log(saveFileDialog.file)
+            //console.log(saveFileDialog.file)
         }
     }
 
