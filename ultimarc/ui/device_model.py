@@ -8,7 +8,7 @@ import typing
 from collections import OrderedDict
 from enum import IntEnum
 
-from PySide6.QtCore import QObject, QAbstractListModel, QModelIndex
+from PySide6.QtCore import QObject, QAbstractListModel, QModelIndex, Property
 
 from ultimarc.tools import ToolEnvironmentObject
 from ultimarc.ui.devices.device import Device
@@ -41,13 +41,10 @@ class DeviceModel(QAbstractListModel, QObject):
     """ This class/model holds the detailed information for the view.
      Other classes will copy their data into this one to display. """
 
-    # Internal member for the currently displayed device
-    _device_ = None
-
     def __init__(self, args, env: (ToolEnvironmentObject, None)):
         super().__init__()
         self._device_ = Device(args, env, False, '')
-        self._details_model_ = DeviceDataModel()  # This is a class level variable
+        self._details_model_ = DeviceDataModel()
 
     def roleNames(self) -> typing.Dict:
         roles = OrderedDict()
@@ -108,3 +105,5 @@ class DeviceModel(QAbstractListModel, QObject):
 
     def get_details(self):
         return self._details_model_
+
+    details = Property(QObject, get_details, constant=True)
