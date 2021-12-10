@@ -5,20 +5,35 @@
 import json
 import logging
 import typing
+from collections import OrderedDict
+from enum import IntEnum
 
-from PySide6.QtCore import QModelIndex
+from PySide6.QtCore import QModelIndex, QObject, Property, Signal
 
 from ultimarc.devices import DeviceClassID
 from ultimarc.devices.mini_pac import PinMapping, MiniPacDevice
+from ultimarc.ui.action_model import ActionModel
 
 from ultimarc.ui.devices.device import Device
-from ultimarc.ui.device_details_model import DeviceDataRoles
 from ultimarc.system_utils import JSONObject
 
 _logger = logging.getLogger('ultimarc')
 
 
+class MiniPacRoles(IntEnum):
+    NAME = 1
+    ACTION = 2
+    ALT_ACTION = 3
+    SHIFT = 4
+
+
+# Map Role Enum values to class property names.
+MiniPacRoleMap = OrderedDict(zip(list(MiniPacRoles), [k.name.lower() for k in MiniPacRoles]))
+
+
 class MiniPacUI(Device):
+    _changed_debounce_ = Signal(str)
+
     def __init__(self, args, env, attached,
                  device_class_id,
                  name=None, device_class_descr=None,
@@ -29,6 +44,9 @@ class MiniPacUI(Device):
         self.icon = 'qrc:/logos/workstation'
         self.config = None
         self._json_obj = None
+
+        self._action_model = ActionModel()
+        self._alternate_action_model = ActionModel()
 
     def get_description(self):
         return 'This is the description of the Mini-pac device'
@@ -66,30 +84,44 @@ class MiniPacUI(Device):
             return True
         return False
 
+    def load_file(self, file):
+        resource_types = ['mini-pac-pins']
+        config = MiniPacDevice.validate_config_base(file.toLocalFile(), resource_types)
+
+        if config is not None:
+            if MiniPacDevice.validate_config(config, 'mini-pac.schema'):
+                self.config = config
+                self._json_obj = JSONObject(self.config)
+                return True
+        return False
+
+    def roleNames(self):
+        return MiniPacRoleMap.items()
+
     def rowCount(self):
         return len(PinMapping)
 
     def data(self, index: QModelIndex, role: int = ...) -> typing.Any:
         pin_name = list(PinMapping)[index.row()]
-        if role == DeviceDataRoles.NAME:
+        if role == MiniPacRoles.NAME:
             return pin_name
 
         for pin in self._json_obj.pins:
             if pin.name == pin_name:
-                if role == DeviceDataRoles.ACTION:
+                if role == MiniPacRoles.ACTION:
                     return pin.action
-                if role == DeviceDataRoles.ALT_ACTION:
+                if role == MiniPacRoles.ALT_ACTION:
                     try:
                         return pin.alternate_action
                     except AttributeError:
                         return ''
-                if role == DeviceDataRoles.SHIFT:
+                if role == MiniPacRoles.SHIFT:
                     try:
                         return pin.shift
                     except AttributeError:
                         return False
         else:
-            return False if role == DeviceDataRoles.SHIFT else ''
+            return False if role == MiniPacRoles.SHIFT else ''
 
     def setData(self, index: QModelIndex, value, role: int = ...):
         pin_name = list(PinMapping)[index.row()]
@@ -101,14 +133,31 @@ class MiniPacUI(Device):
             pin = {'name': pin_name, 'action': ''}
             self.config['pins'].append(pin)
 
-        if role == DeviceDataRoles.SHIFT:
+        if role == MiniPacRoles.SHIFT:
             pin['shift'] = value
 
-        if role == DeviceDataRoles.ACTION:
+        if role == MiniPacRoles.ACTION:
             pin['action'] = value
 
-        if role == DeviceDataRoles.ALT_ACTION:
+        if role == MiniPacRoles.ALT_ACTION:
             pin['alternate_action'] = value
 
         self._json_obj = JSONObject(self.config)
         return True
+
+    def get_debounce(self):
+        return self._json_obj.debounce
+
+    def set_debounce(self, debounce):
+        self.config['debounce'] = debounce
+        self._json_obj = JSONObject(self.config)
+
+    def get_action_model(self):
+        return self._action_model
+
+    def get_alternate_action_model(self):
+        return self._alternate_action_model
+
+    actions = Property(QObject, get_action_model, constant=True)
+    alt_actions = Property(QObject, get_alternate_action_model, constant=True)
+    debounce = Property(str, get_debounce, set_debounce, notify=_changed_debounce_)

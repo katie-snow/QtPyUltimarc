@@ -6,14 +6,14 @@ import logging
 import typing
 from enum import Enum
 
-from PySide6.QtCore import QModelIndex
+from PySide6.QtCore import QModelIndex, QObject
 
 from ultimarc.devices import DeviceClassID
 
 _logger = logging.getLogger('ultimarc')
 
 
-class Device:
+class Device(QObject):
     """ Holds the information for a single device """
     attached = False  # True if hardware is attached
     device_name = 'Unknown Name'  # USB_PRODUCT_DESCRIPTIONS
@@ -26,6 +26,7 @@ class Device:
                  device_class_id,
                  name=None, device_class_descr=None,
                  key=''):
+        super().__init__()
 
         self.env = env
         self.args = args
@@ -47,28 +48,36 @@ class Device:
         self.device_key = key
         self.attached = attached
 
-    # Implement this function in child classes
+    # Implement function in child class
+    def roleNames(self):
+        return None
+
+    # Implement function in child class
     def rowCount(self):
         return 0
 
-    # Implement this function in child classes
+    # Implement function in child class
     def data(self, index: QModelIndex, role: int = ...) -> typing.Any:
         return None
 
-    # Implement this function in child classes
+    # Implement function in child class
     def setData(self, index: QModelIndex, value, role: int = ...):
         return None
 
-    # Implement this function in child classes
+    # Implement function in child class
     def get_qml(self):
         return ''
 
-    # Implement this function in child classes
+    # Implement function in child class
     def write_device(self):
         return None
 
-    # Implement this function in child classes
+    # Implement function in child class
     def write_file(self, file):
+        return False
+
+    # Implement function in child class
+    def load_file(self, value):
         return False
 
     def get_description(self):

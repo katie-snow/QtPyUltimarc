@@ -8,7 +8,7 @@ import typing
 from collections import OrderedDict
 from enum import IntEnum
 
-from PySide6.QtCore import QObject, QAbstractListModel, QModelIndex
+from PySide6.QtCore import QObject, QAbstractListModel, QModelIndex, Property
 
 from ultimarc.tools import ToolEnvironmentObject
 from ultimarc.ui.devices.device import Device
@@ -29,8 +29,8 @@ class DeviceRoles(IntEnum):
     QML = 9
     WRITE_DEVICE = 10
     SAVE_LOCATION = 11
-    # TODO: Create role to return result of writes
-    #  Role to load json file into UI
+    LOAD_LOCATION = 12
+    # TODO: Create role to return result of writes and loads
 
 
 # Map Role Enum values to class property names.
@@ -41,13 +41,10 @@ class DeviceModel(QAbstractListModel, QObject):
     """ This class/model holds the detailed information for the view.
      Other classes will copy their data into this one to display. """
 
-    # Internal member for the currently displayed device
-    _device_ = None
-
     def __init__(self, args, env: (ToolEnvironmentObject, None)):
         super().__init__()
         self._device_ = Device(args, env, False, '')
-        self._details_model_ = DeviceDataModel()  # This is a class level variable
+        self._details_model_ = DeviceDataModel()
 
     def roleNames(self) -> typing.Dict:
         roles = OrderedDict()
@@ -92,6 +89,12 @@ class DeviceModel(QAbstractListModel, QObject):
             ret = self._device_.write_file(value)
             self.dataChanged.emit(index, index, [])
             return ret
+        if role == DeviceRoles.LOAD_LOCATION:
+            # do the model reset since we are changing all the config data
+            self.beginResetModel()
+            ret = self._device_.load_file(value)
+            self.endResetModel()
+            return ret
         return False
 
     def set_device(self, device):
@@ -102,3 +105,5 @@ class DeviceModel(QAbstractListModel, QObject):
 
     def get_details(self):
         return self._details_model_
+
+    details = Property(QObject, get_details, constant=True)

@@ -104,7 +104,6 @@ class DevicesModel(QAbstractListModel, QObject):
         return None
 
     def setData(self, index: QModelIndex, value, role: int = ...):
-        # TODO: Implement for writing GUI -> Device
         if not index.isValid():
             return False
 
@@ -123,10 +122,6 @@ class DevicesModel(QAbstractListModel, QObject):
     def get_device(self):
         return self._device_model_
 
-    def get_device_details(self):
-        return self._device_model_.get_details()
-
     device = Property(QObject, get_device, constant=True)
-    device_details = Property(QObject, get_device_details, constant=True)
     device_count = Property(int, get_device_count, constant=True)
     category = Property(str, get_category, constant=True)
