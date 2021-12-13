@@ -23,7 +23,7 @@ Item {
         clip: true
         focus: true
 
-        model: _d.device
+        model: _d.device_model
         delegate: DelegateDetail {
             focus: true
         }
