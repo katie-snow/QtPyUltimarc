@@ -9,6 +9,7 @@
         <file>complex/ZoomableImage.qml</file>
         <file>simple/Arrow.qml</file>
         <file>simple/FocusRectangle.qml</file>
+        <file>dialogs/FileDialog.qml</file>
         <file>main.qml</file>
     </qresource>
 </RCC>
