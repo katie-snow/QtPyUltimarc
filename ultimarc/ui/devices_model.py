@@ -47,6 +47,7 @@ class DevicesModel(QAbstractListModel, QObject):
         self._category_ = 'Ultimarc Configurations'
         self._devices_ = []
         self._device_model_ = DeviceModel(args, env)
+        self._selected_device_ = None
         self.selected_row = -1
 
         self.setup_info()
@@ -109,6 +110,7 @@ class DevicesModel(QAbstractListModel, QObject):
 
         if role == DevicesRoles.SELECTED_DEVICE:
             self.selected_row = index.row()
+            self._selected_device_ = self._devices_[index.row()]
             self._device_model_.set_device(self._devices_[index.row()])
             return True
         return False
@@ -119,9 +121,13 @@ class DevicesModel(QAbstractListModel, QObject):
     def get_device_count(self):
         return self._device_count_ if self._device_count_ < 4 else 4
 
-    def get_device(self):
+    def get_device_model(self):
         return self._device_model_
 
+    def get_device(self):
+        return self._selected_device_
+
     device = Property(QObject, get_device, constant=True)
+    device_model = Property(QObject, get_device_model, constant=True)
     device_count = Property(int, get_device_count, constant=True)
     category = Property(str, get_category, constant=True)
