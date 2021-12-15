@@ -98,7 +98,7 @@ FocusScope {
             opacity: !_pages.front_page ? 1.0 : 0.0
             activeFocusOnTab: visible
             visible: opacity > 0.0
-            model: _classes
+            model: _device_class_model
             textRole: "class_name"
             valueRole: "class_value"
 
