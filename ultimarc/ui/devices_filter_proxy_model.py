@@ -34,7 +34,7 @@ class ClassFilterProxyModel(QSortFilterProxyModel, QObject):
             self._changed_filter_class_.emit(self._filter_class_)
             self.invalidateFilter()
 
-    filter_class = Property(str, get_filter_class, set_filter_class, notify=_changed_filter_class_)
+    filter = Property(str, get_filter_class, set_filter_class, notify=_changed_filter_class_)
 
     def filterAcceptsRow(self, source_row, source_parent: QModelIndex):
         index = self.sourceModel().index(source_row, 0, source_parent)

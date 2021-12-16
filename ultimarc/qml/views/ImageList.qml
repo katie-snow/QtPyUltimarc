@@ -103,7 +103,7 @@ FocusScope {
             valueRole: "class_value"
 
             onActivated:  {
-                _class.filter_class = currentValue
+                _class_filter.filter = currentValue
             }
 
             Behavior on opacity {

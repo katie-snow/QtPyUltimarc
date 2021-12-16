@@ -61,7 +61,7 @@ if __name__ == '__main__':
         # Connect Python to QML
         context = engine.rootContext()
         context.setContextProperty('_ultimarc_version', '0.1')
-        context.setContextProperty('_class', class_filter)
+        context.setContextProperty('_class_filter', class_filter)
         context.setContextProperty('_devices', device_filter)
         # devices is only used to calculate the position by the number of devices connected in the QML.
         context.setContextProperty('_d', devices)
