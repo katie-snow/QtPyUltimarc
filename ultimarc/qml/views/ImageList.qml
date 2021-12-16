@@ -81,8 +81,8 @@ FocusScope {
             visible: opacity > 0.0
             activeFocusOnTab: visible
             placeholderText: qsTr("Find an Ultimarc Configuration")
-            text: _devices.filter_text
-            onTextChanged: _devices.filter_text = text
+            text: _devices_filter.filter_text
+            onTextChanged: _devices_filter.filter_text = text
             clip: true
 
             Behavior on opacity {
@@ -165,7 +165,7 @@ FocusScope {
 
             clip: true
             focus: true
-            model: _devices
+            model: _devices_filter
 
             delegate: DelegateImage {
                 width: devicesListView.width
@@ -356,7 +356,7 @@ FocusScope {
                     function action() {
                         moveUp.enabled = true
                         _pages.front_page = false
-                        _devices.invalidate_filter
+                        _devices_filter.invalidate_filter
                     }
                 }
             }

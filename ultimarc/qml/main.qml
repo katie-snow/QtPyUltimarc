@@ -135,7 +135,6 @@ ApplicationWindow {
                     function onStepForward(index) {
                         contentList.currentIndex++
                         canGoBack = true
-                        _devices.selected_index = index
                     }
                 }
             }

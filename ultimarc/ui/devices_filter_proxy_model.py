@@ -52,10 +52,8 @@ class ClassFilterProxyModel(QSortFilterProxyModel, QObject):
 
 class DevicesFilterProxyModel(QSortFilterProxyModel, QObject):
     _changed_filter_text_ = Signal(str)
-    _changed_selected_index_ = Signal()
 
     _filter_text_ = ''
-    _selected_index_ = -1
 
     def __init__(self, _pages):
         super().__init__()
@@ -76,15 +74,6 @@ class DevicesFilterProxyModel(QSortFilterProxyModel, QObject):
             self._changed_filter_text_.emit(self._filter_text_)
             self.invalidateFilter()
 
-    def set_selected_index(self, row):
-        if self._selected_index_ != row:
-            self._selected_index_ = row
-            self._changed_selected_index_.emit()
-
-    def get_selected_index(self):
-        return self._selected_index_
-
-    selected_index = Property(int, get_selected_index, set_selected_index, notify=_changed_selected_index_)
     invalidate_filter = Property(int, custom_invalidate_filter, constant=True)
     filter_text = Property(str, get_filter_text, set_filter_text, notify=_changed_filter_text_)
 
