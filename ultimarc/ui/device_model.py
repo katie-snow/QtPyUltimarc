@@ -12,7 +12,7 @@ from PySide6.QtCore import QObject, QAbstractListModel, QModelIndex, Property
 
 from ultimarc.tools import ToolEnvironmentObject
 from ultimarc.ui.devices.device import Device
-from ultimarc.ui.device_details_model import DeviceDataModel
+from ultimarc.ui.device_details_model import DeviceDetailsModel
 
 _logger = logging.getLogger('ultimarc')
 
@@ -44,7 +44,7 @@ class DeviceModel(QAbstractListModel, QObject):
     def __init__(self, args, env: (ToolEnvironmentObject, None)):
         super().__init__()
         self._device_ = Device(args, env, False, '')
-        self._details_model_ = DeviceDataModel()
+        self._details_model_ = DeviceDetailsModel()
 
     def roleNames(self) -> typing.Dict:
         roles = OrderedDict()
@@ -98,12 +98,12 @@ class DeviceModel(QAbstractListModel, QObject):
         return False
 
     def set_device(self, device):
+        self._details_model_.set_device(device)
         self.beginResetModel()
         self._device_ = device
         self.endResetModel()
-        self._details_model_.set_device(device)
 
-    def get_details(self):
+    def get_details_model(self):
         return self._details_model_
 
-    details = Property(QObject, get_details, constant=True)
+    details_model = Property(QObject, get_details_model, constant=True)

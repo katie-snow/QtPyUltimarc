@@ -44,12 +44,13 @@ Item {
                         }
                         QQC2.ComboBox {
                             implicitWidth: 87
+                            implicitHeight: 26
                             model: ['standard', 'none', 'short', 'long']
                             Component.onCompleted: {
-                                currentIndex = find(_d.device.details.debounce)
+                                currentIndex = find(_d.device.debounce)
                             }
                             onActivated: {
-                                _d.device.details.debounce = textAt(currentIndex)
+                                _d.device.debounce = textAt(currentIndex)
                             }
                         }
                     }
@@ -70,7 +71,7 @@ Item {
                     QQC2.ComboBox {
                         id: selectedAction
                         implicitWidth: 130
-                        model: _d.device.details.actions
+                        model: _d.device.actions
                         onCurrentIndexChanged: {
                             if(activeFocus) {
                                 model.action = selectedAction.textAt(currentIndex)
@@ -85,7 +86,7 @@ Item {
                     QQC2.ComboBox {
                         id: selectedAltAction
                         implicitWidth: 130
-                        model: _d.device.details.alt_actions
+                        model: _d.device.alt_actions
                         onCurrentIndexChanged: {
                             if (activeFocus) {
                                 model.action = selectedAltAction.textAt(currentIndex)
@@ -108,7 +109,7 @@ Item {
             cellWidth: 100
             cellHeight: 43
 
-            model: _d.device.details
+            model: _d.device_model.details_model
             delegate: Rectangle {
                 width: grid.cellWidth
                 height: grid.cellHeight

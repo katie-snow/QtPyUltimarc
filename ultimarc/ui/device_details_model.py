@@ -12,7 +12,7 @@ from PySide6.QtCore import QObject, QAbstractListModel, QModelIndex, Property
 _logger = logging.getLogger('ultimarc')
 
 
-class DeviceDataModel(QAbstractListModel, QObject):
+class DeviceDetailsModel(QAbstractListModel, QObject):
     """ Model for populating the QML Repeater in the UI """
 
     def __init__(self):
@@ -46,8 +46,3 @@ class DeviceDataModel(QAbstractListModel, QObject):
         val = self._device.setData(index, value, role)
         self.dataChanged.emit(index, index, [])
         return val
-
-    def get_device(self):
-        return self._device
-
-    device = Property(QObject, get_device, constant=True)
