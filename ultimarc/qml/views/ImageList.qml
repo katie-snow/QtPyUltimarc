@@ -130,7 +130,7 @@ FocusScope {
                 onStopped: moveUp.enabled = false
             }
         }
-        height: _pages.front_page ? adjustedHeight(_d.device_count) : parent.height
+        height: _pages.front_page ? adjustedHeight(_devices.count) : parent.height
         anchors {
             left: parent.left
             right: parent.right
@@ -284,7 +284,7 @@ FocusScope {
                 width: devicesListView.width - 2
                 height: _units.grid_unit * 2
                 anchors.horizontalCenter: parent.horizontalCenter
-                y: Math.round(_units.grid_unit * 4.5) * _d.device_count + 1
+                y: Math.round(_units.grid_unit * 4.5) * _devices.count + 1
                 z: 1
                 Rectangle {
                     anchors.fill: parent

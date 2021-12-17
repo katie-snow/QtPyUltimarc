@@ -63,8 +63,7 @@ if __name__ == '__main__':
         context.setContextProperty('_ultimarc_version', '0.1')
         context.setContextProperty('_class_filter', class_filter)
         context.setContextProperty('_devices_filter', device_filter)
-        # devices is only used to calculate the position by the number of devices connected in the QML.
-        context.setContextProperty('_d', devices)
+        context.setContextProperty('_devices', devices)
         context.setContextProperty('_device_class_model', device_class)
 
         context.setContextProperty('_units', units)

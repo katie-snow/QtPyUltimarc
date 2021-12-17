@@ -129,5 +129,5 @@ class DevicesModel(QAbstractListModel, QObject):
 
     device = Property(QObject, get_device, constant=True)
     device_model = Property(QObject, get_device_model, constant=True)
-    device_count = Property(int, get_device_count, constant=True)
+    count = Property(int, get_device_count, constant=True)
     category = Property(str, get_category, constant=True)
