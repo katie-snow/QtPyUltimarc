@@ -1,9 +1,9 @@
 <RCC>
     <qresource prefix="/">
-        <file>views/ImageDetails.qml</file>
-        <file>views/ImageList.qml</file>
-        <file>complex/PinDetail.qml</file>
-        <file>complex/DelegateImage.qml</file>
+        <file>views/DeviceDetails.qml</file>
+        <file>views/DeviceList.qml</file>
+        <file>complex/PacDetail.qml</file>
+        <file>complex/DelegateDevice.qml</file>
         <file>complex/DelegateDetail.qml</file>
         <file>complex/IndicatedImage.qml</file>
         <file>complex/ZoomableImage.qml</file>

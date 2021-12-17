@@ -68,7 +68,7 @@ class MiniPacUI(Device):
 
     def get_qml(self):
         self.load_config()
-        return 'PinDetail.qml'
+        return 'PacDetail.qml'
 
     def write_device(self):
         devices = [dev for dev in

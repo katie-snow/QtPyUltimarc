@@ -167,7 +167,7 @@ FocusScope {
             focus: true
             model: _devices_filter
 
-            delegate: DelegateImage {
+            delegate: DelegateDevice {
                 width: devicesListView.width
                 focus: true
             }

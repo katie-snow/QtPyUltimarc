@@ -112,7 +112,7 @@ ApplicationWindow {
                 right: parent.right
             }
 
-            model: ["views/ImageList.qml", "views/ImageDetails.qml"]
+            model: ["views/DeviceList.qml", "views/DeviceDetails.qml"]
             orientation: ListView.Horizontal
             snapMode: ListView.SnapToItem
             highlightFollowsCurrentItem: true
