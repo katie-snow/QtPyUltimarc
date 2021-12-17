@@ -46,6 +46,7 @@ Item {
 
     function toMainScreen() {
         canGoBack = false
+        detailLoader.source = ''
         contentList.currentIndex--
     }
 

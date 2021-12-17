@@ -51,7 +51,7 @@ class MiniPacUI(Device):
     def get_description(self):
         return 'This is the description of the Mini-pac device'
 
-    def load_config(self):
+    def populate(self):
         if self.config is None:
             if self.attached:
                 devices = [dev for dev in
@@ -67,7 +67,7 @@ class MiniPacUI(Device):
             self._json_obj = JSONObject(self.config)
 
     def get_qml(self):
-        self.load_config()
+        self.populate()
         return 'PacDetail.qml'
 
     def write_device(self):
