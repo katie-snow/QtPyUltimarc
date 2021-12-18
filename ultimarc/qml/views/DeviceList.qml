@@ -81,8 +81,8 @@ FocusScope {
             visible: opacity > 0.0
             activeFocusOnTab: visible
             placeholderText: qsTr("Find an Ultimarc Configuration")
-            text: _devices.filter_text
-            onTextChanged: _devices.filter_text = text
+            text: _devices_filter.filter_text
+            onTextChanged: _devices_filter.filter_text = text
             clip: true
 
             Behavior on opacity {
@@ -98,12 +98,12 @@ FocusScope {
             opacity: !_pages.front_page ? 1.0 : 0.0
             activeFocusOnTab: visible
             visible: opacity > 0.0
-            model: _classes
+            model: _device_class_model
             textRole: "class_name"
             valueRole: "class_value"
 
             onActivated:  {
-                _class.filter_class = currentValue
+                _class_filter.filter = currentValue
             }
 
             Behavior on opacity {
@@ -130,7 +130,7 @@ FocusScope {
                 onStopped: moveUp.enabled = false
             }
         }
-        height: _pages.front_page ? adjustedHeight(_d.device_count) : parent.height
+        height: _pages.front_page ? adjustedHeight(_devices.count) : parent.height
         anchors {
             left: parent.left
             right: parent.right
@@ -165,9 +165,9 @@ FocusScope {
 
             clip: true
             focus: true
-            model: _devices
+            model: _devices_filter
 
-            delegate: DelegateImage {
+            delegate: DelegateDevice {
                 width: devicesListView.width
                 focus: true
             }
@@ -284,7 +284,7 @@ FocusScope {
                 width: devicesListView.width - 2
                 height: _units.grid_unit * 2
                 anchors.horizontalCenter: parent.horizontalCenter
-                y: Math.round(_units.grid_unit * 4.5) * _d.device_count + 1
+                y: Math.round(_units.grid_unit * 4.5) * _devices.count + 1
                 z: 1
                 Rectangle {
                     anchors.fill: parent
@@ -356,7 +356,7 @@ FocusScope {
                     function action() {
                         moveUp.enabled = true
                         _pages.front_page = false
-                        _devices.invalidate_filter
+                        _devices_filter.invalidate_filter
                     }
                 }
             }

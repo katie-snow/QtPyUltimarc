@@ -13,7 +13,7 @@ _logger = logging.getLogger('ultimarc')
 
 
 class DeviceDetailsModel(QAbstractListModel, QObject):
-    """ Model for populating the QML Repeater in the UI """
+    """ Model for populating the QML UI with device details """
 
     def __init__(self):
         super().__init__()
