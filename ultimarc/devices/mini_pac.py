@@ -107,6 +107,7 @@ class MiniPacDevice(USBDeviceHandle):
         header = PacConfigUnion()
         header.asByte = pac_struct.header.byte_4
         json_obj['debounce'] = get_ipac_series_debounce_key(header.config.debounce)
+        json_obj['paclink'] = True if header.config.paclink is 0x01 else False
 
         # macros
         macros = self._create_macro_array_(pac_struct)
@@ -243,12 +244,33 @@ class MiniPacDevice(USBDeviceHandle):
             cur_config = self.get_current_configuration()
 
             header = PacConfigUnion()
+            header.asByte = cur_config.header.byte_4
             header.config.debounce = IPACSeriesDebounce[val]
 
             cur_config.header.byte_4 = header.asByte
         else:
             _logger.info(_(f'"{debounce}" is not a valid debounce value'))
             return None
+
+        # Header - Setup to send back to device
+        cur_config.header.type = 0x50
+        cur_config.header.byte_2 = 0xdd
+        cur_config.header.byte_3 = 0x0f
+
+        return self.write_alt(USBRequestCode.SET_CONFIGURATION, int(0x03), MINI_PAC_INDEX,
+                              cur_config, ct.sizeof(cur_config))
+
+    def set_paclink(self, paclink):
+        """ Set paclink value to the current Mini-pac device """
+
+        # Get the current configuration from the device
+        cur_config = self.get_current_configuration()
+
+        header = PacConfigUnion()
+        header.asByte = cur_config.header.byte_4
+        header.config.paclink = 0x01 if paclink is True else 0
+
+        cur_config.header.byte_4 = header.asByte
 
         # Header - Setup to send back to device
         cur_config.header.type = 0x50
@@ -308,15 +330,16 @@ class MiniPacDevice(USBDeviceHandle):
             data.header.byte_3 = 0x0f
 
             # Header configuration options
+            header = PacConfigUnion()
             val = config.debounce.lower()
             if val in IPACSeriesDebounce:
-                header = PacConfigUnion()
                 header.config.debounce = IPACSeriesDebounce[val]
-
-                data.header.byte_4 = header.asByte
             else:
                 _logger.info(_(f'"{config.debounce}" is not a valid debounce value'))
                 return False, None
+
+            header.config.paclink = 0x1 if config.paclink is True else 0
+            data.header.byte_4 = header.asByte
 
             # bug: Current limitation, macros are not kept between configurations.  To prevent lingering macro
             #   values in pac structure
