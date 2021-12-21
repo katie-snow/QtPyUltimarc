@@ -76,6 +76,17 @@ class MiniPacSchemaTest(TestCase):
         with self.assertRaises(ValidationError):
             validate(bad_config, self.mini_pac_schema)
 
+        # Paclink entry
+        bad_config_file = os.path.join(git_project_root(),
+                                       'tests/test-data/mini-pac-paclink-bad.json')
+        self.assertTrue(os.path.exists(bad_config_file))
+
+        with open(bad_config_file) as h:
+            bad_config = json.loads(h.read())
+
+        with self.assertRaises(ValidationError):
+            validate(bad_config, self.mini_pac_schema)
+
     def test_mini_pac_optional_json(self):
         """ Test validation when optional entries are not present """
         # Macro entry
