@@ -56,6 +56,15 @@ class MiniPACClass(object):
                         _logger.info(f'{dev.dev_key} ({dev.bus},{dev.address}): ' +
                                      _('debounce successfully applied to device.'))
 
+        # Set paclink value
+        if self.args.paclink is not None:
+            for dev in devices:
+                with dev as dev_h:
+                    response = dev_h.set_paclink(self.args.paclink)
+                    if response:
+                        _logger.info(f'{dev.dev_key} ({dev.bus},{dev.address}): ' +
+                                     _('paclink successfully applied to device.'))
+
         # Get config from device
         if self.args.get_config:
             for dev in devices:
@@ -104,6 +113,9 @@ def run():
     group.add_argument('--set-debounce', help=_('Set Mini-pac debounce value'), type=str, metavar='STR')
     group.add_argument('--set-pin', help=_('Set single Mini-pac pin'), type=str,
                        default=None, metavar=('PIN', 'ACTION', 'ALT_ACTION', 'IS_SHIFT'), nargs=4)
+    group.add_argument('--set-paclink', dest='paclink', help=_('Set Mini-pac paclink value'), action='store_true')
+    group.add_argument('--unset-paclink', dest='paclink', help=_('Unset Mini-pac paclink value'), action='store_false')
+    group.set_defaults(paclink=None)
     args = parser.parse_args()
 
     if not args.get_config and args.indent:
