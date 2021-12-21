@@ -12,6 +12,7 @@ from unittest import TestCase
 
 from ultimarc.devices._device import USBDeviceHandle
 from ultimarc.devices._mappings import get_ipac_series_debounce_key
+from ultimarc.devices._structures import PacConfigUnion
 from ultimarc.devices.mini_pac import MiniPacDevice
 from ultimarc.system_utils import git_project_root
 
@@ -56,7 +57,7 @@ class MiniPacDeviceTest(TestCase):
         self.assertTrue(data.header.type == 0x50)
         self.assertTrue(data.header.byte_2 == 0xdd)
         self.assertTrue(data.header.byte_3 == 0x0f)
-        self.assertTrue(data.header.byte_4 == 0x10)
+        self.assertTrue(data.header.byte_4 == 0x14)
 
         # pins
         # prep work check
@@ -200,3 +201,33 @@ class MiniPacDeviceTest(TestCase):
         # invalid value given
         self.assertTrue(get_ipac_series_debounce_key(0xff) == 'standard')
         self.assertTrue(get_ipac_series_debounce_key(0x05) == 'standard')
+
+    @patch.object(USBDeviceHandle, '_get_descriptor_fields', return_value=None)
+    @patch('libusb.get_device', return_value='pointer')
+    def test_header_byte_4_multiple_entries(self, dev_handle_mock, lib_usb_mock):
+        """ Test the value of byte 4 of the header with multiple entries """
+
+        dev = USBDeviceHandle('test_handle', '0000:0000')
+        self.assertTrue(dev)
+
+        dev.__class__ = MiniPacDevice
+
+        config_file = os.path.join(git_project_root(), 'tests/test-data/mini-pac-good.json')
+        valid, data = dev._create_message_(config_file)
+
+        header = PacConfigUnion()
+        header.asByte = data.header.byte_4
+        # paclink is True
+        self.assertTrue(header.config.paclink == 0x01)
+        # debounce is short (0x02)
+        self.assertTrue(header.config.debounce == 0x02)
+
+        config_file = os.path.join(git_project_root(), 'tests/test-data/mini-pac-pin-optional.json')
+        valid, data = dev._create_message_(config_file)
+
+        header = PacConfigUnion()
+        header.asByte = data.header.byte_4
+        # paclink is False
+        self.assertTrue(header.config.paclink == 0)
+        # debounce is short (0x02)
+        self.assertTrue(header.config.debounce == 0x02)
