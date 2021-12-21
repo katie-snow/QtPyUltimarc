@@ -56,40 +56,56 @@ Item {
                     }
                 }
 
-                RowLayout {
+                ColumnLayout {
                     Layout.alignment: Qt.AlignTop
-                    QQC2.CheckBox {
-                        id: selectedShift
-                        font.pointSize: referenceLabel.font.pointSize - 1
-                        text: qsTr("Shift")
-                    }
-                    QQC2.Label {
-                        color: "blue"
-                        font.pointSize: referenceLabel.font.pointSize - 1
-                        text: "Primary Action:"
-                    }
-                    QQC2.ComboBox {
-                        id: selectedAction
-                        implicitWidth: 130
-                        model: _devices.device.actions
-                        onCurrentIndexChanged: {
-                            if(activeFocus) {
-                                model.action = selectedAction.textAt(currentIndex)
+                    RowLayout {
+                        QQC2.CheckBox {
+                            id: selectedShift
+                            font.pointSize: referenceLabel.font.pointSize - 1
+                            text: qsTr("Shift")
+                        }
+                        QQC2.Label {
+                            color: "blue"
+                            font.pointSize: referenceLabel.font.pointSize - 1
+                            text: "Primary Action:"
+                        }
+                        QQC2.ComboBox {
+                            id: selectedAction
+                            implicitWidth: 130
+                            model: _devices.device.actions
+                            onCurrentIndexChanged: {
+                                if(activeFocus) {
+                                    model.action = selectedAction.textAt(currentIndex)
+                                }
+                            }
+                        }
+                        QQC2.Label {
+                            color: "red"
+                            font.pointSize: referenceLabel.font.pointSize - 1
+                            text: "Alternative Action:"
+                        }
+                        QQC2.ComboBox {
+                            id: selectedAltAction
+                            implicitWidth: 130
+                            model: _devices.device.alt_actions
+                            onCurrentIndexChanged: {
+                                if (activeFocus) {
+                                    model.action = selectedAltAction.textAt(currentIndex)
+                                }
                             }
                         }
                     }
-                    QQC2.Label {
-                        color: "red"
-                        font.pointSize: referenceLabel.font.pointSize - 1
-                        text: "Alternative Action:"
-                    }
-                    QQC2.ComboBox {
-                        id: selectedAltAction
-                        implicitWidth: 130
-                        model: _devices.device.alt_actions
-                        onCurrentIndexChanged: {
-                            if (activeFocus) {
-                                model.action = selectedAltAction.textAt(currentIndex)
+                    RowLayout {
+                        QQC2.CheckBox {
+                            id: paclink
+                            font.pointSize: referenceLabel.font.pointSize - 1
+                            text: qsTr("PacLink")
+
+                            onToggled: {
+                                _devices.device.paclink = checked
+                            }
+                            Component.onCompleted: {
+                                checked = _devices.device.paclink
                             }
                         }
                     }
