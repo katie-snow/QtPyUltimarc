@@ -5,6 +5,7 @@
     "resourceType",
     "deviceClass",
     "debounce",
+    "paclink",
     "pins"
   ],
   "properties": {
@@ -40,6 +41,12 @@
               "long",
               "short"
       ]
+    },
+    "paclink": {
+        "$id": "#root/paclink",
+        "title": "Paclink",
+        "type": "boolean",
+        "default": false
     },
     "macros": {
       "$id": "#root/macros",

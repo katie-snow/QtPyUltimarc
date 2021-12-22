@@ -2,8 +2,15 @@
   "schemaVersion" : 2.0,
   "resourceType" : "mini-pac-pins",
   "deviceClass" : "mini-pac",
-  "debounce" : "short",
-  "paclink" : false,
+  "debounce" : "standard",
+  "paclink" : "Invalid entry",
+  "macros": [
+    {"name": "macro #1", "action": ["s", "a", "b"]},
+    {"name": "macro #2", "action": ["m", "2", "2"]},
+    {"name": "macro #3", "action": ["m", "3", "m", "3", "2", "1"]},
+    {"name": "macro #4", "action": []},
+    {"name": "macro #5", "action": ["m", "1"]}
+  ],
   "pins" : [
     {
       "name": "1right",
@@ -13,13 +20,13 @@
     {
       "name" : "1up",
       "action": "up",
-      "alternate_action": "`",
-      "shift": true
+      "alternate_action": "`"
     },
     {
       "name": "1down",
       "action": "down",
-      "alternate_action": "p"
+      "alternate_action": "p",
+      "shift": true
     },
     {
       "name": "1left",
@@ -33,19 +40,23 @@
     },
     {
       "name": "1sw2",
-      "action": "alt l"
+      "action": "alt l",
+      "alternate_action": ""
     },
     {
       "name": "1sw3",
-      "action": "space"
+      "action": "space",
+      "alternate_action": ""
     },
     {
       "name": "1sw4",
-      "action": "shift l"
+      "action": "shift l",
+      "alternate_action": ""
     },
     {
       "name": "1sw5",
-      "action": "z"
+      "action": "z",
+      "alternate_action": ""
     },
     {
       "name": "1sw6",
@@ -65,7 +76,7 @@
     {
       "name": "1start",
       "action": "b",
-      "shift": true
+      "alternate_action": ""
     },
     {
       "name": "1coin",

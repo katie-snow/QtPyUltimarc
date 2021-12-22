@@ -33,6 +33,7 @@ MiniPacRoleMap = OrderedDict(zip(list(MiniPacRoles), [k.name.lower() for k in Mi
 
 class MiniPacUI(Device):
     _changed_debounce_ = Signal(str)
+    _changed_paclink_ = Signal(bool)
 
     def __init__(self, args, env, attached,
                  device_class_id,
@@ -62,7 +63,8 @@ class MiniPacUI(Device):
                         self.config = dev_h.to_json_str(dev_h.get_current_configuration())
             else:
                 self.config = {'schemaVersion': 2.0, 'resourceType': 'mini-pac-pins',
-                               'deviceClass': self.device_class_id.value, 'debounce': 'standard', 'pins': []}
+                               'deviceClass': self.device_class_id.value, 'debounce': 'standard',
+                               'paclink': False, 'pins': []}
 
             self._json_obj = JSONObject(self.config)
 
@@ -158,6 +160,14 @@ class MiniPacUI(Device):
     def get_alternate_action_model(self):
         return self._alternate_action_model
 
+    def get_paclink(self):
+        return self._json_obj.paclink
+
+    def set_paclink(self, paclink):
+        self.config['paclink'] = paclink
+        self._json_obj = JSONObject(self.config)
+
     actions = Property(QObject, get_action_model, constant=True)
     alt_actions = Property(QObject, get_alternate_action_model, constant=True)
     debounce = Property(str, get_debounce, set_debounce, notify=_changed_debounce_)
+    paclink = Property(bool, get_paclink, set_paclink, notify=_changed_paclink_)

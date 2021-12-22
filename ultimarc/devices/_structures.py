@@ -70,8 +70,7 @@ class PacConfigStruct(UltimarcStruct):
         ('accelerometer', ct.c_uint, 1),
         ('paclink', ct.c_uint, 1),
         ('debounce', ct.c_uint, 2),
-        ('expand_interface', ct.c_uint, 1),
-        ('reserved', ct.c_uint, 2)
+        ('reserved', ct.c_uint, 3)
     ]
 
 
