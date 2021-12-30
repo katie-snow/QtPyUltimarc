@@ -108,6 +108,23 @@ Item {
                                 checked = _devices.device.paclink
                             }
                         }
+                        QQC2.Button {
+                            text: {
+                                "Macros"
+                            }
+                            highlighted: true
+                            function action () {
+                                macrosPopup.open()
+                            }
+                            onClicked: {
+                                action()
+                            }
+                            Keys.onSpacePressed: action()
+                        }
+
+                        MacroPopup {
+                            id: macrosPopup
+                        }
                     }
                 }
             }
