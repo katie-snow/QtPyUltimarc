@@ -7,6 +7,7 @@
         <file>complex/DelegateDetail.qml</file>
         <file>complex/IndicatedImage.qml</file>
         <file>complex/ZoomableImage.qml</file>
+        <file>complex/MacroPopup.qml</file>
         <file>simple/Arrow.qml</file>
         <file>simple/FocusRectangle.qml</file>
         <file>dialogs/FileDialog.qml</file>
