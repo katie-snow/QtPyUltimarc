@@ -16,6 +16,7 @@ from ultimarc.ui.action_model import ActionModel
 
 from ultimarc.ui.devices.device import Device
 from ultimarc.system_utils import JSONObject
+from ultimarc.ui.macro_model import MacroModel
 
 _logger = logging.getLogger('ultimarc')
 
@@ -48,6 +49,7 @@ class MiniPacUI(Device):
 
         self._action_model = ActionModel()
         self._alternate_action_model = ActionModel()
+        self._macro_model_ = MacroModel()
 
     def get_description(self):
         return 'This is the description of the Mini-pac device'
@@ -67,6 +69,8 @@ class MiniPacUI(Device):
                                'paclink': False, 'pins': []}
 
             self._json_obj = JSONObject(self.config)
+
+            self.set_macros()
 
     def get_qml(self):
         self.populate()
@@ -94,6 +98,7 @@ class MiniPacUI(Device):
             if MiniPacDevice.validate_config(config, 'mini-pac.schema'):
                 self.config = config
                 self._json_obj = JSONObject(self.config)
+                self.set_macros()
                 return True
         return False
 
@@ -147,6 +152,12 @@ class MiniPacUI(Device):
         self._json_obj = JSONObject(self.config)
         return True
 
+    def set_macros(self):
+        try:
+            self._macro_model_.set_macros(self.config['macros'])
+        except KeyError:
+            pass
+
     def get_debounce(self):
         return self._json_obj.debounce
 
@@ -167,7 +178,11 @@ class MiniPacUI(Device):
         self.config['paclink'] = paclink
         self._json_obj = JSONObject(self.config)
 
+    def get_macros(self):
+        return self._macro_model_
+
     actions = Property(QObject, get_action_model, constant=True)
     alt_actions = Property(QObject, get_alternate_action_model, constant=True)
     debounce = Property(str, get_debounce, set_debounce, notify=_changed_debounce_)
     paclink = Property(bool, get_paclink, set_paclink, notify=_changed_paclink_)
+    macros = Property(QObject, get_macros, constant=True)

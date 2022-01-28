@@ -36,14 +36,14 @@ Popup {
                     }
                 }
 
-                Label { text: qsTr("Actions:") }
+                Label { text: qsTr("Action:") }
                 ComboBox {
-                    id: macro_action
+                    id: action
                     implicitWidth: 130
                     model: _devices.device.actions
                     onCurrentIndexChanged: {
                         if(activeFocus) {
-                            //model.action = selectedAction.textAt(currentIndex)
+                            macro_actions.text = macro_actions.text + action.textAt(currentIndex) + ' '
                         }
                     }
                 }
@@ -122,11 +122,11 @@ Popup {
                             border.color: Qt.darker(palette.window, 1.2)
                             border.width: 1
 
-                            Text { text: "<b>Macro</b>" }
+                            Text { text: "<b>Action</b>" }
                         }
                     }
 
-                    model: contactModel
+                    model: _devices.device.macros
                     delegate: Item {
                         activeFocusOnTab: true
                         width: Math.round(parent.width)
@@ -142,7 +142,7 @@ Popup {
                                 border.color: Qt.darker(palette.window, 1.2)
                                 border.width: 1
 
-                                Text { text: name + ' ' + parent.width }
+                                Text { text: name }
                             }
                             Rectangle {
                                 implicitWidth: Math.round(parent.width * 2 / 3)
@@ -152,7 +152,7 @@ Popup {
                                 border.color: Qt.darker(palette.window, 1.2)
                                 border.width: 1
 
-                                Text { text: number + ' ' + parent.width }
+                                Text { text: action }
                             }
                         }
                         MouseArea {
@@ -200,6 +200,7 @@ Popup {
                         }
                         highlighted: true
                         onClicked: {
+                            root.close()
                         }
                     }
                 }
