@@ -81,7 +81,7 @@ class MiniPacDevice(USBDeviceHandle):
                 macro = {}
                 if pac_struct.bytes[x]:
                     if pac_struct.bytes[x] == macro_start:
-                        macro['name'] = f'macro #{macro_index}'
+                        macro['name'] = f'#{macro_index}'
                         macro_start += 1
                         macro_index += 1
 
