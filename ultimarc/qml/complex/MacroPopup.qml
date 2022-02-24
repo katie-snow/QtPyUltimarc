@@ -70,22 +70,7 @@ Popup {
         RowLayout {
             Layout.fillHeight: true
             Layout.fillWidth: true
-            ListModel {
-                id: contactModel
 
-                ListElement {
-                    name: "Bill Smith"
-                    number: "555 3264"
-                }
-                ListElement {
-                    name: "John Brown"
-                    number: "555 8426"
-                }
-                ListElement {
-                    name: "Sam Wise"
-                    number: "555 0473"
-                }
-            }
             Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -128,6 +113,7 @@ Popup {
 
                     model: _devices.device.macros
                     delegate: Item {
+                        id: macroRow
                         activeFocusOnTab: true
                         width: Math.round(parent.width)
                         height: Math.round(_units.grid_unit)
@@ -142,7 +128,10 @@ Popup {
                                 border.color: Qt.darker(palette.window, 1.2)
                                 border.width: 1
 
-                                Text { text: name }
+                                Text {
+                                    id: macroName
+                                    text: name
+                                }
                             }
                             Rectangle {
                                 implicitWidth: Math.round(parent.width * 2 / 3)
@@ -152,12 +141,24 @@ Popup {
                                 border.color: Qt.darker(palette.window, 1.2)
                                 border.width: 1
 
-                                Text { text: action }
+                                Text {
+                                    id: macroActions
+                                    text: action
+                                }
                             }
                         }
                         MouseArea {
                             anchors.fill: parent
                             onClicked: list.currentIndex = index
+                        }
+                        Connections {
+                            target: macroEdit
+                            function onReleased() {
+                                if (macroRow.ListView.isCurrentItem) {
+                                    macro_name.text = macroName.text
+                                    macro_actions.text = macroActions.text
+                                }
+                            }
                         }
                     }
                 }
@@ -175,12 +176,11 @@ Popup {
                         }
                     }
                     Button {
+                        id: macroEdit
                         text: {
-                            "Rename"
+                            "Edit"
                         }
                         highlighted: true
-                        onClicked: {
-                        }
                     }
                     Button {
                         text: {
