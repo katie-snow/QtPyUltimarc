@@ -149,14 +149,24 @@ Popup {
                         }
                         MouseArea {
                             anchors.fill: parent
-                            onClicked: list.currentIndex = index
+                            onClicked: {
+                                list.currentIndex = index
+                            }
                         }
                         Connections {
                             target: macroEdit
                             function onReleased() {
                                 if (macroRow.ListView.isCurrentItem) {
-                                    macro_name.text = macroName.text
-                                    macro_actions.text = macroActions.text
+                                    if (macroEdit.text == 'Edit') {
+                                        macro_name.text = macroName.text
+                                        macro_actions.text = macroActions.text
+                                        macroEdit.text = 'Done'
+                                   }
+                                   else {
+                                        model.name = macro_name.text
+                                        model.action = macro_actions.text
+                                        macroEdit.text = 'Edit'
+                                   }
                                 }
                             }
                         }
@@ -168,11 +178,13 @@ Popup {
                 ColumnLayout {
                     Layout.alignment: Qt.AlignRight
                     Button {
+                        id: macroAdd
                         text: {
                             "Add"
                         }
                         highlighted: true
                         onClicked: {
+                            _devices.device.macros
                         }
                     }
                     Button {
