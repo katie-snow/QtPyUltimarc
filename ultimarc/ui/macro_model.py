@@ -8,9 +8,7 @@ import typing
 from collections import OrderedDict
 from enum import IntEnum
 
-from PySide6.QtCore import QObject, QAbstractListModel, QModelIndex, QMetaEnum
-
-from ultimarc.devices._mappings import IPACSeriesMapping
+from PySide6.QtCore import QObject, QAbstractListModel, QModelIndex
 
 _logger = logging.getLogger('ultimarc')
 
@@ -27,7 +25,6 @@ MacroModelRoleMap = OrderedDict(zip(list(MacroModelRoles), [k.name.lower() for k
 class MacroModel(QAbstractListModel, QObject):
     def __init__(self):
         super().__init__()
-
         self._macros_ = []
 
     def set_macros(self, macros):
@@ -50,13 +47,18 @@ class MacroModel(QAbstractListModel, QObject):
             return self._macros_[index.row()]['name']
 
         if role == MacroModelRoles.ACTION:
-            actions = ''
-            for action in self._macros_[index.row()]['action']:
-                actions = actions + action + ' '
+            return ', '.join(self._macros_[index.row()]['action'])
 
-            return actions
-
-    def setData(self, index: QModelIndex, value: typing.Any, role: int= ...) -> bool:
+    def setData(self, index:QModelIndex, value:typing.Any, role:int=...) -> bool:
         if not index.isValid():
             return False
 
+        if role == MacroModelRoles.NAME:
+            self._macros_[index.row()]['name'] = value
+
+        if role == MacroModelRoles.ACTION:
+            actions = [action.strip() for action in list(value.split(','))]
+            self._macros_[index.row()]['action'] = actions
+
+        self.dataChanged.emit(index, index, [])
+        return True
