@@ -43,7 +43,12 @@ Popup {
                     model: _devices.device.actions
                     onCurrentIndexChanged: {
                         if(activeFocus) {
-                            macro_actions.text = macro_actions.text + action.textAt(currentIndex) + ' '
+                            var seperator = " "
+                            if (macro_actions.length > 0)
+                            {
+                                seperator = ", "
+                            }
+                            macro_actions.text = macro_actions.text + seperator + action.textAt(currentIndex)
                         }
                     }
                 }
