@@ -8,7 +8,7 @@ import typing
 from collections import OrderedDict
 from enum import IntEnum
 
-from PySide6.QtCore import QObject, QAbstractListModel, QModelIndex
+from PySide6.QtCore import QObject, QAbstractListModel, QModelIndex, Signal, Property
 
 _logger = logging.getLogger('ultimarc')
 
@@ -23,6 +23,9 @@ MacroModelRoleMap = OrderedDict(zip(list(MacroModelRoles), [k.name.lower() for k
 
 
 class MacroModel(QAbstractListModel, QObject):
+    _add_macro_ = Signal(str)
+    _remove_macro_ = Signal(int)
+
     def __init__(self):
         super().__init__()
         self._macros_ = []
@@ -49,6 +52,8 @@ class MacroModel(QAbstractListModel, QObject):
         if role == MacroModelRoles.ACTION:
             return ', '.join(self._macros_[index.row()]['action'])
 
+        return None
+
     def setData(self, index:QModelIndex, value:typing.Any, role:int=...) -> bool:
         if not index.isValid():
             return False
@@ -62,3 +67,21 @@ class MacroModel(QAbstractListModel, QObject):
 
         self.dataChanged.emit(index, index, [])
         return True
+
+    def add_macro(self, new_macro):
+        name, value = new_macro.split(':')
+        actions = [action.strip() for action in list(value.split(','))]
+        self.beginInsertRows(QModelIndex(), len(self._macros_), len(self._macros_))
+        self._macros_.append({'name': name, 'action': actions})
+        self.endInsertRows()
+
+    def get_macro(self):
+        pass
+
+    def remove_macro(self, index):
+        self.beginRemoveRows(QModelIndex(), index, index)
+        self._macros_.pop(index)
+        self.endRemoveRows()
+
+    add_macro = Property(str, get_macro, add_macro, notify=_add_macro_)
+    remove_macro = Property(int, get_macro, remove_macro, notify=_remove_macro_)

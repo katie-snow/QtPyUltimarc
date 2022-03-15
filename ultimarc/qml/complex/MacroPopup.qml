@@ -120,7 +120,7 @@ Popup {
                     delegate: Item {
                         id: macroRow
                         activeFocusOnTab: true
-                        width: Math.round(parent.width)
+                        width: Math.round(list.width)
                         height: Math.round(_units.grid_unit)
                         RowLayout {
                             spacing: 0
@@ -183,28 +183,25 @@ Popup {
                 ColumnLayout {
                     Layout.alignment: Qt.AlignRight
                     Button {
-                        id: macroAdd
-                        text: {
-                            "Add"
-                        }
+                        text: "Add"
                         highlighted: true
                         onClicked: {
-                            _devices.device.macros
+                            macroEdit.text = 'Edit'
+                            _devices.device.macros.add_macro = macro_name.text + ':' + macro_actions.text
                         }
                     }
                     Button {
                         id: macroEdit
-                        text: {
-                            "Edit"
-                        }
+                        text: "Edit"
                         highlighted: true
                     }
                     Button {
-                        text: {
-                            "Delete"
-                        }
+                        id: macroRemove
+                        text: "Remove"
                         highlighted: true
                         onClicked: {
+                            macroEdit.text = 'Edit'
+                            _devices.device.macros.remove_macro = list.currentIndex
                         }
                     }
                     Item {
@@ -212,9 +209,7 @@ Popup {
                     }
                     Button {
                         Layout.alignment: Qt.AlignBottom
-                        text: {
-                            "Close"
-                        }
+                        text: "Close"
                         highlighted: true
                         onClicked: {
                             root.close()
