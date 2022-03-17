@@ -212,6 +212,8 @@ Popup {
                         text: "Close"
                         highlighted: true
                         onClicked: {
+                            macro_name.text = ""
+                            macro_actions.text = ""
                             root.close()
                         }
                     }
