@@ -33,6 +33,9 @@ class MacroModel(QAbstractListModel, QObject):
     def set_macros(self, macros):
         self._macros_ = macros
 
+    def get_macros(self):
+        return self._macros_
+
     def roleNames(self):
         roles = OrderedDict()
         for k, v in MacroModelRoleMap.items():
