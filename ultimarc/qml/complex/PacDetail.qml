@@ -124,6 +124,9 @@ Item {
 
                         MacroPopup {
                             id: macrosPopup
+                            onClosed: {
+                                _devices.device.update_macro
+                            }
                         }
                     }
                 }
