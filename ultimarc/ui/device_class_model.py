@@ -2,6 +2,7 @@
 # This file is subject to the terms and conditions defined in the
 # file 'LICENSE', which is part of this source code package.
 #
+import typing
 from PySide6.QtCore import QAbstractListModel, QObject, QMetaEnum, QModelIndex
 
 from ultimarc.devices import DeviceClassID
@@ -31,10 +32,10 @@ class DeviceClassModel(QAbstractListModel, QObject):
         }
         return roles
 
-    def rowCount(self, parent: QModelIndex):
+    def rowCount(self, parent: QModelIndex = ...) -> int:
         return 0 if parent.isValid() else len(self.classes)
 
-    def data(self, index: QModelIndex, role):
+    def data(self, index: QModelIndex, role: int = ...) -> typing.Any:
         if not index.isValid():
             return None
 

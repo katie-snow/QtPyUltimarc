@@ -3,6 +3,7 @@
 # file 'LICENSE', which is part of this source code package.
 #
 import logging
+import typing
 from collections import OrderedDict
 
 from enum import IntEnum
@@ -83,12 +84,12 @@ class DevicesModel(QAbstractListModel, QObject):
             roles[k] = v.encode('utf-8')
         return roles
 
-    def rowCount(self, parent):
+    def rowCount(self, parent: QModelIndex = ...) -> int:
         if parent.isValid():
             return 0
         return len(self._devices_)
 
-    def data(self, index: QModelIndex, role):
+    def data(self, index: QModelIndex, role: int = ...) -> typing.Any:
         if not index.isValid():
             return None
 
