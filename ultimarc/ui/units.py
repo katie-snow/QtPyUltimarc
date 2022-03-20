@@ -43,8 +43,8 @@ class Units(QObject):
             self._changed_grid_unit.emit(self._grid_unit)
 
         if grid_unit != self._large_spacing:
-            self._small_spacing = max(2, int(grid_unit / 4)) # 1 / 4 of grid_unit, at least 2
-            self._large_spacing = self._small_spacing * 2;
+            self._small_spacing = max(2, int(grid_unit / 4))  # 1 / 4 of grid_unit, at least 2
+            self._large_spacing = self._small_spacing * 2
             self._changed_spacing.emit()
 
     def update_device_pixel_ratio(self):
