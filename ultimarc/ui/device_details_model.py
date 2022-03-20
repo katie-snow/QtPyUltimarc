@@ -7,7 +7,7 @@ import logging
 import typing
 from collections import OrderedDict
 
-from PySide6.QtCore import QObject, QAbstractListModel, QModelIndex, Property
+from PySide6.QtCore import QObject, QAbstractListModel, QModelIndex
 
 _logger = logging.getLogger('ultimarc')
 

@@ -106,4 +106,5 @@ class DeviceModel(QAbstractListModel, QObject):
     def get_details_model(self):
         return self._details_model_
 
-    details_model = Property(QObject, get_details_model, constant=True)
+    details_model = Property(QObject, get_details_model, constant=True
+                             )
