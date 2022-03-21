@@ -99,6 +99,8 @@ class MiniPacUI(Device):
                 self.config = config
                 self._json_obj = JSONObject(self.config)
                 self.set_macros()
+                self._action_model.set_macro_names(self.config['macros'])
+                self._alternate_action_model.set_macro_names(self.config['macros'])
                 return True
         return False
 
@@ -181,8 +183,14 @@ class MiniPacUI(Device):
     def get_macros(self):
         return self._macro_model_
 
+    def update_macros(self):
+        self.config['macros'] = self._macro_model_.get_macros()
+        self._action_model.set_macro_names(self.config['macros'])
+        self._alternate_action_model.set_macro_names(self.config['macros'])
+
     actions = Property(QObject, get_action_model, constant=True)
     alt_actions = Property(QObject, get_alternate_action_model, constant=True)
     debounce = Property(str, get_debounce, set_debounce, notify=_changed_debounce_)
     paclink = Property(bool, get_paclink, set_paclink, notify=_changed_paclink_)
     macros = Property(QObject, get_macros, constant=True)
+    update_macro = Property(bool, update_macros, constant=True)

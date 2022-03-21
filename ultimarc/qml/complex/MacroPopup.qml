@@ -43,7 +43,12 @@ Popup {
                     model: _devices.device.actions
                     onCurrentIndexChanged: {
                         if(activeFocus) {
-                            macro_actions.text = macro_actions.text + action.textAt(currentIndex) + ' '
+                            var seperator = ""
+                            if (macro_actions.length > 0)
+                            {
+                                seperator = ", "
+                            }
+                            macro_actions.text = macro_actions.text + seperator + action.textAt(currentIndex)
                         }
                     }
                 }
@@ -70,22 +75,7 @@ Popup {
         RowLayout {
             Layout.fillHeight: true
             Layout.fillWidth: true
-            ListModel {
-                id: contactModel
 
-                ListElement {
-                    name: "Bill Smith"
-                    number: "555 3264"
-                }
-                ListElement {
-                    name: "John Brown"
-                    number: "555 8426"
-                }
-                ListElement {
-                    name: "Sam Wise"
-                    number: "555 0473"
-                }
-            }
             Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -128,8 +118,9 @@ Popup {
 
                     model: _devices.device.macros
                     delegate: Item {
+                        id: macroRow
                         activeFocusOnTab: true
-                        width: Math.round(parent.width)
+                        width: Math.round(list.width)
                         height: Math.round(_units.grid_unit)
                         RowLayout {
                             spacing: 0
@@ -142,7 +133,10 @@ Popup {
                                 border.color: Qt.darker(palette.window, 1.2)
                                 border.width: 1
 
-                                Text { text: name }
+                                Text {
+                                    id: macroName
+                                    text: name
+                                }
                             }
                             Rectangle {
                                 implicitWidth: Math.round(parent.width * 2 / 3)
@@ -152,12 +146,34 @@ Popup {
                                 border.color: Qt.darker(palette.window, 1.2)
                                 border.width: 1
 
-                                Text { text: action }
+                                Text {
+                                    id: macroActions
+                                    text: action
+                                }
                             }
                         }
                         MouseArea {
                             anchors.fill: parent
-                            onClicked: list.currentIndex = index
+                            onClicked: {
+                                list.currentIndex = index
+                            }
+                        }
+                        Connections {
+                            target: macroEdit
+                            function onReleased() {
+                                if (macroRow.ListView.isCurrentItem) {
+                                    if (macroEdit.text == 'Edit') {
+                                        macro_name.text = macroName.text
+                                        macro_actions.text = macroActions.text
+                                        macroEdit.text = 'Done'
+                                   }
+                                   else {
+                                        model.name = macro_name.text
+                                        model.action = macro_actions.text
+                                        macroEdit.text = 'Edit'
+                                   }
+                                }
+                            }
                         }
                     }
                 }
@@ -167,27 +183,25 @@ Popup {
                 ColumnLayout {
                     Layout.alignment: Qt.AlignRight
                     Button {
-                        text: {
-                            "Add"
-                        }
+                        text: "Add"
                         highlighted: true
                         onClicked: {
+                            macroEdit.text = 'Edit'
+                            _devices.device.macros.add_macro = macro_name.text + ':' + macro_actions.text
                         }
                     }
                     Button {
-                        text: {
-                            "Rename"
-                        }
+                        id: macroEdit
+                        text: "Edit"
                         highlighted: true
-                        onClicked: {
-                        }
                     }
                     Button {
-                        text: {
-                            "Delete"
-                        }
+                        id: macroRemove
+                        text: "Remove"
                         highlighted: true
                         onClicked: {
+                            macroEdit.text = 'Edit'
+                            _devices.device.macros.remove_macro = list.currentIndex
                         }
                     }
                     Item {
@@ -195,11 +209,11 @@ Popup {
                     }
                     Button {
                         Layout.alignment: Qt.AlignBottom
-                        text: {
-                            "Close"
-                        }
+                        text: "Close"
                         highlighted: true
                         onClicked: {
+                            macro_name.text = ""
+                            macro_actions.text = ""
                             root.close()
                         }
                     }
