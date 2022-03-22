@@ -50,7 +50,7 @@ class MiniPacUI(Device):
         self._macro_model_ = MacroModel()
 
     def get_description(self):
-        return 'This is the description of the Mini-pac device'
+        return 'Integrated 32-input harness-based switch/Joystick Interface.'
 
     def populate(self):
         if self.config is None:
