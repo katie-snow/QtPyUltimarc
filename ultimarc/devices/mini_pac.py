@@ -107,7 +107,7 @@ class MiniPacDevice(USBDeviceHandle):
         header = PacConfigUnion()
         header.asByte = pac_struct.header.byte_4
         json_obj['debounce'] = get_ipac_series_debounce_key(header.config.debounce)
-        json_obj['paclink'] = True if header.config.paclink is 0x01 else False
+        json_obj['paclink'] = True if header.config.paclink == 0x01 else False
 
         # macros
         macros = self._create_macro_array_(pac_struct)
@@ -158,7 +158,7 @@ class MiniPacDevice(USBDeviceHandle):
         config = self.get_current_configuration()
         json_obj = self.to_json_str(config)
         if file:
-            if self.write_to_file(file, indent):
+            if self.write_to_file(json_obj, file, indent):
                 return _('Wrote Mini-pac configuration to file.')
             else:
                 return _('Failed to write Mini-pac configuration to file.')
