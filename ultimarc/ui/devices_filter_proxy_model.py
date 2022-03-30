@@ -5,10 +5,10 @@
 import logging
 import re
 
-from PySide6.QtCore import Property, Signal, QModelIndex, QObject, QSortFilterProxyModel, Slot
+from PySide6.QtCore import Property, Signal, QModelIndex, QObject, QSortFilterProxyModel
 
-from ultimarc.ui.pages import Pages
 from ultimarc.ui.devices_model import DevicesRoles
+from ultimarc.ui.pages import Pages
 
 _logger = logging.getLogger('ultimarc')
 

@@ -57,7 +57,7 @@ class MacroModel(QAbstractListModel, QObject):
 
         return None
 
-    def setData(self, index:QModelIndex, value:typing.Any, role:int=...) -> bool:
+    def setData(self, index: QModelIndex, value: typing.Any, role: int = ...) -> bool:
         if not index.isValid():
             return False
 

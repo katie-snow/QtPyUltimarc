@@ -288,7 +288,6 @@ LegacyIPACMapping = {
     ",": 0x41,
     ".": 0x49,
     "/": 0x4A,
-    "KP /": 0x4A,
     "SHIFT R": 0x59,
     "PRNT SCRN": 0x7C,
     "ALT L": 0x11,

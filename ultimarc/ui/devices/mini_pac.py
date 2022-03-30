@@ -2,7 +2,6 @@
 # This file is subject to the terms and conditions defined in the
 # file 'LICENSE', which is part of this source code package.
 #
-import json
 import logging
 import typing
 from collections import OrderedDict
@@ -12,10 +11,9 @@ from PySide6.QtCore import QModelIndex, QObject, Property, Signal
 
 from ultimarc.devices import DeviceClassID
 from ultimarc.devices.mini_pac import PinMapping, MiniPacDevice
-from ultimarc.ui.action_model import ActionModel
-
-from ultimarc.ui.devices.device import Device
 from ultimarc.system_utils import JSONObject
+from ultimarc.ui.action_model import ActionModel
+from ultimarc.ui.devices.device import Device
 from ultimarc.ui.macro_model import MacroModel
 
 _logger = logging.getLogger('ultimarc')
@@ -52,7 +50,7 @@ class MiniPacUI(Device):
         self._macro_model_ = MacroModel()
 
     def get_description(self):
-        return 'This is the description of the Mini-pac device'
+        return 'Integrated 32-input harness-based switch/Joystick Interface.'
 
     def populate(self):
         if self.config is None:
