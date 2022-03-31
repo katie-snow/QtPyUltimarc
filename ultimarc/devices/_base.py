@@ -13,6 +13,7 @@ import libusb as usb
 
 from ultimarc import translate_gettext as _
 from ultimarc.devices._device import usb_error
+from ultimarc.devices.ipac2 import Ipac2Device
 from ultimarc.devices.usb_button import USBButtonDevice
 from ultimarc.devices.aimtrak import AimTrakDevice
 from ultimarc.devices.mini_pac import MiniPacDevice
@@ -26,6 +27,7 @@ _USB_PRODUCT_CLASSES = {
     'd209:120': USBButtonDevice,
     'd209:160': AimTrakDevice,
     'd209:044': MiniPacDevice,
+    'd209:042': Ipac2Device,
 }
 
 # USB key values for every USB device.
@@ -36,6 +38,7 @@ USB_PRODUCT_DESCRIPTIONS = {
     'd209:1603': 'Aimtrak Lightgun #3',
     'd209:1604': 'Aimtrak Lightgun #4',
     'd209:0440': 'Mini-PAC #1',
+    'd209:0420': 'IPAC2 #1'
 }
 
 
@@ -44,6 +47,7 @@ class DeviceClassID(Enum):
     USBButton = 'usb-button'
     AimTrak = 'aimtrak'
     MiniPac = 'mini-pac'
+    IPAC2 = 'ipac2'
 
 
 class USBDeviceInfo:

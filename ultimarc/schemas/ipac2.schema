@@ -1,0 +1,181 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "required": [
+    "schemaVersion",
+    "resourceType",
+    "deviceClass",
+    "debounce",
+    "paclink",
+    "pins"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "$id": "#root/schemaVersion",
+      "title": "Schemaversion",
+      "type": "integer",
+      "const": 2.0
+    },
+    "resourceType": {
+      "$id": "#root/resourceType",
+      "title": "Resourcetype",
+      "type": "string",
+      "const": "ipac2-pins"
+    },
+    "deviceClass": {
+      "$id": "#root/deviceClass",
+      "title": "Deviceclass",
+      "type": "string",
+      "const": "ipac2"
+    },
+    "debounce": {
+      "$id": "#root/debounce",
+      "title": "Debounce",
+      "type": "string",
+      "default": "standard",
+      "examples": [
+        "short"
+      ],
+      "enum": [
+              "none",
+              "standard",
+              "long",
+              "short"
+      ]
+    },
+    "paclink": {
+        "$id": "#root/paclink",
+        "title": "Paclink",
+        "type": "boolean",
+        "default": false
+    },
+    "macros": {
+      "$id": "#root/macros",
+      "title": "Macros",
+      "type": "array",
+      "default": [],
+      "items": {
+        "$id": "#root/macros/items",
+        "title": "Items",
+        "type": "object",
+        "required": [
+          "name",
+          "action"
+        ],
+        "properties": {
+          "name": {
+            "$id": "#root/macros/items/name",
+            "title": "Name",
+            "type": "string",
+            "default": "",
+            "examples": [
+              "macro name"
+            ],
+            "pattern": "^.*$"
+          },
+          "action": {
+            "$id": "#root/macros/items/action",
+            "title": "Action",
+            "type": "array",
+            "default": [],
+            "items": {
+              "$id": "#root/macros/items/action/items",
+              "title": "Items",
+              "type": "string",
+              "examples": [
+                "b", "e"
+              ],
+              "pattern": "^.*$"
+            }
+          }
+        }
+      }
+    },
+    "pins": {
+      "$id": "#root/pins",
+      "title": "Pins",
+      "type": "array",
+      "default": [],
+      "items": {
+        "$id": "#root/pins/items",
+        "title": "Items",
+        "type": "object",
+        "required": [
+          "name",
+          "action"
+        ],
+        "properties": {
+          "name": {
+            "$id": "#root/pins/items/name",
+            "title": "Name",
+            "type": "string",
+            "default": "",
+            "examples": [
+              "2b"
+            ],
+            "pattern": "^.*$",
+            "enum": [
+              "1right",
+              "1up",
+              "1down",
+              "1left",
+              "1sw1",
+              "1sw2",
+              "1sw3",
+              "1sw4",
+              "1sw5",
+              "1sw6",
+              "1sw7",
+              "1sw8",
+              "1start",
+              "1coin",
+              "2right",
+              "2up",
+              "2down",
+              "2left",
+              "2sw1",
+              "2sw2",
+              "2sw3",
+              "2sw4",
+              "2sw5",
+              "2sw6",
+              "2sw7",
+              "2sw8",
+              "2start",
+              "2coin",
+              "1a",
+              "1b",
+              "2a",
+              "2b"
+            ]
+          },
+          "action": {
+            "$id": "#root/pins/items/action",
+            "title": "Action",
+            "type": "string",
+            "default": "",
+            "examples": [
+              "right"
+            ],
+            "pattern": "^.*$"
+          },
+          "alternate_action": {
+            "$id": "#root/pins/items/alternate_action",
+            "title": "Alternate_Action",
+            "type": "string",
+            "default": "",
+            "examples": [
+              "tab"
+            ],
+            "pattern": "^.*$"
+          },
+          "shift": {
+            "$id": "#root/pins/items/shift",
+            "title": "Shift",
+            "type": "boolean",
+            "default": false
+          }
+        }
+      }
+    }
+  }
+}
