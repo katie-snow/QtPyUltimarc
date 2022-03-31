@@ -1,0 +1,291 @@
+{
+  "schemaVersion" : 2.0,
+  "resourceType" : "ipac4-pins",
+  "deviceClass" : "ipac4",
+  "debounce" : "standard",
+  "paclink" : false,
+  "macros": [
+    {"name": "macro #1", "action": ["m", "1"]},
+    {"name": "macro #2", "action": ["m", "2", "2"]},
+    {"name": "macro #3", "action": ["m", "3", "m", "3", "2", "1"]},
+    {"name": "macro #4", "action": []},
+    {"name": "macro #5", "action": ["m", "1"]}
+  ],
+  "pins" : [
+    {
+      "name": "1right",
+      "action": "right",
+      "alternate_action": "tab",
+      "shift": false
+    },
+    {
+      "name" : "1up",
+      "action": "up",
+      "alternate_action": "`"
+    },
+    {
+      "name": "1down",
+      "action": "down",
+      "alternate_action": "p"
+    },
+    {
+      "name": "1left",
+      "action": "left",
+      "alternate_action": "enter"
+    },
+    {
+      "name": "1sw1",
+      "action": "ctrl l",
+      "alternate_action": "5"
+    },
+    {
+      "name": "1sw2",
+      "action": "alt l"
+    },
+    {
+      "name": "1sw3",
+      "action": "space"
+    },
+    {
+      "name": "1sw4",
+      "action": "shift l"
+    },
+    {
+      "name": "1sw5",
+      "action": "z"
+    },
+    {
+      "name": "1sw6",
+      "action": "x"
+    },
+    {
+      "name": "1sw7",
+      "action": "c",
+      "alternate_action": ""
+    },
+    {
+      "name": "1sw8",
+      "action": "v",
+      "alternate_action": ""
+    },
+    {
+      "name": "1start",
+      "action": "1",
+      "shift": true
+    },
+    {
+      "name": "1coin",
+      "action": "5",
+      "alternate_action": ""
+    },
+    {
+      "name": "2right",
+      "action": "g",
+      "alternate_action": ""
+    },
+    {
+      "name": "2up",
+      "action": "r",
+      "alternate_action": ""
+    },
+    {
+      "name": "2down",
+      "action": "f",
+      "alternate_action": ""
+    },
+    {
+      "name": "2left",
+      "action": "d",
+      "alternate_action": ""
+    },
+    {
+      "name": "2sw1",
+      "action": "a",
+      "alternate_action": "macro #1"
+    },
+    {
+      "name": "2sw2",
+      "action": "s",
+      "alternate_action": "macro #2"
+    },
+    {
+      "name": "2sw3",
+      "action": "q",
+      "alternate_action": ""
+    },
+    {
+      "name": "2sw4",
+      "action": "w",
+      "alternate_action": ""
+    },
+    {
+      "name": "2sw5",
+      "action": "i",
+      "alternate_action": ""
+    },
+    {
+      "name": "2sw6",
+      "action": "k",
+      "alternate_action": ""
+    },
+    {
+      "name": "2sw7",
+      "action": "j",
+      "alternate_action": ""
+    },
+    {
+      "name": "2sw8",
+      "action": "l",
+      "alternate_action": ""
+    },
+    {
+      "name": "2start",
+      "action": "2",
+      "alternate_action": "esc"
+    },
+    {
+      "name": "2coin",
+      "action": "6",
+      "alternate_action": ""
+    },
+    {
+      "name": "3right",
+      "action": "l",
+      "alternate_action": ""
+    },
+    {
+      "name": "3up",
+      "action": "i",
+      "alternate_action": ""
+    },
+    {
+      "name": "3down",
+      "action": "k",
+      "alternate_action": ""
+    },
+    {
+      "name": "3left",
+      "action": "j",
+      "alternate_action": ""
+    },
+    {
+      "name": "3sw1",
+      "action": "ctrl r",
+      "alternate_action": "macro #1"
+    },
+    {
+      "name": "3sw2",
+      "action": "shift r",
+      "alternate_action": "macro #2"
+    },
+    {
+      "name": "3sw3",
+      "action": "enter",
+      "alternate_action": ""
+    },
+    {
+      "name": "3sw4",
+      "action": "o",
+      "alternate_action": ""
+    },
+    {
+      "name": "3sw5",
+      "action": "",
+      "alternate_action": ""
+    },
+    {
+      "name": "3sw6",
+      "action": "",
+      "alternate_action": ""
+    },
+    {
+      "name": "3sw7",
+      "action": "",
+      "alternate_action": ""
+    },
+    {
+      "name": "3sw8",
+      "action": "",
+      "alternate_action": ""
+    },
+    {
+      "name": "3start",
+      "action": "3"
+    },
+    {
+      "name": "3coin",
+      "action": "7",
+      "alternate_action": ""
+    },
+    {
+      "name": "4right",
+      "action": "u",
+      "alternate_action": ""
+    },
+    {
+      "name": "4up",
+      "action": "y",
+      "alternate_action": ""
+    },
+    {
+      "name": "4down",
+      "action": "n",
+      "alternate_action": ""
+    },
+    {
+      "name": "4left",
+      "action": "v",
+      "alternate_action": ""
+    },
+    {
+      "name": "4sw1",
+      "action": "b",
+      "alternate_action": "macro #1"
+    },
+    {
+      "name": "4sw2",
+      "action": "e",
+      "alternate_action": "macro #2"
+    },
+    {
+      "name": "4sw3",
+      "action": "h",
+      "alternate_action": ""
+    },
+    {
+      "name": "4sw4",
+      "action": "m",
+      "alternate_action": ""
+    },
+    {
+      "name": "4sw5",
+      "action": "",
+      "alternate_action": ""
+    },
+    {
+      "name": "4sw6",
+      "action": "",
+      "alternate_action": ""
+    },
+    {
+      "name": "4sw7",
+      "action": "",
+      "alternate_action": ""
+    },
+    {
+      "name": "4sw8",
+      "action": "",
+      "alternate_action": ""
+    },
+    {
+      "name": "4start",
+      "action": "4",
+      "alternate_action": ""
+    },
+    {
+      "name": "4coin",
+      "action": "8",
+      "alternate_action": ""
+    }
+  ]
+}
