@@ -169,8 +169,8 @@ Item {
 
                         selectedName.text = model.name
                         selectedShift.checked = model.shift
-                        selectedAction.currentIndex = selectedAction.find(model.action)
-                        selectedAltAction.currentIndex = selectedAltAction.find(model.alt_action)
+                        selectedAction.currentIndex = selectedAction.find(model.action, Qt.MatchFixedString)
+                        selectedAltAction.currentIndex = selectedAltAction.find(model.alt_action, Qt.MatchFixedString)
                     }
                     onClicked: {
                         mouseAction()
