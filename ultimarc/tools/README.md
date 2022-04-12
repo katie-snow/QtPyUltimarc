@@ -19,7 +19,7 @@ If you have installed the Ultimarc Python package use this command line to run t
 
 ```ultimarc-cli [TOOL NAME]```
 
-If you are running tools from a copy of the Github project use this command line from the `ultimarc` 
+If you are running tools from a copy of the GitHub project use this command line from the `ultimarc` 
 directory:
 
 ```python3 -m tools [TOOL NAME] ```
