@@ -4,11 +4,8 @@
 #
 import json
 import os
-from unittest.mock import patch
-
-from jsonschema import validate
-from jsonschema.exceptions import ValidationError
 from unittest import TestCase
+from unittest.mock import patch
 
 from ultimarc.devices._device import USBDeviceHandle
 from ultimarc.devices._mappings import get_ipac_series_debounce_key
@@ -18,7 +15,6 @@ from ultimarc.system_utils import git_project_root
 
 
 class MiniPacDeviceTest(TestCase):
-
     mini_pac_schema = None
     mini_pac_config = None
     mini_pac_bad_config = None
@@ -40,7 +36,7 @@ class MiniPacDeviceTest(TestCase):
 
     @patch.object(USBDeviceHandle, '_get_descriptor_fields', return_value=None)
     @patch('libusb.get_device', return_value='pointer')
-    def test_mini_pac_data_population (self, dev_handle_mock, lib_usb_mock):
+    def test_mini_pac_data_population(self, dev_handle_mock, lib_usb_mock):
         """ Test that data is being populated correctly when writing to device from json config """
         dev = USBDeviceHandle('test_handle', '0000:0000')
         self.assertTrue(dev)
@@ -49,7 +45,7 @@ class MiniPacDeviceTest(TestCase):
 
         config_file = os.path.join(git_project_root(), 'tests/test-data/mini-pac-good.json')
         valid, data = dev._create_message_(config_file)
-        #print(data)
+        # print(data)
         self.assertTrue(valid)
         self.assertIsNotNone(data)
 

@@ -5,17 +5,16 @@
 # http://libusb.sourceforge.net/api-1.0/libusb_api.html
 #
 import ctypes as ct
-from enum import Enum
 import logging
-import traceback
+from enum import Enum
 
 import libusb as usb
 
 from ultimarc import translate_gettext as _
 from ultimarc.devices._device import usb_error
-from ultimarc.devices.usb_button import USBButtonDevice
 from ultimarc.devices.aimtrak import AimTrakDevice
 from ultimarc.devices.mini_pac import MiniPacDevice
+from ultimarc.devices.usb_button import USBButtonDevice
 from ultimarc.exceptions import USBDeviceNotFoundError
 
 _logger = logging.getLogger('ultimarc')

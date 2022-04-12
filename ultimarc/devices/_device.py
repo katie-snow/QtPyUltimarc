@@ -269,8 +269,8 @@ class USBDeviceHandle:
 
         payload_ptr = ct.byref(payload) if report_id else ct.byref(payload, 1)
         ret = self._make_control_transfer(request_type, b_request, w_value,
-                                           w_index, payload_ptr,
-                                           ct.sizeof(payload) if report_id else size)
+                                          w_index, payload_ptr,
+                                          ct.sizeof(payload) if report_id else size)
         _logger.debug(_(' '.join(hex(x) for x in payload)))
         return ret
 
@@ -304,6 +304,7 @@ class USBDeviceHandle:
         payload = (ct.c_ubyte * 5)(0)
         offset = 1 if report_id else 0
         pos = 0
+        ret = -1
 
         if report_id:
             payload[0] = report_id
@@ -313,7 +314,7 @@ class USBDeviceHandle:
             ct.memmove(ct.addressof(payload) + offset, ct.byref(data, pos), payload_size)
 
             ret = self._make_control_transfer(request_type, b_request, w_value,
-                                           w_index, ct.byref(payload), payload_size + offset)
+                                              w_index, ct.byref(payload), payload_size + offset)
             pos += payload_size
             _logger.debug(_(' '.join(hex(x) for x in payload)))
 
@@ -365,7 +366,7 @@ class USBDeviceHandle:
             # Remove report_id (byte 0) if it is used
             actual_length = actual_length \
                 if actual_length == length and not uses_report_id else ct.c_int(actual_length.value - 1)
-            ct.memmove(ct.addressof(response)+pos,
+            ct.memmove(ct.addressof(response) + pos,
                        ct.byref(payload, 1) if uses_report_id else ct.byref(payload),
                        actual_length.value)
             _logger.debug(_(' '.join(hex(x) for x in payload)))

@@ -4,19 +4,15 @@
 #
 import json
 import os
-from unittest.mock import patch
+from unittest import TestCase
 
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
-from unittest import TestCase
 
-from ultimarc.devices._device import USBDeviceHandle
-from ultimarc.devices.mini_pac import MiniPacDevice
 from ultimarc.system_utils import git_project_root
 
 
 class MiniPacSchemaTest(TestCase):
-
     mini_pac_schema = None
     mini_pac_config = None
     mini_pac_bad_config = None

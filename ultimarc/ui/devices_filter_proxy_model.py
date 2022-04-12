@@ -13,6 +13,7 @@ from ultimarc.ui.pages import Pages
 _logger = logging.getLogger('ultimarc')
 
 
+# noinspection PyUnresolvedReferences
 class ClassFilterProxyModel(QSortFilterProxyModel, QObject):
     _changed_filter_class_ = Signal(str)
 
@@ -50,6 +51,7 @@ class ClassFilterProxyModel(QSortFilterProxyModel, QObject):
                 return cb_filter
 
 
+# noinspection PyUnresolvedReferences
 class DevicesFilterProxyModel(QSortFilterProxyModel, QObject):
     _changed_filter_text_ = Signal(str)
 

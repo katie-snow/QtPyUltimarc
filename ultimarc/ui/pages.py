@@ -10,6 +10,7 @@ from PySide6.QtCore import QObject, Signal, Property
 _logger = logging.getLogger('ultimarc')
 
 
+# noinspection PyUnresolvedReferences
 class Pages(QObject):
     _changed_front_ = Signal(bool)
     
