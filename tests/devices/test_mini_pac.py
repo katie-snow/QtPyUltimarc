@@ -173,7 +173,7 @@ class MiniPacDeviceTest(TestCase):
     @patch.object(USBDeviceHandle, '_get_descriptor_fields', return_value=None)
     @patch('libusb.get_device', return_value='pointer')
     def test_mini_pac_large_macro_entries(self, dev_handle_mock, lib_usb_mock):
-        """ Test that faults happen when the number of macros is to great
+        """ Test that faults happen when the number of macros is too great
         and the number of actions doesn't exceed 85 with control characters """
         dev = USBDeviceHandle('test_handle', '0000:0000')
         self.assertTrue(dev)

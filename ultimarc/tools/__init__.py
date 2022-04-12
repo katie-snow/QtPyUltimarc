@@ -62,7 +62,7 @@ class ToolContextManager(object):
             exit(1)
 
         self._command = command
-        # The Environment dict is where we can setup any information related to all tools.
+        # The Environment dict is where we can set up any information related to all tools.
         self._env = {
             'command': command,
             'devices': USBDevices(_VENDOR_FILTER)
