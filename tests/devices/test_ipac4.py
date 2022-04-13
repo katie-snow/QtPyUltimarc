@@ -66,6 +66,9 @@ class Ipac4DeviceTest(TestCase):
         self.assertTrue(data.bytes[153] == 0x0)
         self.assertTrue(data.bytes[170] == 0x0)
         self.assertTrue(data.bytes[179] == 0x0)
+        self.assertTrue(data.bytes[192] == 0x0)
+        self.assertTrue(data.bytes[193] == 0x0)
+        self.assertTrue(data.bytes[194] == 0x0)
 
         # pin 3start values
         self.assertTrue(data.bytes[23] == 0x20)
@@ -99,32 +102,32 @@ class Ipac4DeviceTest(TestCase):
 
         # Macros
         # macro #1
-        self.assertTrue(data.bytes[192] == 0xe0)
-        self.assertTrue(data.bytes[193] == 0x10)
-        self.assertTrue(data.bytes[194] == 0x1e)
-        self.assertTrue(data.bytes[195] == 0x05)
+        self.assertTrue(data.bytes[195] == 0xe0)
+        self.assertTrue(data.bytes[196] == 0x10)
+        self.assertTrue(data.bytes[197] == 0x1e)
+        self.assertTrue(data.bytes[198] == 0x05)
 
         # macro #2
-        self.assertTrue(data.bytes[196] == 0xe1)
-        self.assertTrue(data.bytes[197] == 0x10)
-        self.assertTrue(data.bytes[198] == 0x1f)
-        self.assertTrue(data.bytes[199] == 0x1f)
+        self.assertTrue(data.bytes[199] == 0xe1)
+        self.assertTrue(data.bytes[200] == 0x10)
+        self.assertTrue(data.bytes[201] == 0x1f)
+        self.assertTrue(data.bytes[202] == 0x1f)
 
         # macro #3
-        self.assertTrue(data.bytes[200] == 0xe2)
-        self.assertTrue(data.bytes[201] == 0x10)
-        self.assertTrue(data.bytes[202] == 0x20)
-        self.assertTrue(data.bytes[203] == 0x10)
-        self.assertTrue(data.bytes[204] == 0x20)
-        self.assertTrue(data.bytes[205] == 0x1f)
-        self.assertTrue(data.bytes[206] == 0x1e)
-
-        # macro #4 (Is macro #5 in the configuration file)
-        self.assertTrue(data.bytes[207] == 0xe3)
-        self.assertTrue(data.bytes[208] == 0x10)
+        self.assertTrue(data.bytes[203] == 0xe2)
+        self.assertTrue(data.bytes[204] == 0x10)
+        self.assertTrue(data.bytes[205] == 0x20)
+        self.assertTrue(data.bytes[206] == 0x10)
+        self.assertTrue(data.bytes[207] == 0x20)
+        self.assertTrue(data.bytes[208] == 0x1f)
         self.assertTrue(data.bytes[209] == 0x1e)
 
-        for x in range(210, 252):
+        # macro #4 (Is macro #5 in the configuration file)
+        self.assertTrue(data.bytes[210] == 0xe3)
+        self.assertTrue(data.bytes[211] == 0x10)
+        self.assertTrue(data.bytes[212] == 0x1e)
+
+        for x in range(213, 252):
             self.assertTrue(data.bytes[x] == 0, 'index: ' + str(x))
 
     @patch.object(USBDeviceHandle, '_get_descriptor_fields', return_value=None)
