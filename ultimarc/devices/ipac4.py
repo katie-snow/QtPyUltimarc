@@ -88,10 +88,12 @@ class Ipac4Device(USBDeviceHandle):
     IPAC4_INDEX = ct.c_uint16(0x02)
 
     # Each macro starts with control character e0 - fe.  Total of 30 macros possible
-    # overall total macro characters is 59
+    # overall total macro characters is 56
     MACRO_MAX_COUNT = 30
-    MACRO_MAX_SIZE = 59
-    MACRO_START_INDEX = 192
+
+    # These two values need to add up to 251
+    MACRO_MAX_SIZE = 56
+    MACRO_START_INDEX = 195
 
     def get_device_config(self, indent=None, file=None):
         """ Return a json string of the device configuration """
@@ -383,7 +385,7 @@ class Ipac4Device(USBDeviceHandle):
             try:
                 # Macros
                 # Each macro starts with control character e0 - fe.  Total of 30 macros possible
-                # overall total macro characters is 85
+                # overall total macro characters is 56
                 cur_size_count = 0
                 cur_macro = 0xe0
                 cur_position = self.MACRO_START_INDEX
