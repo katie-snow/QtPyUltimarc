@@ -191,5 +191,4 @@ class MiniPacUI(Device):
     debounce = Property(str, get_debounce, set_debounce, notify=_changed_debounce_)
     paclink = Property(bool, get_paclink, set_paclink, notify=_changed_paclink_)
     macros = Property(QObject, get_macros, constant=True)
-    update_macro = Property(bool, update_macros, constant=True
-                            )
+    update_macro = Property(bool, update_macros, constant=True)
