@@ -52,6 +52,9 @@ if __name__ == '__main__':
         device_sort = DevicesSortProxyModel()
         devices = DevicesModel(args, tool_env)
 
+        # if there are no devices connected go directly to the configuration list view
+        pages.set_front(devices.has_connected_devices())
+
         # Provide the list to the string model from the filter model
         device_class = DeviceClassModel()
         device_sort.setSourceModel(devices)
