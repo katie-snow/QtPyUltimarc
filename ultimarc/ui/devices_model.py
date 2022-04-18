@@ -13,6 +13,7 @@ from ultimarc.devices import DeviceClassID
 from ultimarc.tools import ToolEnvironmentObject
 from ultimarc.ui.devices.device import Device
 from ultimarc.ui.device_model import DeviceModel
+from ultimarc.ui.devices.ipac2 import Ipac2UI
 from ultimarc.ui.devices.mini_pac import MiniPacUI
 
 _logger = logging.getLogger('ultimarc')
@@ -59,6 +60,9 @@ class DevicesModel(QAbstractListModel, QObject):
             if dev.class_id == DeviceClassID.MiniPac.value:
                 device = MiniPacUI(self.args, self.env, True, DeviceClassID(dev.class_id), dev.product_name,
                                    dev.class_descr, dev.dev_key)
+            elif dev.class_id == DeviceClassID.IPAC2.value:
+                device = Ipac2UI(self.args, self.env, True, DeviceClassID(dev.class_id), dev.product_name,
+                                   dev.class_descr, dev.dev_key)
             else:
                 device = Device(self.args, self.env, True, DeviceClassID(dev.class_id), dev.product_name,
                                 dev.class_descr, dev.dev_key)
@@ -68,6 +72,8 @@ class DevicesModel(QAbstractListModel, QObject):
         for device_class in DeviceClassID:
             if device_class == DeviceClassID.MiniPac:
                 tmp = MiniPacUI(self.args, self.env, False, device_class)
+            elif device_class == DeviceClassID.IPAC2:
+                tmp = Ipac2UI(self.args, self.env, False, device_class)
             else:
                 tmp = Device(self.args, self.env, False, device_class)
             self._devices_.append(tmp)

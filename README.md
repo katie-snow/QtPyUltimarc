@@ -19,7 +19,7 @@ Fedora
 
 ::
 
-    $ git clone git@github.com:robabram/QtPyUltimarc.git
+    $ git clone git@github.com:katie-snow/QtPyUltimarc.git
 
 3. Setup Python virtual environment
 
