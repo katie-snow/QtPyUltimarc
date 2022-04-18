@@ -11,7 +11,6 @@ from PySide6.QtGui import QFontMetrics, QGuiApplication
 _logger = logging.getLogger('ultimarc')
 
 
-# noinspection PyUnresolvedReferences
 class Units(QObject):
     _changed_grid_unit = Signal(float)
     _changed_spacing = Signal()
