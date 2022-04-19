@@ -12,9 +12,7 @@ from ultimarc.devices._mappings import IPACSeriesMapping
 from ultimarc.devices._structures import UltimarcStruct
 from ultimarc.system_utils import JSONObject
 
-
 _logger = logging.getLogger('ultimarc')
-
 
 USBButtonReportID = 0x0200
 USBButtonWIndex = 0x0
@@ -146,7 +144,8 @@ class USBButtonDevice(USBDeviceHandle):
                 return False
             _logger.debug(_('Device JSON configuration passed schema validation.'))
             data = USBButtonColorStruct(0x01,
-                            RGBValueStruct(config.colorRGB.red, config.colorRGB.green, config.colorRGB.blue))
+                                        RGBValueStruct(config.colorRGB.red, config.colorRGB.green,
+                                                       config.colorRGB.blue))
             return self.write(USBRequestCode.SET_CONFIGURATION, USBButtonReportID, USBButtonWIndex, data,
                               ct.sizeof(data))
 
@@ -186,10 +185,11 @@ class USBButtonDevice(USBDeviceHandle):
 
         _logger.debug(_(' application') + f': {application.name}')
         _logger.debug(_(' action') + f': {config.action}')
-        _logger.debug(_(' released color') + f': R({released_rgb.red}), G({released_rgb.green}), B({released_rgb.blue})')
+        _logger.debug(
+            _(' released color') + f': R({released_rgb.red}), G({released_rgb.green}), B({released_rgb.blue})')
         _logger.debug(_(' pressed color') + f': R({pressed_rgb.red}), G({pressed_rgb.green}), B({pressed_rgb.blue})')
         for row in debug_data:
             _logger.debug(_(' row') + f': {", ".join(row)}')
 
         return self.write_alt(USBRequestCode.SET_CONFIGURATION, 0x00, USBButtonWIndex, data,
-                          ct.sizeof(data))
+                              ct.sizeof(data))

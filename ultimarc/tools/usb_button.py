@@ -87,10 +87,10 @@ class USBButtonClass(object):
                     application = ConfigApplication.temporary if self.args.temporary else ConfigApplication.permanent
                     if dev_h.set_config(self.args.set_config, application):
                         _logger.info(f'{dev.dev_key} ({dev.bus},{dev.address}): ' +
-                                 _('configuration successfully applied to device.'))
+                                     _('configuration successfully applied to device.'))
                     else:
                         _logger.error(f'{dev.dev_key} ({dev.bus},{dev.address}): ' +
-                                     _('failed to apply configuration to device.'))
+                                      _('failed to apply configuration to device.'))
 
         return 0
 

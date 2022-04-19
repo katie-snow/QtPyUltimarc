@@ -50,6 +50,7 @@ class ClassFilterProxyModel(QSortFilterProxyModel, QObject):
                 return cb_filter
 
 
+# noinspection PyUnresolvedReferences
 class DevicesFilterProxyModel(QSortFilterProxyModel, QObject):
     _changed_filter_text_ = Signal(str)
 

@@ -28,6 +28,7 @@ def get_ipac_series_debounce_key(val):
     _logger.info(_(f'"{val}" debounce value is not a valid value'))
     return 'standard'
 
+
 #
 # IPAC 2015 or newer key mapping.
 #

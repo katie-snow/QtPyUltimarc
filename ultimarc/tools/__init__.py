@@ -10,7 +10,7 @@ import traceback
 
 from ultimarc import translate_gettext as _
 from ultimarc.devices import USBDevices
-from ultimarc.system_utils import remove_pidfile, write_pidfile_or_die, setup_logging, tc as _tc, JSONObject
+from ultimarc.system_utils import remove_pidfile, write_pidfile_or_die, setup_logging, tc as _tc
 
 toolname = 'ultimarc-cli'
 
@@ -62,7 +62,7 @@ class ToolContextManager(object):
             exit(1)
 
         self._command = command
-        # The Environment dict is where we can setup any information related to all tools.
+        # The Environment dict is where we can set up any information related to all tools.
         self._env = {
             'command': command,
             'devices': USBDevices(_VENDOR_FILTER)

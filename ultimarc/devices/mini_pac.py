@@ -15,13 +15,6 @@ from ultimarc.system_utils import JSONObject
 
 _logger = logging.getLogger('ultimarc')
 
-MINI_PAC_INDEX = ct.c_uint16(0x02)
-MACRO_START_INDEX = 166
-# Each macro starts with control character e0 - fe.  Total of 30 macros possible
-# overall total macro characters is 85
-MACRO_MAX_COUNT = 30
-MACRO_MAX_SIZE = 85
-
 # Pin mapping for Mini-pac device
 # code_index: Normal action
 # alternate_code_index: Alternate action
@@ -69,14 +62,22 @@ class MiniPacDevice(USBDeviceHandle):
     class_descr = _('Mini-PAC')
     interface = 2
 
-    def _create_macro_array_(self, pac_struct):
+    MINI_PAC_INDEX = ct.c_uint16(0x02)
+    MACRO_START_INDEX = 166
+    # Each macro starts with control character e0 - fe.  Total of 30 macros possible
+    # overall total macro characters is 85
+    MACRO_MAX_COUNT = 30
+    MACRO_MAX_SIZE = 85
+
+    @classmethod
+    def _create_macro_array_(cls, pac_struct):
         # macros
         macros = []
         macro_start = 0xe0
         macro_index = 1
 
         y = 0
-        for x in range(MACRO_START_INDEX, len(pac_struct.bytes)):
+        for x in range(cls.MACRO_START_INDEX, len(pac_struct.bytes)):
             if x >= y:
                 macro = {}
                 if pac_struct.bytes[x]:
@@ -168,7 +169,7 @@ class MiniPacDevice(USBDeviceHandle):
     def get_current_configuration(self):
         """ Return the current Mini-PAC pins configuration """
         request = PacHeaderStruct(0x59, 0xdd, 0x0f, 0)
-        ret = self.write(USBRequestCode.SET_CONFIGURATION, int(0x03), MINI_PAC_INDEX,
+        ret = self.write(USBRequestCode.SET_CONFIGURATION, int(0x03), self.MINI_PAC_INDEX,
                          request, ct.sizeof(request))
         return self.read_interrupt(0x84, PacStruct()) if ret else None
 
@@ -180,7 +181,7 @@ class MiniPacDevice(USBDeviceHandle):
 
         # Insert the new configuration into the PacStruct data object
         res, data = self._create_message_(config_file, cur_config)
-        return self.write_alt(USBRequestCode.SET_CONFIGURATION, int(0x03), MINI_PAC_INDEX, data, ct.sizeof(data)) \
+        return self.write_alt(USBRequestCode.SET_CONFIGURATION, int(0x03), self.MINI_PAC_INDEX, data, ct.sizeof(data)) \
             if res else False
 
     def set_pin(self, pin_config):
@@ -233,7 +234,7 @@ class MiniPacDevice(USBDeviceHandle):
         cur_config.header.byte_2 = 0xdd
         cur_config.header.byte_3 = 0x0f
 
-        return self.write_alt(USBRequestCode.SET_CONFIGURATION, int(0x03), MINI_PAC_INDEX,
+        return self.write_alt(USBRequestCode.SET_CONFIGURATION, int(0x03), self.MINI_PAC_INDEX,
                               cur_config, ct.sizeof(cur_config))
 
     def set_debounce(self, debounce):
@@ -257,7 +258,7 @@ class MiniPacDevice(USBDeviceHandle):
         cur_config.header.byte_2 = 0xdd
         cur_config.header.byte_3 = 0x0f
 
-        return self.write_alt(USBRequestCode.SET_CONFIGURATION, int(0x03), MINI_PAC_INDEX,
+        return self.write_alt(USBRequestCode.SET_CONFIGURATION, int(0x03), self.MINI_PAC_INDEX,
                               cur_config, ct.sizeof(cur_config))
 
     def set_paclink(self, paclink):
@@ -277,7 +278,7 @@ class MiniPacDevice(USBDeviceHandle):
         cur_config.header.byte_2 = 0xdd
         cur_config.header.byte_3 = 0x0f
 
-        return self.write_alt(USBRequestCode.SET_CONFIGURATION, int(0x03), MINI_PAC_INDEX,
+        return self.write_alt(USBRequestCode.SET_CONFIGURATION, int(0x03), self.MINI_PAC_INDEX,
                               cur_config, ct.sizeof(cur_config))
 
     def set_config_ui(self, config_dict: dict):
@@ -285,7 +286,7 @@ class MiniPacDevice(USBDeviceHandle):
 
         # Insert the new configuration into the PacStruct data object
         res, data = self._create_message_dict_(config_dict)
-        return self.write_alt(USBRequestCode.SET_CONFIGURATION, int(0x03), MINI_PAC_INDEX, data, ct.sizeof(data)) \
+        return self.write_alt(USBRequestCode.SET_CONFIGURATION, int(0x03), self.MINI_PAC_INDEX, data, ct.sizeof(data)) \
             if res else False
 
     def _create_message_(self, config_file: str, cur_device_config=None):
@@ -345,7 +346,7 @@ class MiniPacDevice(USBDeviceHandle):
             #   values in pac structure
             # Clear current macro structure
             if cur_device_config is not None:
-                for x in range(MACRO_START_INDEX, MACRO_MAX_COUNT):
+                for x in range(cls.MACRO_START_INDEX, cls.MACRO_MAX_COUNT):
                     data.bytes[x] = 0
 
             # key: Macro name value: macro value (e0 - fe)
@@ -356,10 +357,10 @@ class MiniPacDevice(USBDeviceHandle):
                 # overall total macro characters is 85
                 cur_size_count = 0
                 cur_macro = 0xe0
-                cur_position = MACRO_START_INDEX
+                cur_position = self.MACRO_START_INDEX
 
-                if len(config.macros) > MACRO_MAX_COUNT:
-                    _logger.debug(_(f'There are more than {MACRO_MAX_COUNT} '
+                if len(config.macros) > self.MACRO_MAX_COUNT:
+                    _logger.debug(_(f'There are more than {self.MACRO_MAX_COUNT} '
                                     f'macros defined for the Mini-pac device'))
                     return False, None
 
@@ -379,8 +380,8 @@ class MiniPacDevice(USBDeviceHandle):
                                 cur_position += 1
                                 cur_size_count += 1
 
-                            if cur_size_count > MACRO_MAX_SIZE:
-                                _logger.debug(_(f'There are more than {MACRO_MAX_SIZE} '
+                            if cur_size_count > self.MACRO_MAX_SIZE:
+                                _logger.debug(_(f'There are more than {self.MACRO_MAX_SIZE} '
                                                 f'macro values defined for the Mini-pac device'))
                                 return False, None
             except AttributeError:
