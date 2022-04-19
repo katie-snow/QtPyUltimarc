@@ -34,7 +34,7 @@ ApplicationWindow {
     id: mainWindow
     visible: true
     minimumWidth: 800
-    minimumHeight: 480
+    minimumHeight: 580
     title: "Ultimarc Editor"
 
     SystemPalette {

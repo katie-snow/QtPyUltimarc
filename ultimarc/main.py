@@ -60,7 +60,7 @@ if __name__ == '__main__':
 
         # Connect Python to QML
         context = engine.rootContext()
-        context.setContextProperty('_ultimarc_version', '0.1')
+        context.setContextProperty('_ultimarc_version', '1.1.0-alpha')
         context.setContextProperty('_class_filter', class_filter)
         context.setContextProperty('_devices_filter', device_filter)
         context.setContextProperty('_devices', devices)
