@@ -77,29 +77,29 @@ Item {
                 rightMargin: _units.grid_unit * 2
             }
             RowLayout {
-                spacing: 0
+                spacing: 6
                 QQC2.Label {
                     verticalAlignment: Text.AlignBottom
 //                    For debugging
 //                    text: " Index: " + index +
-//                          " Count: " + deviceListView.count +
 //                          " isTop: " + isTop +
-//                          " isBottom: " + isBottom +
-//                          " category: '" + model.category +
-//                          "' " + model.device_class
+//                          " isBottom: " + isBottom
                       text: model.device_class_descr
                 }
                 QQC2.Label {
-                    text: " " + model.device_name
-                    visible: model.attached
-                   }
+                    Layout.fillWidth: true
+                    verticalAlignment: Text.AlignTop
+                    text: model.device_key
+                    wrapMode: Text.Wrap
+                    opacity: 0.6
+                }
             }
+
             QQC2.Label {
                 Layout.fillWidth: true
                 verticalAlignment: Text.AlignTop
-                text: model.device_key
+                text: model.description
                 wrapMode: Text.Wrap
-                opacity: 0.6
             }
         }
         Arrow {
