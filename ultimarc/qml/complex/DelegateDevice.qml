@@ -29,10 +29,8 @@ Item {
     height: Math.round(_units.grid_unit * 4.5)
     activeFocusOnTab: true
 
-    readonly property bool isTop: (!_pages.front_page && index === 0) &&
-                    ((!devicesListView.itemAtIndex(index-1) || !devicesListView.itemAtIndex(index)) || (devicesListView.itemAtIndex(index).category !== devicesListView.itemAtIndex(index-1).category))
-    readonly property bool isBottom: (!_pages.front_page && index+1 === devicesListView.count) &&
-                    ((!devicesListView.itemAtIndex(index+1) || !devicesListView.itemAtIndex(index)) || (devicesListView.itemAtIndex(index).category !== devicesListView.itemAtIndex(index+1).category))
+    readonly property bool isTop: index === 0
+    readonly property bool isBottom: !_pages.front_page && index+1 === devicesListView.count
 
     property color color: delegateMouse.containsPress ? Qt.darker(palette.button, 1.2) : delegateMouse.containsMouse ? palette.button : palette.background
     Behavior on color { ColorAnimation { duration: 120 } }
@@ -83,7 +81,8 @@ Item {
 //                    For debugging
 //                    text: " Index: " + index +
 //                          " isTop: " + isTop +
-//                          " isBottom: " + isBottom
+//                          " isBottom: " + isBottom +
+//                          " model: " + model
                       text: model.device_class_descr
                 }
                 QQC2.Label {
