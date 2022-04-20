@@ -42,15 +42,13 @@ class Ipac2UI(Device):
                                       name, device_class_descr, key)
 
         self.icon = 'qrc:/logos/workstation'
+        self.description = '32-Input button/joystick/trackball/spinner USB interface'
         self.config = None
         self._json_obj = None
 
         self._action_model = ActionModel()
         self._alternate_action_model = ActionModel()
         self._macro_model_ = MacroModel()
-
-    def get_description(self):
-        return '32-Input USB button/joystick/trackball/spinner interface.'
 
     def populate(self):
         if self.config is None:
