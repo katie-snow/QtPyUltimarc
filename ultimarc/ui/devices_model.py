@@ -32,6 +32,7 @@ class DevicesRoles(IntEnum):
     ATTACHED = 7
     SELECTED_DEVICE = 8
     DEVICE = 9
+    DESCRIPTION = 10
 
 
 # Map Role Enum values to class property names.
