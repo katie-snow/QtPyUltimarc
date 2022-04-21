@@ -42,7 +42,7 @@ class Ipac2SchemaTest(TestCase):
 
         # Macro entry
         bad_config_file = os.path.join(git_project_root(),
-                                       'tests/test-data/ipac2-macro-bad.json')
+                                       'tests/test-data/ipac2/ipac2-macro-bad.json')
         self.assertTrue(os.path.exists(bad_config_file))
 
         with open(bad_config_file) as h:
@@ -53,7 +53,7 @@ class Ipac2SchemaTest(TestCase):
 
         # Pin entry
         bad_config_file = os.path.join(git_project_root(),
-                                       'tests/test-data/ipac2-pin-bad.json')
+                                       'tests/test-data/ipac2/ipac2-pin-bad.json')
         self.assertTrue(os.path.exists(bad_config_file))
 
         with open(bad_config_file) as h:
@@ -64,7 +64,7 @@ class Ipac2SchemaTest(TestCase):
 
         # Debounce entry
         bad_config_file = os.path.join(git_project_root(),
-                                       'tests/test-data/ipac2-debounce-bad.json')
+                                       'tests/test-data/ipac2/ipac2-debounce-bad.json')
         self.assertTrue(os.path.exists(bad_config_file))
 
         with open(bad_config_file) as h:
@@ -75,7 +75,7 @@ class Ipac2SchemaTest(TestCase):
 
         # Paclink entry
         bad_config_file = os.path.join(git_project_root(),
-                                       'tests/test-data/ipac2-paclink-bad.json')
+                                       'tests/test-data/ipac2/ipac2-paclink-bad.json')
         self.assertTrue(os.path.exists(bad_config_file))
 
         with open(bad_config_file) as h:
@@ -88,7 +88,7 @@ class Ipac2SchemaTest(TestCase):
         """ Test validation when optional entries are not present """
         # Macro entry
         opt_config_file = os.path.join(git_project_root(),
-                                       'tests/test-data/ipac2-pin-optional.json')
+                                       'tests/test-data/ipac2/ipac2-pin-optional.json')
         self.assertTrue(os.path.exists(opt_config_file))
 
         with open(opt_config_file) as h:
