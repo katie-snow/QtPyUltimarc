@@ -42,15 +42,13 @@ class MiniPacUI(Device):
                                         name, device_class_descr, key)
 
         self.icon = 'qrc:/logos/workstation'
+        self.description = 'Integrated 32-input harness-based switch/Joystick USB interface'
         self.config = None
         self._json_obj = None
 
         self._action_model = ActionModel()
         self._alternate_action_model = ActionModel()
         self._macro_model_ = MacroModel()
-
-    def get_description(self):
-        return 'Integrated 32-input harness-based switch/Joystick Interface.'
 
     def populate(self):
         if self.config is None:

@@ -32,6 +32,7 @@ class DevicesRoles(IntEnum):
     ATTACHED = 7
     SELECTED_DEVICE = 8
     DEVICE = 9
+    DESCRIPTION = 10
 
 
 # Map Role Enum values to class property names.
@@ -83,6 +84,9 @@ class DevicesModel(QAbstractListModel, QObject):
             else:
                 tmp = Device(self.args, self.env, False, device_class)
             self._devices_.append(tmp)
+
+    def has_connected_devices(self):
+        return True if self._device_count_ > 0 else False
 
     def get_devices(self):
         """ Return a list of devices we should show information for. """

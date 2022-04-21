@@ -21,6 +21,7 @@ class Device(QObject):
     device_class_id = 'Unknown Type'  # DeviceClassId
     device_key = ''  # Key representing the hardware attached
     icon = 'qrc:/logos/placeholder'  # Unknown product icon
+    description = 'Device class description' # Description of the device
 
     def __init__(self, args, env, attached,
                  device_class_id,
@@ -81,7 +82,7 @@ class Device(QObject):
         return False
 
     def get_description(self):
-        return 'Device class implementation'
+        return self.description
 
     def get_attached(self):
         return self.attached

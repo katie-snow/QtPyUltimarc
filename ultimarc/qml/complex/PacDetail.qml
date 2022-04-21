@@ -143,7 +143,7 @@ Item {
             interactive: false
 
             cellWidth: 100
-            cellHeight: 43
+            cellHeight: 42
 
             model: _devices.device_model.details_model
             delegate: Rectangle {
@@ -174,6 +174,13 @@ Item {
                     }
                     onClicked: {
                         mouseAction()
+                    }
+                    // Not the best way to do this, but it gets the job done.  Setting the first pin
+                    // as the selected pin
+                    Component.onCompleted: {
+                        if (index == 0) {
+                            mouseAction()
+                        }
                     }
                 }
                 ColumnLayout {
@@ -209,51 +216,62 @@ Item {
                         }
                     }
                     Rectangle {
-                        Layout.preferredWidth: 100
+                        Layout.preferredWidth: 98
                         height: childrenRect.height
-                        Layout.margins: 2
+                        Layout.margins: 1
 
                         RowLayout {
-                            anchors {
-                                left: parent.left
-                                right: parent.right
-                            }
+                            spacing: 0
 
-                            QQC2.Label {
-                                id: action
-                                color: "blue"
-                                bottomPadding: 3
-                                leftPadding: 3
-                                font.pointSize: referenceLabel.font.pointSize
-                                text: model.action
-                                font.bold: true
+                            Rectangle {
+                                width: childrenRect.width
+                                height: childrenRect.height
+                                color: "transparent"
 
-                                Connections {
-                                    target: selectedAction
-                                    function onCurrentIndexChanged() {
-                                        if (grid.currentIndex == index && selectedAction.activeFocus) {
-                                            model.action = selectedAction.textAt(selectedAction.currentIndex)
+                                QQC2.Label {
+                                    id: action
+                                    color: "blue"
+                                    bottomPadding: 1
+                                    leftPadding: 1
+                                    width: 49
+                                    font.pointSize: referenceLabel.font.pointSize
+                                    text: model.action
+                                    font.bold: true
+                                    elide: Text.ElideRight
+
+                                    Connections {
+                                        target: selectedAction
+                                        function onCurrentIndexChanged() {
+                                            if (grid.currentIndex == index && selectedAction.activeFocus) {
+                                                model.action = selectedAction.textAt(selectedAction.currentIndex)
+                                            }
                                         }
                                     }
                                 }
                             }
-                            Item {
-                                Layout.fillWidth: true
-                            }
-                            QQC2.Label {
-                                id: altAction
-                                color: "red"
-                                bottomPadding: 3
-                                rightPadding: 3
-                                font.pointSize: referenceLabel.font.pointSize
-                                text: model.alt_action
-                                font.bold: true
 
-                                Connections {
-                                    target: selectedAltAction
-                                    function onCurrentIndexChanged() {
-                                        if (grid.currentIndex == index && selectedAltAction.activeFocus) {
-                                            model.alt_action = selectedAltAction.textAt(selectedAltAction.currentIndex)
+                            Rectangle {
+                                width: childrenRect.width
+                                height: childrenRect.height
+                                color: "transparent"
+
+                                QQC2.Label {
+                                    id: altAction
+                                    color: "red"
+                                    bottomPadding: 1
+                                    leftPadding: 3
+                                    width: 49
+                                    font.pointSize: referenceLabel.font.pointSize
+                                    text: model.alt_action
+                                    font.bold: true
+                                    elide: Text.ElideRight
+
+                                    Connections {
+                                        target: selectedAltAction
+                                        function onCurrentIndexChanged() {
+                                            if (grid.currentIndex == index && selectedAltAction.activeFocus) {
+                                                model.alt_action = selectedAltAction.textAt(selectedAltAction.currentIndex)
+                                            }
                                         }
                                     }
                                 }

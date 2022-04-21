@@ -29,10 +29,8 @@ Item {
     height: Math.round(_units.grid_unit * 4.5)
     activeFocusOnTab: true
 
-    // TODO Bug: Need to fix this properties
-    readonly property bool isTop: (!devicesListView.itemAtIndex(index-1) || !devicesListView.itemAtIndex(index)) || (devicesListView.itemAtIndex(index).category !== devicesListView.itemAtIndex(index-1).category)
-    readonly property bool isBottom: (!_pages.front_page && index+1 === devicesListView.count) &&
-                    ((!devicesListView.itemAtIndex(index+1) || !devicesListView.itemAtIndex(index)) || (devicesListView.itemAtIndex(index).category !== devicesListView.itemAtIndex(index+1).category))
+    readonly property bool isTop: index === 0
+    readonly property bool isBottom: !_pages.front_page && index+1 === devicesListView.count
 
     property color color: delegateMouse.containsPress ? Qt.darker(palette.button, 1.2) : delegateMouse.containsMouse ? palette.button : palette.background
     Behavior on color { ColorAnimation { duration: 120 } }
@@ -77,29 +75,30 @@ Item {
                 rightMargin: _units.grid_unit * 2
             }
             RowLayout {
-                spacing: 0
+                spacing: 6
                 QQC2.Label {
                     verticalAlignment: Text.AlignBottom
 //                    For debugging
 //                    text: " Index: " + index +
-//                          " Count: " + deviceListView.count +
 //                          " isTop: " + isTop +
 //                          " isBottom: " + isBottom +
-//                          " category: '" + model.category +
-//                          "' " + model.device_class
+//                          " model: " + model
                       text: model.device_class_descr
                 }
                 QQC2.Label {
-                    text: " " + model.device_name
-                    visible: model.attached
-                   }
+                    Layout.fillWidth: true
+                    verticalAlignment: Text.AlignTop
+                    text: model.device_key
+                    wrapMode: Text.Wrap
+                    opacity: 0.6
+                }
             }
+
             QQC2.Label {
                 Layout.fillWidth: true
                 verticalAlignment: Text.AlignTop
-                text: model.device_key
+                text: model.description
                 wrapMode: Text.Wrap
-                opacity: 0.6
             }
         }
         Arrow {
