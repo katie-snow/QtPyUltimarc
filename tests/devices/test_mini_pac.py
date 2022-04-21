@@ -43,7 +43,7 @@ class MiniPacDeviceTest(TestCase):
 
         dev.__class__ = MiniPacDevice
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/mini-pac-good.json')
+        config_file = os.path.join(git_project_root(), 'tests/test-data/minipac/mini-pac-good.json')
         valid, data = dev._create_message_(config_file)
         # print(data)
         self.assertTrue(valid)
@@ -121,7 +121,7 @@ class MiniPacDeviceTest(TestCase):
 
         dev.__class__ = MiniPacDevice
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/mini-pac-pin-optional.json')
+        config_file = os.path.join(git_project_root(), 'tests/test-data/minipac/mini-pac-pin-optional.json')
         valid, data = dev._create_message_(config_file)
 
         # pin 1up values, has both optional values
@@ -146,7 +146,7 @@ class MiniPacDeviceTest(TestCase):
 
         dev.__class__ = MiniPacDevice
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/mini-pac-pin-optional.json')
+        config_file = os.path.join(git_project_root(), 'tests/test-data/minipac/mini-pac-pin-optional.json')
         # Validate against the base schema.
         resource_types = ['mini-pac-pins']
         json_dict = dev.validate_config_base(config_file, resource_types)
@@ -175,12 +175,12 @@ class MiniPacDeviceTest(TestCase):
         self.assertTrue(dev)
         dev.__class__ = MiniPacDevice
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/mini-pac-macro-large-count.json')
+        config_file = os.path.join(git_project_root(), 'tests/test-data/minipac/mini-pac-macro-large-count.json')
         valid, data = dev._create_message_(config_file)
         self.assertFalse(valid)
         self.assertIsNone(data)
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/mini-pac-macro-large-action-count.json')
+        config_file = os.path.join(git_project_root(), 'tests/test-data/minipac/mini-pac-macro-large-action-count.json')
         valid, data = dev._create_message_(config_file)
         self.assertFalse(valid)
         self.assertIsNone(data)
@@ -208,7 +208,7 @@ class MiniPacDeviceTest(TestCase):
 
         dev.__class__ = MiniPacDevice
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/mini-pac-good.json')
+        config_file = os.path.join(git_project_root(), 'tests/test-data/minipac/mini-pac-good.json')
         valid, data = dev._create_message_(config_file)
 
         header = PacConfigUnion()
@@ -218,7 +218,7 @@ class MiniPacDeviceTest(TestCase):
         # debounce is short (0x02)
         self.assertTrue(header.config.debounce == 0x02)
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/mini-pac-pin-optional.json')
+        config_file = os.path.join(git_project_root(), 'tests/test-data/minipac/mini-pac-pin-optional.json')
         valid, data = dev._create_message_(config_file)
 
         header = PacConfigUnion()
