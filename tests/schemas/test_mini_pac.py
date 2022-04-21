@@ -41,7 +41,7 @@ class MiniPacSchemaTest(TestCase):
 
         # Macro entry
         bad_config_file = os.path.join(git_project_root(),
-                                       'tests/test-data/mini-pac-macro-bad.json')
+                                       'tests/test-data/minipac/mini-pac-macro-bad.json')
         self.assertTrue(os.path.exists(bad_config_file))
 
         with open(bad_config_file) as h:
@@ -52,7 +52,7 @@ class MiniPacSchemaTest(TestCase):
 
         # Pin entry
         bad_config_file = os.path.join(git_project_root(),
-                                       'tests/test-data/mini-pac-pin-bad.json')
+                                       'tests/test-data/minipac/mini-pac-pin-bad.json')
         self.assertTrue(os.path.exists(bad_config_file))
 
         with open(bad_config_file) as h:
@@ -63,7 +63,7 @@ class MiniPacSchemaTest(TestCase):
 
         # Debounce entry
         bad_config_file = os.path.join(git_project_root(),
-                                       'tests/test-data/mini-pac-debounce-bad.json')
+                                       'tests/test-data/minipac/mini-pac-debounce-bad.json')
         self.assertTrue(os.path.exists(bad_config_file))
 
         with open(bad_config_file) as h:
@@ -74,7 +74,7 @@ class MiniPacSchemaTest(TestCase):
 
         # Paclink entry
         bad_config_file = os.path.join(git_project_root(),
-                                       'tests/test-data/mini-pac-paclink-bad.json')
+                                       'tests/test-data/minipac/mini-pac-paclink-bad.json')
         self.assertTrue(os.path.exists(bad_config_file))
 
         with open(bad_config_file) as h:
@@ -87,7 +87,7 @@ class MiniPacSchemaTest(TestCase):
         """ Test validation when optional entries are not present """
         # Macro entry
         opt_config_file = os.path.join(git_project_root(),
-                                       'tests/test-data/mini-pac-pin-optional.json')
+                                       'tests/test-data/minipac/mini-pac-pin-optional.json')
         self.assertTrue(os.path.exists(opt_config_file))
 
         with open(opt_config_file) as h:

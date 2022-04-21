@@ -47,9 +47,9 @@ class Ipac4DeviceTest(TestCase):
 
         dev.__class__ = Ipac4Device
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/ipac4-good.json')
+        config_file = os.path.join(git_project_root(), 'tests/test-data/ipac4/ipac4-good.json')
         valid, data = dev._create_device_message_(config_file)
-        print(data)
+        # print(data)
         self.assertTrue(valid)
         self.assertIsNotNone(data)
 
@@ -139,7 +139,7 @@ class Ipac4DeviceTest(TestCase):
 
         dev.__class__ = Ipac4Device
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/ipac4-pin-optional.json')
+        config_file = os.path.join(git_project_root(), 'tests/test-data/ipac4/ipac4-pin-optional.json')
         valid, data = dev._create_device_message_(config_file)
 
         # pin 3sw2 values, has both optional values
@@ -161,7 +161,7 @@ class Ipac4DeviceTest(TestCase):
 
         dev.__class__ = Ipac4Device
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/ipac4-pin-optional.json')
+        config_file = os.path.join(git_project_root(), 'tests/test-data/ipac4/ipac4-pin-optional.json')
         # Validate against the base schema.
         resource_types = ['ipac4-pins']
         json_dict = dev.validate_config_base(config_file, resource_types)
@@ -187,12 +187,12 @@ class Ipac4DeviceTest(TestCase):
         self.assertTrue(dev)
         dev.__class__ = Ipac4Device
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/ipac4-macro-large-count.json')
+        config_file = os.path.join(git_project_root(), 'tests/test-data/ipac4/ipac4-macro-large-count.json')
         valid, data = dev._create_device_message_(config_file)
         self.assertFalse(valid)
         self.assertIsNone(data)
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/ipac4-macro-large-action-count.json')
+        config_file = os.path.join(git_project_root(), 'tests/test-data/ipac4/ipac4-macro-large-action-count.json')
         valid, data = dev._create_device_message_(config_file)
         self.assertFalse(valid)
         self.assertIsNone(data)
@@ -220,7 +220,7 @@ class Ipac4DeviceTest(TestCase):
 
         dev.__class__ = Ipac4Device
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/ipac4-good.json')
+        config_file = os.path.join(git_project_root(), 'tests/test-data/ipac4/ipac4-good.json')
         valid, data = dev._create_device_message_(config_file)
 
         header = PacConfigUnion()
@@ -230,7 +230,7 @@ class Ipac4DeviceTest(TestCase):
         # debounce is long (0x03)
         self.assertTrue(header.config.debounce == 0x03)
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/ipac4-pin-optional.json')
+        config_file = os.path.join(git_project_root(), 'tests/test-data/ipac4/ipac4-pin-optional.json')
         valid, data = dev._create_device_message_(config_file)
 
         header = PacConfigUnion()
