@@ -175,6 +175,13 @@ Item {
                     onClicked: {
                         mouseAction()
                     }
+                    // Not the best way to do this, but it gets the job done.  Setting the first pin
+                    // as the selected pin
+                    Component.onCompleted: {
+                        if (index == 0) {
+                            mouseAction()
+                        }
+                    }
                 }
                 ColumnLayout {
                     spacing: 1
