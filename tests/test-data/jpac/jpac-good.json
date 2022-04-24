@@ -3,7 +3,14 @@
   "resourceType" : "jpac-pins",
   "deviceClass" : "jpac",
   "debounce" : "short",
-  "paclink" : false,
+  "paclink" : true,
+  "macros": [
+    {"name": "macro #1", "action": ["s", "a", "b"]},
+    {"name": "macro #2", "action": ["m", "2"]},
+    {"name": "macro #3", "action": ["m", "3", "m", "3", "2", "1"]},
+    {"name": "macro #4", "action": []},
+    {"name": "macro #5", "action": ["m", "1"]}
+  ],
   "pins" : [
     {
       "name": "1right",
@@ -25,7 +32,8 @@
     {
       "name": "1left",
       "action": "left",
-      "alternate_action": "enter"
+      "alternate_action": "enter",
+      "shift": true
     },
     {
       "name": "1sw1",
@@ -109,7 +117,7 @@
     {
       "name": "2sw3",
       "action": "q",
-      "alternate_action": ""
+      "alternate_action": "k"
     },
     {
       "name": "2sw4",
