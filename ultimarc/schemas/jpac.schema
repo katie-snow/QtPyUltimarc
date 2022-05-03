@@ -99,6 +99,7 @@
         "$id": "#root/pins/items",
         "title": "Items",
         "type": "object",
+        "additionalProperties": false,
         "required": [
           "name",
           "action"
@@ -146,6 +147,12 @@
               "test",
               "tilt"
             ]
+          },
+          "disable": {
+            "$id": "#root/pins/items/disable",
+            "title": "Disable",
+            "type": "boolean",
+            "const": true
           },
           "action": {
             "$id": "#root/pins/items/action",

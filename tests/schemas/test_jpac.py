@@ -95,3 +95,15 @@ class JpacSchemaTest(TestCase):
             opt_config = json.loads(h.read())
 
         self.assertIsNone(validate(opt_config, self.jpac_schema))
+
+    def test_jpac_disabled_pin(self):
+        """ Test the 'disable' entry """
+        bad_config_file = os.path.join(git_project_root(),
+                                       'tests/test-data/jpac/jpac-bad-disabled-pin.json')
+        self.assertTrue(os.path.exists(bad_config_file))
+
+        with open(bad_config_file) as h:
+            bad_config = json.loads(h.read())
+
+        with self.assertRaises(ValidationError):
+            validate(bad_config, self.jpac_schema)

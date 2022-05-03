@@ -47,12 +47,13 @@
     {
       "name": "1sw3",
       "action": "space",
-      "alternate_action": ""
+      "disable": true
     },
     {
       "name": "1sw4",
       "action": "shift l",
-      "alternate_action": ""
+      "alternate_action": "a",
+      "disable": true
     },
     {
       "name": "1sw5",

@@ -254,3 +254,21 @@ class JpacDeviceTest(TestCase):
         self.assertTrue(header.config.paclink == 0)
         # debounce is short (0x02)
         self.assertTrue(header.config.debounce == 0x02)
+
+    @patch.object(USBDeviceHandle, '_get_descriptor_fields', return_value=None)
+    @patch('libusb.get_device', return_value='pointer')
+    def test_disable_pin(self, dev_handle_mock, lib_usb_mock):
+        """ Test disabling a pin """
+
+        dev = USBDeviceHandle('test_handle', '0000:0000')
+        self.assertTrue(dev)
+
+        dev.__class__ = JpacDevice
+
+        config_file = os.path.join(git_project_root(), 'tests/test-data/jpac/jpac-good.json')
+        valid, data = dev._create_device_message_(config_file)
+
+        # pin 1sw3 has 'disable' set to true
+        self.assertTrue(data.bytes[0] == 0xff)
+        self.assertTrue(data.bytes[50] == 0)
+        self.assertTrue(data.bytes[100] == 0x01, data.bytes[100])

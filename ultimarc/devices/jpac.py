@@ -68,6 +68,9 @@ class JpacDevice(USBDeviceHandle):
     MACRO_MAX_SIZE = 85
     MACRO_START_INDEX = 166
 
+    # Disable value
+    DISABLED = 0xff
+
     def get_device_config(self, indent=None, file=None):
         """ Return a json string of the device configuration """
         config = self.read_device()
@@ -107,16 +110,17 @@ class JpacDevice(USBDeviceHandle):
         pins = []
         for key in PinMapping:
             action_index, alternate_action_index, shift_index = PinMapping[key]
-            pin = {}
-            if pac_struct.bytes[action_index]:
-                pin['name'] = key
+            pin = {'name': key}
+
+            # Disabled pins have an action_index of 0xff for j-pac
+            if pac_struct.bytes[action_index] is not self.DISABLED:
                 pin['action'] = get_ipac_series_mapping_key(pac_struct.bytes[action_index])
                 if pin['action'] is None:
                     mi = get_ipac_series_macro_mapping_index(pac_struct.bytes[action_index])
                     if mi is not None:
                         pin['action'] = macros[mi]['name']
                     else:
-                        _logger.debug(_(f'{key} action is not a valid value'))
+                        _logger.error(_(f'{key} action is not a valid value'))
                 if pac_struct.bytes[alternate_action_index]:
                     alt_action = get_ipac_series_mapping_key(pac_struct.bytes[alternate_action_index])
                     if alt_action is None:
@@ -128,7 +132,10 @@ class JpacDevice(USBDeviceHandle):
                 if pac_struct.bytes[shift_index] == 0x41 or \
                         pac_struct.bytes[shift_index] == 0x40:
                     pin['shift'] = True
-                pins.append(pin)
+            else:
+                pin['disable'] = True
+                pin['action'] = self.DISABLED
+            pins.append(pin)
         json_obj['pins'] = pins
 
         return json_obj if self.validate_config(json_obj, 'jpac.schema') else None
@@ -412,13 +419,25 @@ class JpacDevice(USBDeviceHandle):
             for pin in config.pins:
                 try:
                     action_index, alternate_action_index, shift_index = PinMapping[pin.name]
-                    action = pin.action.upper()
-                    if action in IPACSeriesMapping:
-                        data.bytes[action_index] = IPACSeriesMapping[action]
-                    elif action in macro_dict:
-                        data.bytes[action_index] = macro_dict[action]
+                    action = 0
+                    try:
+                        # The pin is disabled if disable is present.  Schema only allows true
+                        if pin.disable:
+                            action = self.DISABLED
+                    except AttributeError:
+                        action = pin.action.upper()
+
+                    if action is not self.DISABLED:
+                        if action in IPACSeriesMapping:
+                            data.bytes[action_index] = IPACSeriesMapping[action]
+                        elif action in macro_dict:
+                            data.bytes[action_index] = macro_dict[action]
+                        else:
+                            _logger.info(_(f'{pin.name} action "{action}" is not a valid value'))
                     else:
-                        _logger.info(_(f'{pin.name} action "{action}" is not a valid value'))
+                        # the pin is disabled don't update any other bytes for this pin
+                        data.bytes[action_index] = self.DISABLED
+                        continue
 
                     try:
                         alternate_action = pin.alternate_action.upper()
