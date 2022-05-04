@@ -68,7 +68,7 @@ class JpacDevice(USBDeviceHandle):
     MACRO_MAX_SIZE = 85
     MACRO_START_INDEX = 166
 
-    # Disable value
+    # Disabled value
     DISABLED = 0xff
 
     def get_device_config(self, indent=None, file=None):
@@ -133,8 +133,8 @@ class JpacDevice(USBDeviceHandle):
                         pac_struct.bytes[shift_index] == 0x40:
                     pin['shift'] = True
             else:
-                pin['disable'] = True
-                pin['action'] = self.DISABLED
+                pin['disabled'] = True
+                pin['action'] = ''
             pins.append(pin)
         json_obj['pins'] = pins
 
@@ -172,10 +172,10 @@ class JpacDevice(USBDeviceHandle):
         return macros
 
     @classmethod
-    def write_to_file(cls, data: dict, file_path, indent=None):
+    def write_to_file(cls, data: JSONObject, file_path, indent=None):
         try:
             with open(file_path, 'w') as h:
-                json.dump(data, h, indent=indent)
+                h.write(data.to_json(indent))
                 return True
         except FileNotFoundError as err:
             _logger.debug(err)
@@ -421,8 +421,8 @@ class JpacDevice(USBDeviceHandle):
                     action_index, alternate_action_index, shift_index = PinMapping[pin.name]
                     action = 0
                     try:
-                        # The pin is disabled if disable is present.  Schema only allows true
-                        if pin.disable:
+                        # The pin is disabled if disabled is present.  Schema only allows true
+                        if pin.disabled:
                             action = self.DISABLED
                     except AttributeError:
                         action = pin.action.upper()
