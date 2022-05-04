@@ -50,13 +50,13 @@
     {
       "name": "1sw4",
       "action": "shift l",
-      "disable": true
+      "disabled": true
     },
     {
       "name": "1sw5",
       "action": "z",
       "alternate_action": "",
-      "disable": true
+      "disabled": true
     },
     {
       "name": "1sw6",

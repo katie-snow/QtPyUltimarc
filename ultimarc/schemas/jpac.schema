@@ -148,9 +148,9 @@
               "tilt"
             ]
           },
-          "disable": {
-            "$id": "#root/pins/items/disable",
-            "title": "Disable",
+          "disabled": {
+            "$id": "#root/pins/items/disabled",
+            "title": "Disabled",
             "type": "boolean",
             "const": true
           },
