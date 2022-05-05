@@ -15,6 +15,7 @@ from ultimarc.ui.devices.device import Device
 from ultimarc.ui.device_model import DeviceModel
 from ultimarc.ui.devices.ipac2 import Ipac2UI
 from ultimarc.ui.devices.ipac4 import Ipac4UI
+from ultimarc.ui.devices.jpac import JpacUI
 from ultimarc.ui.devices.mini_pac import MiniPacUI
 
 _logger = logging.getLogger('ultimarc')
@@ -64,10 +65,13 @@ class DevicesModel(QAbstractListModel, QObject):
                                    dev.class_descr, dev.dev_key)
             elif dev.class_id == DeviceClassID.IPAC2.value:
                 device = Ipac2UI(self.args, self.env, True, DeviceClassID(dev.class_id), dev.product_name,
-                                   dev.class_descr, dev.dev_key)
+                                 dev.class_descr, dev.dev_key)
             elif dev.class_id == DeviceClassID.IPAC4.value:
                 device = Ipac4UI(self.args, self.env, True, DeviceClassID(dev.class_id), dev.product_name,
-                                   dev.class_descr, dev.dev_key)
+                                 dev.class_descr, dev.dev_key)
+            elif dev.class_id == DeviceClassID.JPAC.value:
+                device = JpacUI(self.args, self.env, True, DeviceClassID(dev.class_id), dev.product_name,
+                                dev.class_descr, dev.dev_key)
             else:
                 device = Device(self.args, self.env, True, DeviceClassID(dev.class_id), dev.product_name,
                                 dev.class_descr, dev.dev_key)
@@ -81,6 +85,8 @@ class DevicesModel(QAbstractListModel, QObject):
                 tmp = Ipac2UI(self.args, self.env, False, device_class)
             elif device_class == DeviceClassID.IPAC4:
                 tmp = Ipac4UI(self.args, self.env, False, device_class)
+            elif device_class == DeviceClassID.JPAC:
+                tmp = JpacUI(self.args, self.env, False, device_class)
             else:
                 tmp = Device(self.args, self.env, False, device_class)
             self._devices_.append(tmp)

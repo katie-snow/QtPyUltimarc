@@ -1,0 +1,14 @@
+{
+  "schemaVersion" : 2.0,
+  "resourceType" : "jpac-pins",
+  "deviceClass" : "jpac",
+  "debounce" : "short",
+  "paclink" : false,
+  "pins" : [
+    {
+      "name": "1right",
+      "action": "right",
+      "disable": "disable"
+    }
+  ]
+}

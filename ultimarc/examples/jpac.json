@@ -1,0 +1,172 @@
+{
+  "schemaVersion" : 2.0,
+  "resourceType" : "jpac-pins",
+  "deviceClass" : "jpac",
+  "debounce" : "standard",
+  "paclink" : false,
+  "macros": [
+    {"name": "m1", "action": ["m", "1"]},
+    {"name": "m2", "action": ["m", "2", "2"]},
+    {"name": "m3", "action": ["m", "3", "m", "3", "2", "1"]},
+    {"name": "m4", "action": []},
+    {"name": "m5", "action": ["m", "1"]}
+  ],
+  "pins" : [
+    {
+      "name": "1right",
+      "action": "right",
+      "alternate_action": "tab",
+      "shift": false
+    },
+    {
+      "name" : "1up",
+      "action": "up",
+      "alternate_action": "`"
+    },
+    {
+      "name": "1down",
+      "action": "down",
+      "alternate_action": "p"
+    },
+    {
+      "name": "1left",
+      "action": "left",
+      "alternate_action": "enter"
+    },
+    {
+      "name": "1sw1",
+      "action": "ctrl l",
+      "alternate_action": "5"
+    },
+    {
+      "name": "1sw2",
+      "action": "alt l"
+    },
+    {
+      "name": "1sw3",
+      "action": "space",
+      "alternate_action": ""
+    },
+    {
+      "name": "1sw4",
+      "action": "shift l",
+      "disabled": true
+    },
+    {
+      "name": "1sw5",
+      "action": "z",
+      "alternate_action": "",
+      "disabled": true
+    },
+    {
+      "name": "1sw6",
+      "action": "x",
+      "alternate_action": ""
+    },
+    {
+      "name": "1sw7",
+      "action": "c",
+      "alternate_action": ""
+    },
+    {
+      "name": "1sw8",
+      "action": "v",
+      "alternate_action": ""
+    },
+    {
+      "name": "1start",
+      "action": "1",
+      "alternate_action": ""
+    },
+    {
+      "name": "1coin",
+      "action": "5",
+      "alternate_action": ""
+    },
+    {
+      "name": "2right",
+      "action": "g",
+      "alternate_action": ""
+    },
+    {
+      "name": "2up",
+      "action": "r",
+      "alternate_action": ""
+    },
+    {
+      "name": "2down",
+      "action": "f",
+      "alternate_action": ""
+    },
+    {
+      "name": "2left",
+      "action": "d",
+      "alternate_action": ""
+    },
+    {
+      "name": "2sw1",
+      "action": "macro #1",
+      "alternate_action": ""
+    },
+    {
+      "name": "2sw2",
+      "action": "s",
+      "alternate_action": "macro #2"
+    },
+    {
+      "name": "2sw3",
+      "action": "q",
+      "alternate_action": ""
+    },
+    {
+      "name": "2sw4",
+      "action": "w",
+      "alternate_action": ""
+    },
+    {
+      "name": "2sw5",
+      "action": "i",
+      "alternate_action": ""
+    },
+    {
+      "name": "2sw6",
+      "action": "k",
+      "alternate_action": ""
+    },
+    {
+      "name": "2sw7",
+      "action": "j",
+      "alternate_action": ""
+    },
+    {
+      "name": "2sw8",
+      "action": "l",
+      "alternate_action": ""
+    },
+    {
+      "name": "2start",
+      "action": "2",
+      "alternate_action": "esc"
+    },
+    {
+      "name": "2coin",
+      "action": "6",
+      "alternate_action": ""
+    },
+    {
+      "name": "service",
+      "action": "F1",
+      "alternate_action": ""
+    },
+    {
+      "name": "test",
+      "action": "F2",
+      "alternate_action": ""
+    },
+    {
+      "name": "tilt",
+      "action": "F3",
+      "alternate_action": ""
+    }
+  ]
+}
