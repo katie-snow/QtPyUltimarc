@@ -11,7 +11,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: "Setup"
+          name: Unit Tests
           command: |
             python3 -m venv venv
             ls
