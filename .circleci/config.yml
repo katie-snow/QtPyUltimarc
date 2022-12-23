@@ -35,17 +35,20 @@ jobs:
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  example-workflow:
-    jobs:
-      - ultimarc-job
+  #example-workflow:
+  #  jobs:
+  #    - ultimarc-job
       
-  unittest-workflow:
-    jobs:
-      - ultimarc-test
+  #unittest-workflow:
+  #  jobs:
+  #    - ultimarc-test
 
   ultimarc-workflow:
     jobs:
       - python/test:
-          pkg-manager: pip-dist 
+          ensure-test-tool: true
+          pkg-manager: pip-dist
+          pypi-cache: true 
           test-tool: unittest 
           test-tool-args: discover -s tests -v 
+          venv-cache: true
