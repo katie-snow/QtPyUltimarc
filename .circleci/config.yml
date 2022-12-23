@@ -2,9 +2,19 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
+orbs:
+  python: circleci/python@2.1.1
+
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
+  ultimarc-job:
+    docker:
+      - image: cimg/python:3.6
+    steps:
+      - python/install-packages:
+          pkg-manager: pip-dist 
+
   ultimarc-test: 
     docker:
       - image: cimg/python:3.6
@@ -25,6 +35,17 @@ jobs:
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
+  example-workflow:
+    jobs:
+      - ultimarc-job
+      
   unittest-workflow:
     jobs:
       - ultimarc-test
+
+  ultimarc-workflow:
+    jobs:
+      - python/test:
+          pkg-manager: pip-dist 
+          test-tool: unittest 
+          test-tool-args: discover -s tests -v 
