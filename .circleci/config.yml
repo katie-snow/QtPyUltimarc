@@ -11,14 +11,20 @@ jobs:
     steps:
       - checkout
       - run:
-          name: "pip setup"
-          command: |
-              python3 -m venv venv
-              source ./venv/bin/activate
-              pip install --upgrade pip setuptools
-              pip install pip-tools
-              pip-sync
-
+          name: "virtual environment"
+          command: "python3 -m venv venv"
+      - run:
+          name: "venv activate"
+          command: "source ./venv/bin/activate"
+      - run:
+          name: "pip upgrade"
+          command: "pip install --upgrade pip setuptools"
+      - run:
+          name: "pip install"
+          command: "pip install pip-tools"    
+      - run:
+          name: "pip sync"
+          command: "pip-sync"
       - run:
           name: "python env"
           command: "export PYTHONPATH='pwd'"
