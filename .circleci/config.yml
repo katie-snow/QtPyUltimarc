@@ -12,13 +12,10 @@ jobs:
       - checkout
       - run:
           name: "virtual environment"
-          command: "python3 -m venv venv"
-      - run:
-          name: "venv activate"
-          command: "source ./venv/bin/activate"
-      - run:
-          name: "pip upgrade"
-          command: "pip install --upgrade pip setuptools"
+          command: |
+              python3 -m venv venv
+              source ./venv/bin/activate
+              pip install --upgrade pip setuptools
       - run:
           name: "pip install"
           command: "pip install pip-tools"    
@@ -32,26 +29,9 @@ jobs:
           name: "run tests"
           command: "python -m unittest discover -s tests -v"
 
-  say-hello:
-    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
-    docker:
-      - image: cimg/base:stable
-    # Add steps to the job
-    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
-    steps:
-      - checkout
-      - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
-
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
   unittest-workflow:
     jobs:
       - ultimarc-devices-test
-
-  say-hello-workflow:
-    jobs:
-      - say-hello
