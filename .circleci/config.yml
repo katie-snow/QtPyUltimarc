@@ -16,25 +16,11 @@ jobs:
             python3 -m venv venv
             ls
             source ./venv/bin/activate
-            
-      - run:
-          name: "venv activate"
-          command: "source ./venv/bin/activate"
-      - run:
-          name: "pip upgrade"
-          command: "pip install --upgrade pip setuptools"
-      - run:
-          name: "pip install"
-          command: "pip install pip-tools"    
-      - run:
-          name: "pip sync"
-          command: "pip-sync"
-      - run:
-          name: "python env"
-          command: "export PYTHONPATH='pwd'"
-      - run:
-          name: "run tests"
-          command: "python -m unittest discover -s tests -v"
+            pip install --upgrade pip setuptools
+            pip install pip-tools
+            pip sync
+            export PYTHONPATH='pwd'
+            python -m unittest discover -s tests -v
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
