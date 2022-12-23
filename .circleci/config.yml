@@ -5,6 +5,18 @@ version: 2.1
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
+  ultimarc-devices-test: 
+    docker:
+      - image: cimg/python:3.10.1
+    steps:
+      - checkout
+      - run:
+          name: "install dependencies"
+          command: "pip install -r requirements.txt"
+      - run:
+          name: "run tests"
+          command: "python unittest descover -s tests"
+
   say-hello:
     # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
@@ -21,6 +33,10 @@ jobs:
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
+  unittest-workflow:
+    jobs:
+      - ultimarc-devices-test
+      
   say-hello-workflow:
     jobs:
       - say-hello
