@@ -10,7 +10,28 @@ jobs:
       - image: cimg/python:3.6
     steps:
       - checkout
-      
+      - run:
+          name: "Setup"
+          command: |
+            python3 -m venv venv
+            ls
+            source ./venv/bin/activate
+            
+      - run:
+          name: "venv activate"
+          command: "source ./venv/bin/activate"
+      - run:
+          name: "pip upgrade"
+          command: "pip install --upgrade pip setuptools"
+      - run:
+          name: "pip install"
+          command: "pip install pip-tools"    
+      - run:
+          name: "pip sync"
+          command: "pip-sync"
+      - run:
+          name: "python env"
+          command: "export PYTHONPATH='pwd'"
       - run:
           name: "run tests"
           command: "python -m unittest discover -s tests -v"
