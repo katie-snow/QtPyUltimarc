@@ -11,8 +11,23 @@ jobs:
     steps:
       - checkout
       - run:
-          name: "install dependencies"
-          command: "pip install -r requirements.txt"
+          name: "virtual environment"
+          command: "python3 -m venv venv"
+      - run:
+          name: "venv activate"
+          command: "source ./venv/bin/activate"
+      - run:
+          name: "pip upgrade"
+          command: "pip install --upgrade pip setuptools"
+      - run:
+          name: "pip install"
+          command: "pip install pip-tools"    
+      - run:
+          name: "pip sync"
+          command: "pip-sync"
+      - run:
+          name: "python env"
+          command: "export PYTHONPATH='pwd'"
       - run:
           name: "run tests"
           command: "python unittest descover -s tests"
@@ -36,7 +51,7 @@ workflows:
   unittest-workflow:
     jobs:
       - ultimarc-devices-test
-      
+
   say-hello-workflow:
     jobs:
       - say-hello
