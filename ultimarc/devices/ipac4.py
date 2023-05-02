@@ -6,12 +6,12 @@ import ctypes as ct
 import json
 import logging
 
+from python_easy_json import JSONObject
 from ultimarc import translate_gettext as _
 from ultimarc.devices._device import USBDeviceHandle, USBRequestCode
 from ultimarc.devices._mappings import get_ipac_series_macro_mapping_index, get_ipac_series_mapping_key, \
     get_ipac_series_debounce_key, IPACSeriesMapping, IPACSeriesDebounce
 from ultimarc.devices._structures import PacHeaderStruct, PacStruct, PacConfigUnion
-from ultimarc.system_utils import JSONObject
 
 _logger = logging.getLogger('ultimarc')
 

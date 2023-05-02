@@ -6,11 +6,11 @@ import ctypes as ct
 import logging
 from enum import IntEnum
 
+from python_easy_json import JSONObject
 from ultimarc import translate_gettext as _
 from ultimarc.devices._device import USBDeviceHandle, USBRequestCode
 from ultimarc.devices._mappings import IPACSeriesMapping
 from ultimarc.devices._structures import UltimarcStruct
-from ultimarc.system_utils import JSONObject
 
 _logger = logging.getLogger('ultimarc')
 

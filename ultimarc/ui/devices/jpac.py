@@ -9,9 +9,9 @@ from enum import IntEnum
 
 from PySide6.QtCore import QModelIndex, QObject, Property, Signal
 
+from python_easy_json import JSONObject
 from ultimarc.devices import DeviceClassID
 from ultimarc.devices.jpac import PinMapping, JpacDevice
-from ultimarc.system_utils import JSONObject
 from ultimarc.ui.action_model import ActionModel
 from ultimarc.ui.devices.device import Device
 from ultimarc.ui.macro_model import MacroModel
