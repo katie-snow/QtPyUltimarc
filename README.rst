@@ -1,6 +1,6 @@
 |badge1| |badge2| |badge3|
 
-.. |badge1| image:: https://github.com/katie-snow/QtPyUltimarc/actions/workflows/unittests.yaml/badge.svg
+.. |badge1| image:: https://github.com/katie-snow/QtPyUltimarc/actions/workflows/tests.yaml/badge.svg
   :alt: Unittest Completion Status
 .. |badge2| image:: https://raw.githubusercontent.com/katie-snow/QtPyUltimarc/coverage-badge/coverage.svg?raw=true
   :alt: Code Coverage Status
