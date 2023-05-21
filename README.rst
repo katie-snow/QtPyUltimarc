@@ -9,10 +9,10 @@
 
 
 ****************************************************************************************
-python-ultimarc: Pure python implementation for managing Ultimarc USB products
+Python Ultimarc Tools: Python tools for managing Ultimarc arcade devices
 ****************************************************************************************
 
-The **python-ultimarc** python is a cross platform set of command line tools, graphical tool and python library for
+The **Python Ultimarc** tools are a pure python implementation and cross platform set of command line tools, graphical tool and python library for
 managing Ultimarc USB arcade devices, for more information about Ultimarc devices visit https://www.ultimarc.com.
 
 Get It Now
