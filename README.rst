@@ -65,7 +65,7 @@ executing '**ultimarc**' in a terminal command window. To view the available too
 To view the help for a specific tool, add the tool name and use the '--help' argument:
 ::
 
-    $ ultimarc usb-button --help
+    $ ultimarc list --help
 
     usage: list [-h] [--debug] [--log-file] [-q] [--bus BUS] [--address ADDRESS] [-c CLASS_ID] [-d]
 
