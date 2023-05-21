@@ -11,3 +11,5 @@ libusb
 # JSON Schema Validation
 jsonschema
 
+# JSONObject
+python_easy_json
