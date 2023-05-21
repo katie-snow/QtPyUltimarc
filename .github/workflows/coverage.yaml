@@ -1,0 +1,38 @@
+name: Coverage
+
+on: [push]
+
+jobs:
+  coverage:
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install coverage
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Run Coverage
+        run: |
+          export PYTHONPATH=./src
+          coverage run -m unittest discover -v -s tests
+      - name: Generate Coverage Report
+        run: |
+          coverage report
+      - name: Creating coverage folder
+        run: |
+          mkdir -p coverage
+      - name: Coverage Badge
+        uses: tj-actions/coverage-badge-py@v1.8
+        with:
+          output: coverage/coverage.svg
+      - name: Publish coverage report to coverage-badge branch
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: coverage-badge
+          folder: coverage
