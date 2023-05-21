@@ -5,7 +5,12 @@
 import logging
 import sys
 
-from PySide6 import QtCore, QtWidgets, QtQml
+try:
+    from PySide6 import QtCore, QtWidgets, QtQml
+except ImportError:
+    print("\nError: PyUltimarc QT libraries not installed, unable to launch UI.")
+    print("   To install, run: 'pip install PyUltimarc[ui]'\n")
+    sys.exit(-1)
 
 from ultimarc import translate_gettext as _
 from ultimarc.tools import ToolContextManager
