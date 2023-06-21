@@ -28,8 +28,9 @@ _logger = logging.getLogger('ultimarc')
 _tool_cmd = _('ui')
 _tool_title = _('Ultimarc Editor')
 
-if __name__ == '__main__':
-    """ Main entry point """
+
+def run():
+    """ Main UI entry point """
     app = QtWidgets.QApplication(sys.argv)
     # QtQuickControls2.QQuickStyle('org.fedoraproject.AdwaitaTheme')
     # QtQuickControls2.QQuickStyle('Fusion')
@@ -88,3 +89,7 @@ if __name__ == '__main__':
         ret = app.exec_()
 
     sys.exit(ret)
+    
+if __name__ == '__main__':
+    run()
+

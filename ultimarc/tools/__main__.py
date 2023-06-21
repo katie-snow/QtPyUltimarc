@@ -11,6 +11,7 @@ import os
 import re
 import sys
 
+import ultimarc
 from ultimarc import translate_gettext as _
 from ultimarc.tools import toolname
 
@@ -33,14 +34,7 @@ def _run_tool(lib_paths, import_path):
     """
     Run the tools from the given path.
     """
-    # We need to run from the `django_service` directory, save the current directory
     cwd = os.path.abspath(os.curdir)
-    if not cwd.endswith('tools'):
-        tmp_cwd = os.path.join(cwd, 'tools')
-        if not os.path.exists(tmp_cwd):
-            raise FileNotFoundError(_('Unable to locate "tools" module.'))
-        os.chdir(tmp_cwd)
-
     args = copy.deepcopy(sys.argv)
 
     show_usage = False
@@ -58,12 +52,16 @@ def _run_tool(lib_paths, import_path):
     lp = None
     for lib_path in lib_paths:
         if os.path.exists(os.path.join(os.curdir, lib_path)):
-            lp = os.path.join(os.curdir, lib_path)
+            os.chdir(os.path.abspath(lib_path))
+            lp = os.path.join(os.path.abspath(lib_path), import_path)
+            break
 
     if not lp:
         print(_('ERROR: tool library path not found, aborting.'))
         os.chdir(cwd)
         exit(1)
+
+    print(lp)
 
     command_names = list()
 
@@ -84,8 +82,9 @@ def _run_tool(lib_paths, import_path):
                 command_names.append("  {0} : {1}".format(mod_cmd.ljust(14), mod_desc))
         else:
             if mod_cmd == command:
+                mod_base = os.path.basename(os.path.dirname(lp))
                 mod_name = os.path.basename(lib).split(".")[0]
-                mod = importlib.import_module("{0}.{1}".format(import_path, mod_name))
+                mod = importlib.import_module("{0}.{1}".format(mod_base, mod_name))
                 exit_code = mod.run()
                 if '-q' not in sys.argv and '--quiet' not in sys.argv:
                     print(_('finished.'))
@@ -116,7 +115,7 @@ def run():
     """
     Developer Tools
     """
-    lib_paths = [".", "tools"]
+    lib_paths = [os.path.dirname(ultimarc.__file__), ".", "tools"]
     import_path = "tools"
     return _run_tool(lib_paths, import_path)
 
