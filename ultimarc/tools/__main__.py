@@ -33,7 +33,6 @@ def _run_tool():
     """
     Run the tools from the given path.
     """
-    cwd = os.path.abspath(os.curdir)
     args = copy.deepcopy(sys.argv)
 
     proj_path = os.path.abspath(__file__).split('/ultimarc/tools')[0]
@@ -53,7 +52,6 @@ def _run_tool():
         sys.argv = args
 
     os.environ['PYTHONPATH'] = import_base
-    os.chdir(tool_path)
 
     command_names = list()
 
@@ -78,7 +76,6 @@ def _run_tool():
             exit_code = mod.run()
             if '-q' not in sys.argv and '--quiet' not in sys.argv:
                 print(_('finished.'))
-            os.chdir(cwd)
             return exit_code
 
     if not show_usage:
@@ -100,8 +97,6 @@ def _run_tool():
         print(gn)
     print("")
 
-    os.chdir(cwd)
-
 
 def run():
     return _run_tool()
@@ -109,4 +104,3 @@ def run():
 # --- Main Program Call ---
 if __name__ == "__main__":
     sys.exit(run())
-
