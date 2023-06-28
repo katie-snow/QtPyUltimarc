@@ -5,8 +5,6 @@
 # !!! This file is python 3.x compliant !!!
 #
 
-import gettext
-import json
 import logging
 import os
 import re
@@ -14,8 +12,6 @@ import shlex
 import signal
 import subprocess
 import sys
-from datetime import datetime, date
-from json import JSONDecodeError
 
 try:
     import requests

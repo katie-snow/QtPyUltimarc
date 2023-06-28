@@ -3,6 +3,7 @@
 # file 'LICENSE', which is part of this source code package.
 #
 import logging
+import os
 import sys
 
 try:
@@ -28,8 +29,14 @@ _logger = logging.getLogger('ultimarc')
 _tool_cmd = _('ui')
 _tool_title = _('Ultimarc Editor')
 
-if __name__ == '__main__':
-    """ Main entry point """
+
+def run():
+    proj_path = os.path.abspath(__file__).split('/ultimarc/')[0]
+    app_base = os.path.join(proj_path, 'ultimarc')
+
+    os.environ['PYTHONPATH'] = proj_path
+
+    """ Main UI entry point """
     app = QtWidgets.QApplication(sys.argv)
     # QtQuickControls2.QQuickStyle('org.fedoraproject.AdwaitaTheme')
     # QtQuickControls2.QQuickStyle('Fusion')
@@ -77,7 +84,7 @@ if __name__ == '__main__':
         context.setContextProperty('_units', units)
         context.setContextProperty('_pages', pages)
 
-        url = QtCore.QUrl.fromLocalFile('qml/main.qml')
+        url = QtCore.QUrl.fromLocalFile(os.path.join(app_base, 'qml/main.qml'))
 
         engine.load(url)
         if not engine.rootObjects():
@@ -88,3 +95,7 @@ if __name__ == '__main__':
         ret = app.exec_()
 
     sys.exit(ret)
+    
+if __name__ == '__main__':
+    run()
+

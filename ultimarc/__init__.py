@@ -5,5 +5,9 @@
 # Enable i18n internationalization support for python
 #
 import gettext
-translate = gettext.translation('ultimarc', './locale', fallback=True)
+import os
+
+base_path = os.path.dirname(os.path.abspath(__name__))
+
+translate = gettext.translation(base_path, './locale', fallback=True)
 translate_gettext = translate.gettext

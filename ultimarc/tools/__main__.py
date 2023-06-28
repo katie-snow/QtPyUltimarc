@@ -29,19 +29,15 @@ def _grep_prop(filename, prop_name):
     return None
 
 
-def _run_tool(lib_paths, import_path):
+def _run_tool():
     """
     Run the tools from the given path.
     """
-    # We need to run from the `django_service` directory, save the current directory
-    cwd = os.path.abspath(os.curdir)
-    if not cwd.endswith('tools'):
-        tmp_cwd = os.path.join(cwd, 'tools')
-        if not os.path.exists(tmp_cwd):
-            raise FileNotFoundError(_('Unable to locate "tools" module.'))
-        os.chdir(tmp_cwd)
-
     args = copy.deepcopy(sys.argv)
+
+    proj_path = os.path.abspath(__file__).split('/ultimarc/tools')[0]
+    import_base = os.path.join(proj_path, 'ultimarc')
+    tool_path = os.path.join(import_base, 'tools')
 
     show_usage = False
     command = "no-command"
@@ -55,71 +51,56 @@ def _run_tool(lib_paths, import_path):
         command = args.pop(1)
         sys.argv = args
 
-    lp = None
-    for lib_path in lib_paths:
-        if os.path.exists(os.path.join(os.curdir, lib_path)):
-            lp = os.path.join(os.curdir, lib_path)
-
-    if not lp:
-        print(_('ERROR: tool library path not found, aborting.'))
-        os.chdir(cwd)
-        exit(1)
+    os.environ['PYTHONPATH'] = import_base
 
     command_names = list()
 
-    libs = glob.glob(os.path.join(lp, "*.py"))
+    libs = glob.glob(os.path.join(tool_path, "*.py"))
     for lib in libs:
         mod_cmd = _grep_prop(lib, "tool_cmd")
         mod_desc = _grep_prop(lib, "tool_desc")
         if not mod_cmd:
             continue
 
-        if show_usage:
-            # TODO: Support i18n translations for tool_cmd and tool_desc.  We need to import the module
-            #       here and query the gettext strings.  Importing the modules here is really slow.
-            mod_cmd = mod_cmd.replace('(', '').replace("'", '')
-            mod_desc = mod_desc.replace('(', '').replace("'", '')
+        # TODO: Support i18n translations for tool_cmd and tool_desc.  We need to import the module
+        #       here and query the gettext strings.  Importing the modules here is really slow.
+        usage_mod_cmd = mod_cmd.replace('(', '').replace("'", '')
+        usage_mod_desc = mod_desc.replace('(', '').replace("'", '')
 
-            if mod_cmd != "template":
-                command_names.append("  {0} : {1}".format(mod_cmd.ljust(14), mod_desc))
-        else:
-            if mod_cmd == command:
-                mod_name = os.path.basename(lib).split(".")[0]
-                mod = importlib.import_module("{0}.{1}".format(import_path, mod_name))
-                exit_code = mod.run()
-                if '-q' not in sys.argv and '--quiet' not in sys.argv:
-                    print(_('finished.'))
-                os.chdir(cwd)
-                return exit_code
+        if mod_cmd != "template":
+            command_names.append("  {0} : {1}".format(usage_mod_cmd.ljust(14), usage_mod_desc))
 
-    if show_usage:
-        _tool = toolname if toolname in sys.argv[0] else 'python -m tools'
-        _usage = _('usage')
-        _command = _('command')
-        _short_help = _('-h')
-        _long_help = _('--help')
-        _args = _('args')
-        _commands = _('available commands')
+        if mod_cmd == command:
+            mod_name = os.path.basename(lib).split(".")[0]
+            mod = importlib.import_module("ultimarc.tools.{0}".format(mod_name))
+            exit_code = mod.run()
+            if '-q' not in sys.argv and '--quiet' not in sys.argv:
+                print(_('finished.'))
+            return exit_code
 
-        print(f"\n{_usage}: {_tool} [{_command}] " +
-              f"[{_short_help}|{_long_help}] [{_args}]\n\n{_commands}:")
+    if not show_usage:
+        print(_('Error: Invalid command argument'))
 
-        command_names.sort()
-        for gn in command_names:
-            print(gn)
-        print("")
+    _tool = toolname if toolname in sys.argv[0] else 'python -m tools'
+    _usage = _('usage')
+    _command = _('command')
+    _short_help = _('-h')
+    _long_help = _('--help')
+    _args = _('args')
+    _commands = _('available commands')
 
-    os.chdir(cwd)
+    print(f"\n{_usage}: {_tool} [{_command}] " +
+          f"[{_short_help}|{_long_help}] [{_args}]\n\n{_commands}:")
+
+    command_names.sort()
+    for gn in command_names:
+        print(gn)
+    print("")
 
 
 def run():
-    """
-    Developer Tools
-    """
-    lib_paths = [".", "tools"]
-    import_path = "tools"
-    return _run_tool(lib_paths, import_path)
-
+    return _run_tool()
 
 # --- Main Program Call ---
-sys.exit(run())
+if __name__ == "__main__":
+    sys.exit(run())
