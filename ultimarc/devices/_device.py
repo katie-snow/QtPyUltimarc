@@ -380,15 +380,10 @@ class USBDeviceHandle:
         :param schema_file: Schema file name only, no path included.
         :return: schema dict.
         """
-        schema_paths = [
-            './ultimarc/schemas', '../ultimarc/schemas', '../../ultimarc/schemas', '../schemas', './schemas'
-        ]
-        schema_path = None
-
-        for path in schema_paths:
-            schema_path = os.path.abspath(os.path.join(path, schema_file))
-            if os.path.exists(schema_path):
-                break
+        proj_path = os.path.abspath(__file__).split('/ultimarc/')[0]
+        import_base = os.path.join(proj_path, 'ultimarc')
+        schema_base = os.path.join(import_base, 'schemas')
+        schema_path = os.path.abspath(os.path.join(schema_base, schema_file))
 
         if not schema_path:
             _logger.error(_('Unable to locate schema directory.'))
