@@ -9,8 +9,8 @@ import sys
 try:
     from PySide6 import QtCore, QtWidgets, QtQml
 except ImportError:
-    print("\nError: PyUltimarc QT libraries not installed, unable to launch UI.")
-    print("   To install, run: 'pip install PyUltimarc[ui]'\n")
+    print("\nError: Ultimarc QT libraries not installed, unable to launch UI.")
+    print("   To install, run: 'pip install ultimarc[ui]'\n")
     sys.exit(-1)
 
 from ultimarc import translate_gettext as _
@@ -75,7 +75,7 @@ def run():
 
         # Connect Python to QML
         context = engine.rootContext()
-        context.setContextProperty('_ultimarc_version', '1.1.0-alpha')
+        context.setContextProperty('_ultimarc_version', '1.0.0-alpha.5')
         context.setContextProperty('_class_filter', class_filter)
         context.setContextProperty('_devices_filter', device_filter)
         context.setContextProperty('_devices', devices)
