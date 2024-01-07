@@ -227,3 +227,18 @@ class MiniPacDeviceTest(TestCase):
         self.assertTrue(header.config.paclink == 0)
         # debounce is short (0x02)
         self.assertTrue(header.config.debounce == 0x02)
+
+    @patch.object(USBDeviceHandle, '_get_descriptor_fields', return_value=None)
+    @patch('libusb.get_device', return_value='pointer')
+    def test_schema_path(self, dev_handle_mock, lib_usb_mock):
+        """ Test that the schema file can be found when running ultimarc outside the project """
+
+        dev = USBDeviceHandle('test_handle', '0000:0000')
+        self.assertTrue(dev)
+
+        dev.__class__ = MiniPacDevice
+
+        prev_dir = os.path.abspath(os.curdir)
+        os.chdir(os.path.abspath(__file__).split('/QtPyUltimarc/')[0])
+        self.assertTrue(dev.load_config_schema('mini-pac.schema'))
+        os.chdir(prev_dir)
