@@ -42,8 +42,12 @@ class USBRequestCode(IntEnum):
     SET_INTERFACE = 0x0B  # Select an alternate interface for the specified interface
     SYNCH_FRAME = 0x0C  # Set then report an endpoint's synchronization frame
     REQUEST_SET_SEL = 0x30  # Sets both the U1 and U2 Exit Latency
-    SET_ISOCH_DELAY = 0x31  # Delay from the time a host transmits a packet to the time it is
-    # received by the device.
+    SET_ISOCH_DELAY = 0x31  # Delay from the time a host transmits a packet to the time it is received by the device.
+
+    # Pre-2015 UltraStik controller ID change Codes
+    ULTRASTIK_E9 = 0xE9
+    ULTRASTIK_EA = 0xEA
+    ULTRASTIK_EB = 0xEB
 
 
 class USBRequestDirection(IntEnum):
@@ -264,8 +268,7 @@ class USBDeviceHandle:
         payload = (ct.c_ubyte * 5)(0)
         payload[0] = report_id
 
-        ct.memmove(ct.addressof(payload) + 1, ct.byref(data, 0),
-                   size if size <= 4 else 4)
+        ct.memmove(ct.addressof(payload) + 1, ct.byref(data, 0), size if size <= 4 else 4)
 
         payload_ptr = ct.byref(payload) if report_id else ct.byref(payload, 1)
         ret = self._make_control_transfer(request_type, b_request, w_value,
@@ -320,6 +323,30 @@ class USBDeviceHandle:
 
         _logger.debug(_('Write operation complete, wrote {} bytes.').format(pos))
         return ret
+
+    def write_raw(self, b_request, w_value, w_index, data=None, size=None,
+                  request_type=USBRequestType.REQUEST_TYPE_CLASS, recipient=USBRequestRecipient.RECIPIENT_INTERFACE):
+        """
+        Read message from USB device.
+        :param b_request: Request field for the setup packet
+        :param w_value: Value field for the setup packet.
+        :param w_index: Index field for the setup packet
+        :param data: ctypes structure class.
+        :param size: size of message.
+        :param request_type: Request type enum value.
+        :param recipient: Recipient enum value.
+        :return: True if successful otherwise False.
+        """
+        if self.interface is None:
+            raise USBDeviceInterfaceNotClaimedError(self.dev_key)
+        if not isinstance(request_type, USBRequestType):
+            raise ValueError('Request type argument must be a USBRequestType enum value.')
+        if not isinstance(recipient, USBRequestRecipient):
+            raise ValueError('Request type argument must be a USBRequestRecipient enum value.')
+
+        # Combine direction, request type and recipient together.
+        request_type = usb.LIBUSB_ENDPOINT_OUT | request_type | recipient
+        return self._make_control_transfer(request_type, b_request, w_value, w_index, ct.byref(data), size)
 
     def read(self, b_request, w_value, w_index, data=None, size=None, request_type=USBRequestType.REQUEST_TYPE_CLASS,
              recipient=USBRequestRecipient.RECIPIENT_INTERFACE):
