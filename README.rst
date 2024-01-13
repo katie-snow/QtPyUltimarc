@@ -4,8 +4,8 @@
   :alt: Unittest Completion Status
 .. |badge2| image:: https://raw.githubusercontent.com/katie-snow/QtPyUltimarc/coverage-badge/coverage.svg?raw=true
   :alt: Code Coverage Status
-.. |badge3| image:: https://img.shields.io/badge/python-v3.7%20|%20v3.8%20|%20v3.9%20|%20v3.10%20|%20v3.11-blue
-  :alt: Python v3.7, v3.8, v3.9, v3.10, v3.11
+.. |badge3| image:: https://img.shields.io/badge/python-v3.7%20|%20v3.8%20|%20v3.9%20|%20v3.10%20|%20v3.11%20|%20v3.12-blue
+  :alt: Python v3.7, v3.8, v3.9, v3.10, v3.11, v3.12
 
 
 ****************************************************************************************
