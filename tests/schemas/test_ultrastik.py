@@ -55,6 +55,7 @@ class UltraStikSchemaTest(TestCase):
         # Load list of invalid config files
         invalid_config_files = glob(os.path.join(test_config_root, 'ultrastik_*.json'))
 
+        # Load the invalid config test files and sort them by ResourceType value.
         for file in invalid_config_files:
             with open(file) as h:
                 config = h.read()
@@ -68,7 +69,7 @@ class UltraStikSchemaTest(TestCase):
         self.assertIsNotNone(self.invalid_config_files)
         self.assertIsNotNone(self.invalid_controller_id_config_files)
 
-        # Load list of example config files
+        # Load list of example config files and sort them by ResourceType value.
         valid_config_files = glob(os.path.join(example_config_root, 'ultrastik-*.json'))
         for file in valid_config_files:
             with open(file) as h:

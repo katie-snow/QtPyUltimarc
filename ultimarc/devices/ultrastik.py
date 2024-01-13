@@ -3,12 +3,11 @@
 # file 'LICENSE', which is part of this source code package.
 #
 import ctypes as ct
-from enum import IntEnum
 import logging
 
 from ultimarc import translate_gettext as _
 from ultimarc.devices._device import USBDeviceHandle, USBRequestCode, USBRequestType, USBRequestRecipient
-from ultimarc.devices._structures import UltimarcStruct
+from ultimarc.devices._structures import UltraStikStruct
 
 _logger = logging.getLogger('ultimarc')
 
@@ -61,8 +60,8 @@ class UltraStikPre2015Device(USBDeviceHandle):
         """
         # Calculate new device ID.
         new_id = USTIK_CONFIG_BASE + (new_controller_id - 1)
-        # Setup data array.
-        data = (ct.c_uint8 * USTIK_PRE_MESG_LENGTH)(0)
+        # Setup an array with zero for all byte values.
+        data = (ct.c_ubyte * USTIK_PRE_MESG_LENGTH)(0)
         data[0] = new_id
 
         resp_1 = self.write_raw(USBRequestCode.ULTRASTIK_E9, 0x1, USTIK_PRE_INTERFACE, ct.c_void_p(), 0x0,
@@ -81,8 +80,9 @@ class UltraStikPre2015Device(USBDeviceHandle):
 
         return not False in [resp_1, resp_2, resp_3, resp_4]
 
-    def set_config(self):
-        ...
+    def set_config(self, config: UltraStikStruct) -> bool:
+
+        return True
 
 
 class UltraStikDevice(USBDeviceHandle):
@@ -101,8 +101,8 @@ class UltraStikDevice(USBDeviceHandle):
         """
         # Calculate new device ID.
         new_id = USTIK_CONFIG_BASE + (new_controller_id - 1)
-        # Setup data array.
-        data = (ct.c_uint8 * USTIK_MESG_LENGTH)(0)
+        # Setup an array with zero for all byte values.
+        data = (ct.c_ubyte * USTIK_MESG_LENGTH)(0)
         data[0] = new_id
 
         resp = self.write(USBRequestCode.SET_CONFIGURATION, 0x0, USTIK_INTERFACE, data, USTIK_MESG_LENGTH,
@@ -110,3 +110,6 @@ class UltraStikDevice(USBDeviceHandle):
                           recipient=USBRequestRecipient.RECIPIENT_INTERFACE)
 
         return resp
+
+    def set_config(self, config: UltraStikStruct) -> bool:
+        return True

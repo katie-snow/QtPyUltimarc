@@ -2,5 +2,5 @@
 	"schemaVersion" : 2.0,
   	"resourceType" : "ultrastik-controller-id",
   	"deviceClass" : "ultrastik",
-	"newId": "abc"
+	"newControllerId": "abc"
 }
