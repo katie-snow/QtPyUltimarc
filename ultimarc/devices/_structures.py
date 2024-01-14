@@ -20,7 +20,7 @@ class UltimarcStruct(ct.Structure):
 
     def __len__(self) -> int:
         """
-        :return: Return the number of bytes required for this structure
+        :return: Return the number of bytes for the size this structure
         """
         return sum([ct.sizeof(i[1]) for i in self._fields_])
 

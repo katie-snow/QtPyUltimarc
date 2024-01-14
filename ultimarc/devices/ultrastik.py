@@ -4,6 +4,9 @@
 #
 import ctypes as ct
 import logging
+from typing import Dict
+
+from python_easy_json import JSONObject
 
 from ultimarc import translate_gettext as _
 from ultimarc.devices._device import USBDeviceHandle, USBRequestCode, USBRequestType, USBRequestRecipient
@@ -11,6 +14,7 @@ from ultimarc.devices._structures import UltraStikStruct
 
 _logger = logging.getLogger('ultimarc')
 
+USTIK_RESOURCE_TYPES = ['ultrastik-controller-id', 'ultrastik-config']
 
 USTIK_DATA_SIZE = 96
 USTIK_CONFIG_BASE = 0x51
@@ -80,9 +84,14 @@ class UltraStikPre2015Device(USBDeviceHandle):
 
         return not False in [resp_1, resp_2, resp_3, resp_4]
 
-    def set_config(self, config: UltraStikStruct) -> bool:
+    def set_config(self, config_file: str) -> bool:
+
+        config = JSONObject(self.validate_config_base(config_file, USTIK_RESOURCE_TYPES))
+
+
 
         return True
+
 
 
 class UltraStikDevice(USBDeviceHandle):
