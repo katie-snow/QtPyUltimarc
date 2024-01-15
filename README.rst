@@ -47,6 +47,9 @@ Supported Ultimarc Devices
    * - UltraStik 360 Joystick
      - Yes
      - No
+   * - AimTrak Light Gun
+     - No
+     - No
 
 Get It Now
 ==========
