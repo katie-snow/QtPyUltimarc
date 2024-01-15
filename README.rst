@@ -1,11 +1,13 @@
-|badge1| |badge2| |badge3|
+|badge1| |badge2| |badge3| |badge4|
 
 .. |badge1| image:: https://github.com/katie-snow/QtPyUltimarc/actions/workflows/tests.yaml/badge.svg
   :alt: Unittest Completion Status
 .. |badge2| image:: https://raw.githubusercontent.com/katie-snow/QtPyUltimarc/coverage-badge/coverage.svg?raw=true
   :alt: Code Coverage Status
-.. |badge3| image:: https://img.shields.io/badge/python-v3.7%20|%20v3.8%20|%20v3.9%20|%20v3.10%20|%20v3.11%20|%20v3.12-blue
-  :alt: Python v3.7, v3.8, v3.9, v3.10, v3.11, v3.12
+.. |badge3| image:: https://img.shields.io/badge/python-v3.7%20|%20v3.8%20|%20v3.9%20|%20v3.10%20|%20v3.11-blue
+  :alt: Python v3.7, v3.8, v3.9, v3.10, v3.11
+.. |badge4| image:: https://img.shields.io/badge/OS%20Support-Linux%20|%20Mac%20OS%20|%20MS%20Windows-blue
+  :alt: OS Support Linux, Mac OS, MS Windows
 
 
 ****************************************************************************************
@@ -13,8 +15,35 @@ Python Ultimarc Tools: Python tools for managing Ultimarc devices
 ****************************************************************************************
 
 The **Python Ultimarc** tools are a pure python implementation and cross platform set of command line tools, graphical
-tool and python library for managing Ultimarc USB arcade devices, for more information about Ultimarc devices
-visit https://www.ultimarc.com.
+tool and python library for managing Ultimarc USB arcade devices. Both the CLI and UI tools run on Linux, Mac OS and MS Windows.
+
+For more information about Ultimarc devices visit https://www.ultimarc.com.
+
+.. list-table:: Ultimarc Device Support
+   :widths: 25 25 25
+   :header-rows: 1
+
+   * - Ultimarc Device
+     - CLI Support
+     - UI Support
+   * - J-PAC
+     - Yes
+     - Yes
+   * - I-PAC2
+     - Yes
+     - Yes
+   * - I-PAC4
+     - Yes
+     - Yes
+   * - MINI-PAC
+     - Yes
+     - Yes
+   * - USB Button
+     - Yes
+     - No
+   * - UltraStik 360 Joystick
+     - Yes
+     - No
 
 Get It Now
 ==========
@@ -83,6 +112,12 @@ To view the help for a specific tool, add the tool name and use the '--help' arg
       -d, --descriptors     Show device descriptor values.
 
     class ids: usb-button,aimtrak,mini-pac,ipac2,ipac4,jpac
+
+
+Udev Support
+==================
+
+For Udev support for Ultimarc devices, copy the file 'ultimarc/udev/95-ultimarc.rules' to the /etc/udev/rules.d folder.
 
 
 Project Links
