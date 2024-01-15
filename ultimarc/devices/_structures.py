@@ -98,11 +98,11 @@ class PacStruct(UltimarcStruct):
 class UltraStikStruct(UltimarcStruct):
     """ Defines the structure used by UltraStik boards. Total size is 96 """
     _fields_ = [
-        ('keepAnalog', ct.c_ubyte),  # keepAnalog[0] : false off(0x50), true on(0x11)
-        ('mapSize', ct.c_ubyte),  # mapSize[1] = 9
-        ('restrictor', ct.c_ubyte),  # restrictor[2] : false off(0x10), true on(0x09)
-        ('borders', ct.c_ubyte * 8),  # borders[3-10] : array of 8 bytes
-        ('map', ct.c_ubyte * 81),  # map[11-92] : array of 81 map values
-        ('reserved', ct.c_ubyte * 3),  # reserved
-        ('flash', ct.c_ubyte)  # flash[95] : (Pre-2015) false RAM(0xFF), true FLASH(0x00), (=> 2015) 0x0
+        ('keepAnalog', ct.c_uint8),  # keepAnalog[0] : false off(0x50), true on(0x11)
+        ('mapSize', ct.c_uint8),  # mapSize[1] = 9
+        ('restrictor', ct.c_uint8),  # restrictor[2] : false off(0x10), true on(0x09)
+        ('borders', ct.c_uint8 * 8),  # borders[3-10] : array of 8 bytes
+        ('map', ct.c_uint8 * 81),  # map[11-92] : array of 81 map values
+        ('reserved', ct.c_uint8 * 3),  # reserved
+        ('flash', ct.c_uint8)  # flash[95] : (Pre-2015) false RAM(0xFF), true FLASH(0x00), (=> 2015) 0x0
     ]

@@ -98,7 +98,7 @@ class UltraStikTool(object):
                         return -1
 
                     _logger.info(_(f'Updating {device.product_name} ({device.dev_key})'))
-                    dev_h.set_config(config)
+                    dev_h.set_config(self.args.set_config)
 
             _logger.info(_(f'Success'))
             return 0

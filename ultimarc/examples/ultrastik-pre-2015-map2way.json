@@ -4,7 +4,8 @@
   	"deviceClass" : "ultrastik",
 	"mapSize" : 9,
 	"restrictor" : false,
-	"flash" : false,
+	"flash" : true,
+	"keepAnalog" : false,
 	"borders" :
 	    [
 	        30, 58, 86, 114, 142, 170, 198, 226
