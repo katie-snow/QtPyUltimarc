@@ -19,8 +19,11 @@ tool and python library for managing Ultimarc USB arcade devices. Both the CLI a
 
 For more information about Ultimarc devices visit https://www.ultimarc.com.
 
-.. list-table:: Ultimarc Device Support
-   :widths: 25 25 25
+Supported Ultimarc Devices
+==========================
+
+.. list-table::
+   :widths: 50 25 25
    :header-rows: 1
 
    * - Ultimarc Device
