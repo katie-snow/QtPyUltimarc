@@ -4,7 +4,8 @@
   "required": [
     "schemaVersion",
     "resourceType",
-    "deviceClass"
+    "deviceClass",
+    "newControllerId"
   ],
   "properties": {
     "schemaVersion": {
