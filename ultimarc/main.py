@@ -27,8 +27,9 @@ import ultimarc.qml.rc_assets
 _logger = logging.getLogger('ultimarc')
 
 _tool_cmd = _('ui')
+_tool_qml = _('qml/main.qml')
 _tool_title = _('Ultimarc Editor')
-
+_tool_version = _('1.0.0-alpha.5')
 
 def run():
     proj_path = os.path.abspath(__file__).split('/ultimarc/')[0]
@@ -38,8 +39,6 @@ def run():
 
     """ Main UI entry point """
     app = QtWidgets.QApplication(sys.argv)
-    # QtQuickControls2.QQuickStyle('org.fedoraproject.AdwaitaTheme')
-    # QtQuickControls2.QQuickStyle('Fusion')
 
     ToolContextManager.initialize_logging('ultimarc')  # Configure logging
 
@@ -48,9 +47,8 @@ def run():
     args = parser.parse_args()
 
     # Instantiate UI.
-    QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
     QtCore.QCoreApplication.setOrganizationDomain('SnowyWhitewater.org')
-    QtCore.QCoreApplication.setOrganizationName('SnowyWhitewater.org')
+    QtCore.QCoreApplication.setOrganizationName('SnowyWhitewater')
     QtCore.QCoreApplication.setApplicationName('UltimarcEditor')
     engine = QtQml.QQmlApplicationEngine()
 
@@ -75,7 +73,7 @@ def run():
 
         # Connect Python to QML
         context = engine.rootContext()
-        context.setContextProperty('_ultimarc_version', '1.0.0-alpha.5')
+        context.setContextProperty('_ultimarc_version', _tool_version)
         context.setContextProperty('_class_filter', class_filter)
         context.setContextProperty('_devices_filter', device_filter)
         context.setContextProperty('_devices', devices)
@@ -84,7 +82,7 @@ def run():
         context.setContextProperty('_units', units)
         context.setContextProperty('_pages', pages)
 
-        url = QtCore.QUrl.fromLocalFile(os.path.join(app_base, 'qml/main.qml'))
+        url = QtCore.QUrl.fromLocalFile(os.path.join(app_base, _tool_qml))
 
         engine.load(url)
         if not engine.rootObjects():
@@ -92,10 +90,10 @@ def run():
             sys.exit(-1)
 
         # Run UI loop.
-        ret = app.exec_()
+        ret = app.exec()
 
     sys.exit(ret)
-    
+
+
 if __name__ == '__main__':
     run()
-
