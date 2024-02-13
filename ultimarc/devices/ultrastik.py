@@ -178,10 +178,5 @@ class UltraStikDevice(USBDeviceHandle):
         data.flash = 0x00
         data.reserved = (ct.c_uint8 * 3)(*[0, 0, 0])
 
-        payload = (ct.c_uint8 * USTIK_MESG_LENGTH)(0)
-        ct.memmove(ct.addressof(payload), ct.byref(data, USTIK_MESG_LENGTH), USTIK_MESG_LENGTH)
-        _logger.debug(f"  config data : {' '.join('%02X' % b for b in payload)}")
+        return self.write_alt(USBRequestCode.SET_CONFIGURATION, 0x0, USTIK_INTERFACE, data, ct.sizeof(data))
 
-        resp = self.write_alt(USBRequestCode.SET_CONFIGURATION, 0x0, USTIK_INTERFACE, payload, USTIK_MESG_LENGTH)
-
-        return resp
