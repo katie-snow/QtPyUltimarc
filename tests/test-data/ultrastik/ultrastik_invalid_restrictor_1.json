@@ -2,7 +2,6 @@
 	"schemaVersion" : 2.0,
   	"resourceType" : "ultrastik-config",
   	"deviceClass" : "ultrastik",
-	"mapSize" : 9,
 	"restrictor" : "hi",
 	"flash" : false,
 	"borders" : 

@@ -99,7 +99,6 @@ class UltraStikStruct(UltimarcStruct):
     """ Defines the structure used by UltraStik boards. Total size is 96 """
     _fields_ = [
         ('keepAnalog', ct.c_uint8),  # keepAnalog[0] : false off(0x50), true on(0x11)
-        ('mapSize', ct.c_uint8),  # mapSize[1] = 9
         ('restrictor', ct.c_uint8),  # restrictor[2] : false off(0x10), true on(0x09)
         ('borders', ct.c_uint8 * 8),  # borders[3-10] : array of 8 bytes
         ('map', ct.c_uint8 * 81),  # map[11-92] : array of 81 map values

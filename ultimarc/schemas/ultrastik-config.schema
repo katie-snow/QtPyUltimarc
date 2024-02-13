@@ -5,7 +5,6 @@
     "schemaVersion",
     "resourceType",
     "deviceClass",
-    "mapSize",
     "restrictor",
     "flash",
     "borders",
@@ -29,11 +28,6 @@
       "title": "Deviceclass",
       "type": "string",
       "const": "ultrastik"
-    },
-    "mapSize": {
-      "$id": "#root/mapSize",
-      "type": "number",
-      "const": 9
     },
     "restrictor": {
       "$id": "#root/restrictor",
