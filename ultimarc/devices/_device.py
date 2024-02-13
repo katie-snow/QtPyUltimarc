@@ -42,12 +42,6 @@ class USBRequestCode(IntEnum):
     SET_INTERFACE = 0x0B  # Select an alternate interface for the specified interface
     SYNCH_FRAME = 0x0C  # Set then report an endpoint's synchronization frame
     REQUEST_SET_SEL = 0x30  # Sets both the U1 and U2 Exit Latency
-    SET_ISOCH_DELAY = 0x31  # Delay from the time a host transmits a packet to the time it is received by the device.
-
-    # Pre-2015 UltraStik controller ID change Codes
-    ULTRASTIK_E9 = 0xE9
-    ULTRASTIK_EA = 0xEA
-    ULTRASTIK_EB = 0xEB
 
 
 class USBRequestDirection(IntEnum):
@@ -215,7 +209,7 @@ class USBDeviceHandle:
         """
         if self.interface is None:
             raise USBDeviceInterfaceNotClaimedError(self.dev_key)
-        if not isinstance(b_request, USBRequestCode):
+        if not isinstance(b_request, (USBRequestCode, IntEnum)):
             raise ValueError('b_request argument must be USBRequestCode enum value.')
 
         ret = usb.control_transfer(

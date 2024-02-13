@@ -52,7 +52,7 @@ class UltraStikTool(object):
                 "schemaVersion" : 2.0,
                 "resourceType" : "ultrastik-controller-id",
                 "deviceClass" : "ultrastik",
-                "newControllerId" : 1
+                "newControllerId" : self.args.set_device_id
             }
         else:
             # Load and validate config file is one of the valid resource types

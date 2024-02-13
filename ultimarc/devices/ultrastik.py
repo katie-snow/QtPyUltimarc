@@ -4,6 +4,7 @@
 #
 import ctypes as ct
 import logging
+from enum import IntEnum
 
 from python_easy_json import JSONObject
 
@@ -15,8 +16,7 @@ _logger = logging.getLogger('ultimarc')
 
 USTIK_RESOURCE_TYPES = ['ultrastik-controller-id', 'ultrastik-config']
 
-USTIK_DATA_SIZE = 96
-USTIK_CONFIG_BASE = 0x51
+USTIK_ID_CONFIG_BASE = 0x51
 
 # UltraStik pre 2015 defines
 USTIK_PRE_INTERFACE = 0
@@ -26,6 +26,18 @@ USTIK_PRE_REQUEST_1 = 0xE9
 USTIK_PRE_REQUEST_2 = 0xEB
 USTIK_PRE_REQUEST_3 = 0xEA
 USTIK_PRE_MESG_LENGTH = 32
+
+
+class USBRequestCodePre2015(IntEnum):
+    """ Support pre-2015 Ultrastik USB devices """
+    # Pre-2015 UltraStik controller ID change Codes
+    SET_ISOCH_DELAY = 0x31  # Delay from the time a host transmits a packet to the time it is received by the device.
+    ULTRASTIK_E9 = 0xE9
+    ULTRASTIK_EA = 0xEA
+    ULTRASTIK_EB = 0xEB
+
+    USTIK_DATA_SIZE = 96
+
 
 # UltraStik 2015 and newer defines
 USTIK_INTERFACE = 2
@@ -62,22 +74,22 @@ class UltraStikPre2015Device(USBDeviceHandle):
         :return: True if successful, otherwise false.
         """
         # Calculate new device ID.
-        new_id = USTIK_CONFIG_BASE + (new_controller_id - 1)
+        new_id = USTIK_ID_CONFIG_BASE + (new_controller_id - 1)
         # Setup an array with zero for all byte values.
         data = (ct.c_ubyte * USTIK_PRE_MESG_LENGTH)(0)
         data[0] = new_id
 
-        resp_1 = self.write_raw(USBRequestCode.ULTRASTIK_E9, 0x1, USTIK_PRE_INTERFACE, ct.c_void_p(), 0x0,
+        resp_1 = self.write_raw(USBRequestCodePre2015.ULTRASTIK_E9, 0x1, USTIK_PRE_INTERFACE, ct.c_void_p(), 0x0,
                                request_type=USBRequestType.REQUEST_TYPE_VENDOR,
                                recipient=USBRequestRecipient.RECIPIENT_OTHER)
         # We need to write 32 bytes here.
-        resp_2 = self.write(USBRequestCode.ULTRASTIK_EB, 0x0, USTIK_PRE_INTERFACE, data, USTIK_PRE_MESG_LENGTH,
+        resp_2 = self.write(USBRequestCodePre2015.ULTRASTIK_EB, 0x0, USTIK_PRE_INTERFACE, data, USTIK_PRE_MESG_LENGTH,
                             request_type=USBRequestType.REQUEST_TYPE_VENDOR,
                             recipient=USBRequestRecipient.RECIPIENT_OTHER)
-        resp_3 = self.read(USBRequestCode.ULTRASTIK_EA, 0x0, USTIK_PRE_INTERFACE, ct.c_void_p(), 0x0,
+        resp_3 = self.read(USBRequestCodePre2015.ULTRASTIK_EA, 0x0, USTIK_PRE_INTERFACE, ct.c_void_p(), 0x0,
                           request_type=USBRequestType.REQUEST_TYPE_VENDOR,
                           recipient=USBRequestRecipient.RECIPIENT_OTHER)
-        resp_4 = self.write(USBRequestCode.ULTRASTIK_E9, 0x0, USTIK_PRE_INTERFACE, ct.c_void_p(), 0x0,
+        resp_4 = self.write(USBRequestCodePre2015.ULTRASTIK_E9, 0x0, USTIK_PRE_INTERFACE, ct.c_void_p(), 0x0,
                            request_type=USBRequestType.REQUEST_TYPE_VENDOR,
                            recipient=USBRequestRecipient.RECIPIENT_OTHER)
 
@@ -89,8 +101,8 @@ class UltraStikPre2015Device(USBDeviceHandle):
         config = JSONObject(self.validate_config_base(config_file, USTIK_RESOURCE_TYPES))
 
         data = UltraStikStruct()
-        data.keepAnalog = 0x11 if config.keepAnalog else 0x11
-        data.mapSize = config.mapSize
+        data.keepAnalog = 0x11 if config.keepAnalog else 0x50  # Keep Analog: true on(0x11) else false off(0x50)
+        data.mapSize = 9
         data.restrictor = 0x09 if config.restrictor else 0x10
         data.borders = (ct.c_uint8 * 8)(*config.borders)
         data.map = (ct.c_uint8 * 81)(*[DIRECTION_MAP[v] for v in config.map])
@@ -100,7 +112,7 @@ class UltraStikPre2015Device(USBDeviceHandle):
         resp_2 = resp_3 = resp_4 = False
         payload = (ct.c_uint8 * USTIK_PRE_MESG_LENGTH)(0)
 
-        resp_1 = self.write_raw(USBRequestCode.ULTRASTIK_E9, 0x1, USTIK_PRE_INTERFACE, ct.c_void_p(), 0x0,
+        resp_1 = self.write_raw(USBRequestCodePre2015.ULTRASTIK_E9, 0x1, USTIK_PRE_INTERFACE, ct.c_void_p(), 0x0,
                                 request_type=USBRequestType.REQUEST_TYPE_VENDOR,
                                 recipient=USBRequestRecipient.RECIPIENT_OTHER)
         # We need to write 32 bytes here.
@@ -108,18 +120,18 @@ class UltraStikPre2015Device(USBDeviceHandle):
             ct.memmove(ct.addressof(payload), ct.byref(data, USTIK_PRE_MESG_LENGTH * x), USTIK_PRE_MESG_LENGTH)
             _logger.debug(f"  config data block {x+1}: {' '.join('%02X' % b for b in payload)}")
 
-            resp_2 = self.write(USBRequestCode.ULTRASTIK_EB, 0x0, USTIK_PRE_INTERFACE,
+            resp_2 = self.write(USBRequestCodePre2015.ULTRASTIK_EB, 0x0, USTIK_PRE_INTERFACE,
                                 payload, USTIK_PRE_MESG_LENGTH,
                                 request_type=USBRequestType.REQUEST_TYPE_VENDOR,
                                 recipient=USBRequestRecipient.RECIPIENT_OTHER)
-            resp_3 = self.read(USBRequestCode.ULTRASTIK_EA, 0x0, USTIK_PRE_INTERFACE, ct.c_void_p(), 0x0,
+            resp_3 = self.read(USBRequestCodePre2015.ULTRASTIK_EA, 0x0, USTIK_PRE_INTERFACE, ct.c_void_p(), 0x0,
                                 request_type=USBRequestType.REQUEST_TYPE_VENDOR,
                                 recipient=USBRequestRecipient.RECIPIENT_OTHER)
             if not resp_2 or not resp_3:
                 break
 
         if resp_2 and resp_3:
-            resp_4 = self.write(USBRequestCode.ULTRASTIK_E9, 0x0, USTIK_PRE_INTERFACE, ct.c_void_p(), 0x0,
+            resp_4 = self.write(USBRequestCodePre2015.ULTRASTIK_E9, 0x0, USTIK_PRE_INTERFACE, ct.c_void_p(), 0x0,
                             request_type=USBRequestType.REQUEST_TYPE_VENDOR,
                             recipient=USBRequestRecipient.RECIPIENT_OTHER)
 
@@ -141,7 +153,7 @@ class UltraStikDevice(USBDeviceHandle):
         :return: True if successful, otherwise false.
         """
         # Calculate new device ID.
-        new_id = USTIK_CONFIG_BASE + (new_controller_id - 1)
+        new_id = USTIK_ID_CONFIG_BASE + (new_controller_id - 1)
         # Setup an array with zero for all byte values.
         data = (ct.c_ubyte * USTIK_MESG_LENGTH)(0)
         data[0] = new_id
@@ -158,8 +170,8 @@ class UltraStikDevice(USBDeviceHandle):
         config = JSONObject(self.validate_config_base(config_file, USTIK_RESOURCE_TYPES))
 
         data = UltraStikStruct()
-        data.keepAnalog = 0x11 if config.keepAnalog else 0x11
-        data.mapSize = config.mapSize
+        data.keepAnalog = 0x11 if config.keepAnalog else 0x50  # Keep Analog: true on(0x11) else false off(0x50)
+        data.mapSize = 9
         data.restrictor = 0x09 if config.restrictor else 0x10
         data.borders = (ct.c_uint8 * 8)(*config.borders)
         data.map = (ct.c_uint8 * 81)(*[DIRECTION_MAP[v] for v in config.map])
@@ -170,8 +182,6 @@ class UltraStikDevice(USBDeviceHandle):
         ct.memmove(ct.addressof(payload), ct.byref(data, USTIK_MESG_LENGTH), USTIK_MESG_LENGTH)
         _logger.debug(f"  config data : {' '.join('%02X' % b for b in payload)}")
 
-        resp = self.write_raw(USBRequestCode.SET_CONFIGURATION, 0x1, USTIK_INTERFACE, payload, USTIK_MESG_LENGTH,
-                                request_type=USBRequestType.REQUEST_TYPE_CLASS,
-                                recipient=USBRequestRecipient.RECIPIENT_INTERFACE)
+        resp = self.write_alt(USBRequestCode.SET_CONFIGURATION, 0x0, USTIK_INTERFACE, payload, USTIK_MESG_LENGTH)
 
         return resp
