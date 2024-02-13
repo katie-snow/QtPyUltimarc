@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "resourceType",
+    "deviceClass",
+    "newControllerId"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "$id": "#root/schemaVersion",
+      "title": "Schemaversion",
+      "type": "integer",
+      "const": 2.0
+    },
+    "resourceType": {
+      "$id": "#root/resourceType",
+      "title": "Resourcetype",
+      "type": "string",
+      "const": "ultrastik-controller-id"
+    },
+    "deviceClass": {
+      "$id": "#root/deviceClass",
+      "title": "Deviceclass",
+      "type": "string",
+      "const": "ultrastik"
+    },
+    "newControllerId": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 4
+    }
+  }
+}

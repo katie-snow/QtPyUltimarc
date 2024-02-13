@@ -1,0 +1,20 @@
+{
+	"schemaVersion" : 2.0,
+  	"resourceType" : "ultrastik-config",
+  	"deviceClass" : "ultrastik",
+	"restrictor" : false,
+	"flash" : false,
+	"borders" : 100,	    
+	"map" : 
+	    [
+	        "N", "N", "N", "N", "N", "N", "N", "N", "N",
+	        "N", "N", "N", "N", "N", "N", "N", "N", "N",
+	        "N", "N", "N", "N", "N", "N", "N", "N", "N",
+	        "C", "C", "C", "C", "C", "C", "C", "C", "C",
+	        "C", "C", "C", "C", "C", "C", "C", "C", "C",
+	        "C", "C", "C", "C", "C", "C", "C", "C", "C",
+	        "S", "S", "S", "S", "S", "S", "S", "S", "S",
+	        "S", "S", "S", "S", "S", "S", "S", "S", "S",
+	        "S", "S", "S", "S", "S", "S", "S", "S", "S"
+	    ]
+}

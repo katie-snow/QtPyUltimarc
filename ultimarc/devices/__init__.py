@@ -8,10 +8,11 @@ import sys
 
 import libusb as usb
 
-from ultimarc import translate_gettext as _
 from ._base import _USB_PRODUCT_CLASSES, USB_PRODUCT_DESCRIPTIONS, USBDevices, DeviceClassID
 from ._device import usb_error
-from ..exceptions import USBDeviceClaimInterfaceError, USBDeviceNotFoundError, \
+
+from ultimarc import translate_gettext as _
+from ultimarc.exceptions import USBDeviceClaimInterfaceError, USBDeviceNotFoundError, \
     USBDeviceInterfaceNotClaimedError
 
 _logger = logging.getLogger('default')

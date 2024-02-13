@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "resourceType",
+    "deviceClass",
+    "restrictor",
+    "flash",
+    "borders",
+    "map"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "$id": "#root/schemaVersion",
+      "title": "Schemaversion",
+      "type": "integer",
+      "const": 2.0
+    },
+    "resourceType": {
+      "$id": "#root/resourceType",
+      "title": "Resourcetype",
+      "type": "string",
+      "const": "ultrastik-config"
+    },
+    "deviceClass": {
+      "$id": "#root/deviceClass",
+      "title": "Deviceclass",
+      "type": "string",
+      "const": "ultrastik"
+    },
+    "restrictor": {
+      "$id": "#root/restrictor",
+      "type": "boolean"
+    },
+    "flash": {
+      "$id": "#root/flash",
+      "type": "boolean"
+    },
+    "keepAnalog": {
+      "$id": "#root/keepAnalog",
+      "type": "boolean"
+    },
+    "borders": {
+      "$id": "#root/borders",
+      "type": "array",
+      "items": {
+        "type": "integer"
+      },
+      "minItems": 8,
+      "maxItems": 8
+    },
+    "map": {
+      "$id": "#root/map",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "-",
+          "C",
+          "N",
+          "NE",
+          "E",
+          "SE",
+          "S",
+          "SW",
+          "W",
+          "NW",
+          "*"
+        ]
+      },
+      "minItems": 81,
+      "maxItems": 81
+    }
+  }
+}

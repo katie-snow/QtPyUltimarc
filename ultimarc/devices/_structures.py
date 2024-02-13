@@ -18,6 +18,12 @@ class UltimarcStruct(ct.Structure):
                             for name, value in self._as_dict_().items())
         return f'<{self.__class__.__name__}:\n{values}>'
 
+    def __len__(self) -> int:
+        """
+        :return: Return the number of bytes for the size this structure
+        """
+        return sum([ct.sizeof(i[1]) for i in self._fields_])
+
     def _as_dict_(self) -> dict:
         return {field[0]: (hex(getattr(self, field[0]))
                            if isinstance(getattr(self, field[0]), int)
@@ -86,4 +92,16 @@ class PacStruct(UltimarcStruct):
     _fields_ = [
         ('header', PacHeaderStruct),  # 1 - 4  (4 bytes)
         ('bytes', ct.c_ubyte * 252),  # 5 - 256
+    ]
+
+
+class UltraStikStruct(UltimarcStruct):
+    """ Defines the structure used by UltraStik boards. Total size is 96 """
+    _fields_ = [
+        ('keepAnalog', ct.c_uint8),  # keepAnalog[0] : false off(0x50), true on(0x11)
+        ('restrictor', ct.c_uint8),  # restrictor[2] : false off(0x10), true on(0x09)
+        ('borders', ct.c_uint8 * 8),  # borders[3-10] : array of 8 bytes
+        ('map', ct.c_uint8 * 81),  # map[11-92] : array of 81 map values
+        ('reserved', ct.c_uint8 * 3),  # reserved
+        ('flash', ct.c_uint8)  # flash[95] : (Pre-2015) false RAM(0xFF), true FLASH(0x00), (=> 2015) 0x0
     ]
