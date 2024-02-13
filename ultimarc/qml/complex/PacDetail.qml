@@ -113,13 +113,13 @@ Item {
                                 "Macros"
                             }
                             highlighted: true
-                            function action () {
+                            function macroAction () {
                                 macrosPopup.open()
                             }
                             onClicked: {
-                                action()
+                                macroAction()
                             }
-                            Keys.onSpacePressed: action()
+                            Keys.onSpacePressed: macroAction()
                         }
 
                         MacroPopup {
@@ -136,8 +136,8 @@ Item {
         GridView {
             id: grid
             y: _units.grid_unit
-            width: parent.width
-            height: mainWindow.height - _units.grid_unit
+            implicitWidth: parent.width
+            implicitHeight: mainWindow.height - _units.grid_unit
 
             clip: true
             interactive: false
