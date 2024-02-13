@@ -29,7 +29,7 @@ _logger = logging.getLogger('ultimarc')
 _tool_cmd = _('ui')
 _tool_qml = _('qml/main.qml')
 _tool_title = _('Ultimarc Editor')
-_tool_version = _('1.0.0-alpha.5')
+_tool_version = _('1.0.0-alpha.6')
 
 def run():
     proj_path = os.path.abspath(__file__).split('/ultimarc/')[0]
