@@ -29,6 +29,12 @@ Supported Ultimarc Devices
    * - Ultimarc Device
      - CLI Support
      - UI Support
+   * - PAC Drive
+     - No
+     - No
+   * - PAC LED64
+     - No
+     - No
    * - J-PAC
      - Yes
      - Yes
@@ -41,13 +47,25 @@ Supported Ultimarc Devices
    * - MINI-PAC
      - Yes
      - Yes
+   * - Ultimate I/O
+     - No
+     - No
    * - USB Button
      - Yes
+     - No
+   * - ServoStik
+     - No
      - No
    * - UltraStik 360 Joystick
      - Yes
      - No
    * - AimTrak Light Gun
+     - No
+     - No
+   * - U-Hid
+     - No
+     - No
+   * - U-Hid Nano
      - No
      - No
 
