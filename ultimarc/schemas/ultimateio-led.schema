@@ -1,0 +1,71 @@
+{
+ "$schema": "http://json-schema.org/draft-07/schema#",
+ "required": [
+   "schemaVersion",
+   "resourceType",
+   "deviceClass",
+   "intensities"
+ ],
+ "properties": {
+    "schemaVersion": {
+      "$id": "#root/schemaVersion",
+      "title": "Schemaversion",
+      "type": "integer",
+      "const": 2.0
+    },
+    "resourceType": {
+      "$id": "#root/resourceType",
+      "title": "Resourcetype",
+      "type": "string",
+      "const": "ultimateIO-led"
+    },
+    "deviceClass": {
+      "$id": "#root/deviceClass",
+      "title": "Deviceclass",
+      "type": "string",
+      "const": "ultimateIO"
+    },
+    "randomState": {
+      "$id": "#root/randomState",
+      "title": "randomState",
+      "type": "boolean"
+    },
+    "fadeRate": {
+      "$id": "#root/fadeRate",
+      "title": "fadeRafe",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 255
+    },
+    "intensities": {
+      "$id": "#root/intensities",
+      "title": "Intensities",
+      "type": "array",
+      "items": {
+        "$id": "#root/intensities/items",
+        "title": "Items",
+        "type": "object",
+        "required": [
+          "led",
+          "value"
+        ],
+        "properties": {
+          "led": {
+            "$id": "#root/intensities/items/led",
+            "title": "led",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 96
+          },
+          "value": {
+            "$id": "#root/intensities/items/value",
+            "title": "value",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 255
+          }
+        }
+      }
+    }
+  }
+}
