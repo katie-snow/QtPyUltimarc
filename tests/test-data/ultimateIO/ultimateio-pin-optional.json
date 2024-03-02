@@ -1,0 +1,21 @@
+{
+  "schemaVersion" : 2.0,
+  "resourceType" : "ultimateIO-pin",
+  "deviceClass" : "ultimateIO",
+  "debounce" : "short",
+  "highCurrentOutput": true,
+  "accelerometer": true,
+
+  "pins" : [
+    {
+      "name": "1right",
+      "action": "right"
+    },
+    {
+      "name": "1down",
+      "action": "down",
+      "alternate_action": "p",
+      "shift": true
+    }
+  ]
+}
