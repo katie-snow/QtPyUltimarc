@@ -4,6 +4,9 @@
     "schemaVersion",
     "resourceType",
     "deviceClass",
+    "debounce",
+    "highCurrentOutput",
+    "accelerometer",
     "pins"
   ],
   "properties": {
@@ -24,6 +27,18 @@
       "title": "Deviceclass",
       "type": "string",
       "const": "ultimateIO"
+    },
+    "highCurrentOutput": {
+      "$id": "#root/highCurrentOutput",
+      "title": "HighCurrentOutput",
+      "type": "boolean",
+      "default": false
+    },
+    "acelerometer": {
+      "$id": "#root/accelerometer",
+      "title": "accelerometer",
+      "type": "boolean",
+      "default": false
     },
     "debounce": {
       "$id": "#root/debounce",

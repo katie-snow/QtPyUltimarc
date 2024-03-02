@@ -130,50 +130,22 @@ class UltimateIODeviceTest(TestCase):
 
         dev.__class__ = UltimateIODevice
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/minipac/mini-pac-pin-optional.json')
-        valid, data = dev._create_message_(config_file)
+        config_file = os.path.join(git_project_root(), 'tests/test-data/ultimateIO/ultimateio-pin-optional.json')
+        self.assertTrue(os.path.exists(config_file))
+        valid, data = dev._create_device_message_(config_file)
 
-        # pin 1up values, has both optional values
-        self.assertTrue(data.bytes[10] == 0x52)
-        self.assertTrue(data.bytes[60] == 0x35)
-        self.assertTrue(data.bytes[110] == 0x40)
+        # pin 1down values, has both optional values
+        self.assertTrue(data.bytes[6] == 0x51)
+        self.assertTrue(data.bytes[56] == 0x13)
+        self.assertTrue(data.bytes[106] == 0x40)
 
-        # pin 1sw2 values no optional values
-        self.assertTrue(data.bytes[11] == 0x72)
-        self.assertTrue(data.bytes[61] == 0)
-        self.assertTrue(data.bytes[111] == 0)
-
-        # macros
-        self.assertTrue(data.bytes[166] == 0)
-
-    @patch.object(USBDeviceHandle, '_get_descriptor_fields', return_value=None)
-    @patch('libusb.get_device', return_value='pointer')
-    def test_ultimateio_pin_ui_connection(self, dev_handle_mock, lib_usb_mock):
-        """ Test that optional parameters are handled correctly """
-        dev = USBDeviceHandle('test_handle', '0000:0000')
-        self.assertTrue(dev)
-
-        dev.__class__ = UltimateIODevice
-
-        config_file = os.path.join(git_project_root(), 'tests/test-data/minipac/mini-pac-pin-optional.json')
-        # Validate against the base schema.
-        resource_types = ['mini-pac-pins']
-        json_dict = dev.validate_config_base(config_file, resource_types)
-
-        valid, data = dev._create_message_dict_(json_dict)
-
-        # pin 1up values, has both optional values
-        self.assertTrue(data.bytes[10] == 0x52)
-        self.assertTrue(data.bytes[60] == 0x35)
-        self.assertTrue(data.bytes[110] == 0x40)
-
-        # pin 1sw2 values no optional values
-        self.assertTrue(data.bytes[11] == 0x72)
-        self.assertTrue(data.bytes[61] == 0)
-        self.assertTrue(data.bytes[111] == 0)
+        # pin 1right values no optional values
+        self.assertTrue(data.bytes[0] == 0x4f)
+        self.assertTrue(data.bytes[50] == 0)
+        self.assertTrue(data.bytes[100] == 0x01)
 
         # macros
-        self.assertTrue(data.bytes[166] == 0)
+        self.assertTrue(data.bytes[164] == 0)
 
     @patch.object(USBDeviceHandle, '_get_descriptor_fields', return_value=None)
     @patch('libusb.get_device', return_value='pointer')
@@ -184,13 +156,13 @@ class UltimateIODeviceTest(TestCase):
         self.assertTrue(dev)
         dev.__class__ = UltimateIODevice
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/minipac/mini-pac-macro-large-count.json')
-        valid, data = dev._create_message_(config_file)
+        config_file = os.path.join(git_project_root(), 'tests/test-data/ultimateIO/ultimateio-macro-large-count.json')
+        valid, data = dev._create_device_message_(config_file)
         self.assertFalse(valid)
         self.assertIsNone(data)
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/minipac/mini-pac-macro-large-action-count.json')
-        valid, data = dev._create_message_(config_file)
+        config_file = os.path.join(git_project_root(), 'tests/test-data/ultimateIO/ultimateio-macro-large-action-count.json')
+        valid, data = dev._create_device_message_(config_file)
         self.assertFalse(valid)
         self.assertIsNone(data)
 
@@ -217,25 +189,40 @@ class UltimateIODeviceTest(TestCase):
 
         dev.__class__ = UltimateIODevice
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/minipac/mini-pac-good.json')
-        valid, data = dev._create_message_(config_file)
+        config_file = os.path.join(git_project_root(), 'tests/test-data/ultimateIO/ultimateio-pin-optional.json')
+        valid, data = dev._create_device_message_(config_file)
 
         header = PacConfigUnion()
         header.asByte = data.header.byte_4
-        # paclink is True
-        self.assertTrue(header.config.paclink == 0x01)
+
+        # high current output
+        self.assertTrue(header.config.high_current_output == 0x01)
+
+        # accelerometer
+        self.assertTrue(header.config.accelerometer == 0x01)
+
+        # paclink is 0x0, not available on UltimateIO board
+        self.assertTrue(header.config.paclink == 0x00)
+
         # debounce is short (0x02)
         self.assertTrue(header.config.debounce == 0x02)
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/minipac/mini-pac-pin-optional.json')
-        valid, data = dev._create_message_(config_file)
+        config_file = os.path.join(git_project_root(), 'ultimarc/examples/ultimateIO/ultimateio-pin.json')
+        valid, data = dev._create_device_message_(config_file)
 
         header = PacConfigUnion()
         header.asByte = data.header.byte_4
-        # paclink is False
-        self.assertTrue(header.config.paclink == 0)
-        # debounce is short (0x02)
-        self.assertTrue(header.config.debounce == 0x02)
+        # high current output
+        self.assertTrue(header.config.high_current_output == 0x00)
+
+        # accelerometer
+        self.assertTrue(header.config.accelerometer == 0x00)
+
+        # paclink is 0x0, not available on UltimateIO board
+        self.assertTrue(header.config.paclink == 0x00)
+
+        # debounce is short (0x00)
+        self.assertTrue(header.config.debounce == 0x00)
 
     @patch.object(USBDeviceHandle, '_get_descriptor_fields', return_value=None)
     @patch('libusb.get_device', return_value='pointer')

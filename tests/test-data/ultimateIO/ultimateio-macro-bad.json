@@ -3,6 +3,8 @@
   "resourceType": "ultimateIO-pin",
   "deviceClass": "ultimateIO",
   "debounce": "standard",
+  "highCurrentOutput": false,
+  "accelerometer": false,
   "xThreshold": 15,
   "yThreshold": 127,
   "macros": [
