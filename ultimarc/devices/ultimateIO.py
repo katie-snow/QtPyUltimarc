@@ -85,8 +85,8 @@ class UltimateIODevice(USBDeviceHandle):
     # overall total macro characters is 56
     MACRO_MAX_COUNT = 30
 
-    # These two values need to add up to 252
-    MACRO_MAX_SIZE = 88
+    # These two values need to add up to 251
+    MACRO_MAX_SIZE = 87
     MACRO_START_INDEX = 164
 
     def get_device_config(self, indent=None, file=None):
@@ -115,6 +115,10 @@ class UltimateIODevice(USBDeviceHandle):
         # header configuration
         header = PacConfigUnion()
         header.asByte = ultimate_struct.header.byte_4
+        json_obj['highCurrentOutput'] = True if header.config.high_current_output == 0x01 else False
+
+        json_obj['accelerometer'] = True if header.config.accelerometer == 0x01 else False
+
         json_obj['debounce'] = get_ipac_series_debounce_key(header.config.debounce)
 
         # X Threshold
@@ -210,7 +214,7 @@ class UltimateIODevice(USBDeviceHandle):
             if res else False
 
     def set_pin(self, pin_config):
-        """ Write a pin to the current ipac4 device """
+        """ Write a pin to the current ultimateIO device """
         pin = pin_config[0]
         # Get the current configuration from the device
         cur_config = self.read_device()
@@ -263,7 +267,7 @@ class UltimateIODevice(USBDeviceHandle):
                               cur_config, ct.sizeof(cur_config))
 
     def set_debounce(self, debounce):
-        """ Set debounce value to the current ipac4 device """
+        """ Set debounce value to the current ultimateIO device """
         val = debounce.lower()
         if val in IPACSeriesDebounce:
             # Get the current configuration from the device
@@ -288,7 +292,7 @@ class UltimateIODevice(USBDeviceHandle):
                               cur_config, ct.sizeof(cur_config))
 
     def set_config_ui(self, config_dict: dict):
-        """ Write a new configuration from UI to the current ipac4 device """
+        """ Write a new configuration from UI to the current ultimateIO device """
 
         # Insert the new configuration into the PacStruct data object
         res, data = self._create_device_struct_(config_dict)
@@ -356,11 +360,21 @@ class UltimateIODevice(USBDeviceHandle):
                 _logger.info(_(f'"{config.debounce}" is not a valid debounce value'))
                 return False, None
 
+            header.config.high_current_output = 0x01 if config.highCurrentOutput is True else 0
+            header.config.accelerometer = 0x01 if config.accelerometer is True else 0
+            data.header.byte_4 = header.asByte
+
             # X Threshold
-            data.bytes[156] = config.xThreshold
+            try:
+                data.bytes[156] = config.xThreshold
+            except AttributeError:
+                pass
 
             # Y Threshold
-            data.bytes[163] = config.yThreshold
+            try:
+                data.bytes[163] = config.yThreshold
+            except AttributeError:
+                pass
 
             # bug: Current limitation, macros are not kept between configurations.  To prevent lingering macro
             #   values in pac structure
@@ -402,7 +416,7 @@ class UltimateIODevice(USBDeviceHandle):
 
                             if cur_size_count > self.MACRO_MAX_SIZE:
                                 _logger.debug(_(f'There are more than {self.MACRO_MAX_SIZE} '
-                                                f'macro values defined for the ipac4 device'))
+                                                f'macro values defined for the ultimateIO device'))
                                 return False, None
             except AttributeError:
                 pass
@@ -440,7 +454,7 @@ class UltimateIODevice(USBDeviceHandle):
                         pass
 
                 except KeyError:
-                    _logger.debug(_(f'Pin {pin.name} does not exists in ipac4 device'))
+                    _logger.debug(_(f'Pin {pin.name} does not exists in ultimateIO device'))
 
             return True, data
 
