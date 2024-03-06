@@ -5,8 +5,6 @@
     "resourceType",
     "deviceClass",
     "debounce",
-    "highCurrentOutput",
-    "accelerometer",
     "pins"
   ],
   "properties": {
@@ -27,18 +25,6 @@
       "title": "Deviceclass",
       "type": "string",
       "const": "ultimateIO"
-    },
-    "highCurrentOutput": {
-      "$id": "#root/highCurrentOutput",
-      "title": "HighCurrentOutput",
-      "type": "boolean",
-      "default": false
-    },
-    "acelerometer": {
-      "$id": "#root/accelerometer",
-      "title": "accelerometer",
-      "type": "boolean",
-      "default": false
     },
     "debounce": {
       "$id": "#root/debounce",
@@ -200,27 +186,5 @@
         }
       }
     }
-  },
-  "xThreshold": {
-      "$id": "#root/xthreshold",
-      "title": "xThreshold",
-      "type": "integer",
-      "default": 15,
-      "examples": [
-        "15"
-      ],
-      "minimum": 0,
-      "maximum": 255
-  },
-  "yThreshold": {
-    "$id": "#root/ythreshold",
-    "title": "xThreshold",
-    "type": "integer",
-    "default": "127",
-    "examples": [
-      "127"
-    ],
-    "minimum": 0,
-    "maximum": 255
   }
 }

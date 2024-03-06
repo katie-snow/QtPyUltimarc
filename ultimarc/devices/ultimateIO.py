@@ -115,17 +115,8 @@ class UltimateIODevice(USBDeviceHandle):
         # header configuration
         header = PacConfigUnion()
         header.asByte = ultimate_struct.header.byte_4
-        json_obj['highCurrentOutput'] = True if header.config.high_current_output == 0x01 else False
-
-        json_obj['accelerometer'] = True if header.config.accelerometer == 0x01 else False
 
         json_obj['debounce'] = get_ipac_series_debounce_key(header.config.debounce)
-
-        # X Threshold
-        json_obj['xThreshold'] = int(ultimate_struct.bytes[156], 16)
-
-        # Y Threshold
-        json_obj['yThreshold'] = int(ultimate_struct.bytes[163], 16)
 
         # macros
         macros = self._create_macro_array_(ultimate_struct)
@@ -360,21 +351,8 @@ class UltimateIODevice(USBDeviceHandle):
                 _logger.info(_(f'"{config.debounce}" is not a valid debounce value'))
                 return False, None
 
-            header.config.high_current_output = 0x01 if config.highCurrentOutput is True else 0
-            header.config.accelerometer = 0x01 if config.accelerometer is True else 0
+            # set data header
             data.header.byte_4 = header.asByte
-
-            # X Threshold
-            try:
-                data.bytes[156] = config.xThreshold
-            except AttributeError:
-                pass
-
-            # Y Threshold
-            try:
-                data.bytes[163] = config.yThreshold
-            except AttributeError:
-                pass
 
             # bug: Current limitation, macros are not kept between configurations.  To prevent lingering macro
             #   values in pac structure

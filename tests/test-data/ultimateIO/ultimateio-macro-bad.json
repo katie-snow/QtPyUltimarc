@@ -3,10 +3,6 @@
   "resourceType": "ultimateIO-pin",
   "deviceClass": "ultimateIO",
   "debounce": "standard",
-  "highCurrentOutput": false,
-  "accelerometer": false,
-  "xThreshold": 15,
-  "yThreshold": 127,
   "macros": [
     {"name": "macro #1", "action": ["m", 4]},
     {"name": "macro #2", "action": ["m", "2", "2"]},
