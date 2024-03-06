@@ -78,24 +78,6 @@ class UltimateIOClass(object):
                         _logger.info(f'{dev.dev_key} ({dev.bus},{dev.address}): ' +
                                      _('debounce successfully applied to device.'))
 
-        # Set X Threshold value
-        if self.args.set_x_threshold:
-            for dev in devices:
-                with dev as dev_h:
-                    response = dev_h.set_x_threshold(self.args.set_x_threshold)
-                    if response:
-                        _logger.info(f'{dev.dev_key} ({dev.bus},{dev.address}): ' +
-                                     _('x threshold successfully applied to device.'))
-
-        # Set Y Threshold value
-        if self.args.set_y_threshold:
-            for dev in devices:
-                with dev as dev_h:
-                    response = dev_h.set_y_threshold(self.args.set_y_threshold)
-                    if response:
-                        _logger.info(f'{dev.dev_key} ({dev.bus},{dev.address}): ' +
-                                     _('y threshold successfully applied to device.'))
-
         return 0
 
 
@@ -116,9 +98,7 @@ def run():
     group.add_argument('--current',
                        help=_('Use ultimateIO current config when applying config from file'), default=False,
                        action='store_true')
-    group.add_argument('--set-debounce', help=_('Set ultimateIO debounce value'), type=str, metavar='STR')
-    group.add_argument('--set-xthreshold', help=_('Set ultimateIO X threshold value'), type=int, metavar='INT')
-    group.add_argument('--set-ythreshold', help=_('Set ultimateIO Y threshold value'), type=int, metavar='INT')
+    group.add_argument('--set-debounce', help=_('Set debounce value'), type=str, metavar='STR')
     group.add_argument('--set-pin', help=_('Set single pin'), type=str,
                        default=None, metavar=('PIN', 'ACTION', 'ALT_ACTION', 'IS_SHIFT'), nargs=4)
     args = parser.parse_args()

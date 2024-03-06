@@ -3,8 +3,6 @@
   "resourceType" : "ultimateIO-pin",
   "deviceClass" : "ultimateIO",
   "debounce" : "short",
-  "highCurrentOutput": false,
-  "accelerometer": false,
   "macros": [
     {"name": "macro #1", "action": ["s", "a", "b"]},
     {"name": "macro #2", "action": ["m", "2", "2"]},

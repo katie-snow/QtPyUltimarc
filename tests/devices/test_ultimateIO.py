@@ -68,12 +68,6 @@ class UltimateIODeviceTest(TestCase):
 
         self.assertTrue(data.bytes[157] == 0x7f)
 
-        # Threshold X
-        self.assertTrue(data.bytes[156] == 0x11)
-
-        # Threshold Y
-        self.assertTrue(data.bytes[163] == 0x11)
-
         # pin 2b values
         self.assertTrue(data.bytes[42] == 0x0A)
         self.assertTrue(data.bytes[92] == 0x0A)
@@ -195,12 +189,6 @@ class UltimateIODeviceTest(TestCase):
         header = PacConfigUnion()
         header.asByte = data.header.byte_4
 
-        # high current output
-        self.assertTrue(header.config.high_current_output == 0x01)
-
-        # accelerometer
-        self.assertTrue(header.config.accelerometer == 0x01)
-
         # paclink is 0x0, not available on UltimateIO board
         self.assertTrue(header.config.paclink == 0x00)
 
@@ -212,11 +200,6 @@ class UltimateIODeviceTest(TestCase):
 
         header = PacConfigUnion()
         header.asByte = data.header.byte_4
-        # high current output
-        self.assertTrue(header.config.high_current_output == 0x00)
-
-        # accelerometer
-        self.assertTrue(header.config.accelerometer == 0x00)
 
         # paclink is 0x0, not available on UltimateIO board
         self.assertTrue(header.config.paclink == 0x00)
