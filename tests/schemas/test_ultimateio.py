@@ -110,3 +110,50 @@ class UltimateIOSchemaTest(TestCase):
 
         with self.assertRaises(ValidationError):
             validate(bad_config, self.ultimateio_pin_schema)
+
+    def test_ultimateio_bad_led_json(self):
+        """ Test that bad json configurations fail against the ultimateio led schema """
+
+        # all intensities
+        bad_config_file = os.path.join(git_project_root(),
+                                       'tests/test-data/ultimateIO/ultimateio-all-intensities-bad.json')
+        self.assertTrue(os.path.exists(bad_config_file))
+
+        with open(bad_config_file) as h:
+            bad_config = json.loads(h.read())
+
+        with self.assertRaises(ValidationError):
+            validate(bad_config, self.ultimateio_led_schema)
+
+        # intensities
+        bad_config_file = os.path.join(git_project_root(),
+                                       'tests/test-data/ultimateIO/ultimateio-led-bad.json')
+        self.assertTrue(os.path.exists(bad_config_file))
+
+        with open(bad_config_file) as h:
+            bad_config = json.loads(h.read())
+
+        with self.assertRaises(ValidationError):
+            validate(bad_config, self.ultimateio_led_schema)
+
+        # random states
+        bad_config_file = os.path.join(git_project_root(),
+                                       'tests/test-data/ultimateIO/ultimateio-randomState-bad.json')
+        self.assertTrue(os.path.exists(bad_config_file))
+
+        with open(bad_config_file) as h:
+            bad_config = json.loads(h.read())
+
+        with self.assertRaises(ValidationError):
+            validate(bad_config, self.ultimateio_led_schema)
+
+        # fade rate
+        bad_config_file = os.path.join(git_project_root(),
+                                       'tests/test-data/ultimateIO/ultimateio-fadeRate-bad.json')
+        self.assertTrue(os.path.exists(bad_config_file))
+
+        with open(bad_config_file) as h:
+            bad_config = json.loads(h.read())
+
+        with self.assertRaises(ValidationError):
+            validate(bad_config, self.ultimateio_led_schema)

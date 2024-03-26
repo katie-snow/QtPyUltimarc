@@ -9,5 +9,9 @@
   {"led": 3, "value" : 40 },
   {"led": 4, "value" : 111 }
   ],
-  "fadeRate" : 0
+  "fadeRate" : 0,
+  "allIntensities": {
+    "active": false,
+    "value": 0
+  }
 }

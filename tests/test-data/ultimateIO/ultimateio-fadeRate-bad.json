@@ -4,5 +4,9 @@
   "deviceClass": "ultimateIO",
   "randomState" : true,
   "intensities": [],
-  "fadeRate" : "test"
+  "fadeRate" : "test",
+  "allIntensities": {
+    "active": false,
+    "value": 0
+  }
 }
