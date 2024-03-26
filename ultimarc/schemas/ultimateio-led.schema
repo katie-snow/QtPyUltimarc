@@ -4,7 +4,8 @@
    "schemaVersion",
    "resourceType",
    "deviceClass",
-   "intensities"
+   "intensities",
+   "allIntensities"
  ],
  "properties": {
     "schemaVersion": {
@@ -64,6 +65,29 @@
             "minimum": 0,
             "maximum": 255
           }
+        }
+      }
+    },
+    "allIntensities": {
+      "$id": "#root/allIntensities",
+      "title": "allIntensities",
+      "type": "object",
+      "required": [
+        "active",
+        "value"
+      ],
+      "properties": {
+        "active": {
+            "$id": "#root/allintensities/active",
+            "title": "active",
+            "type": "boolean"
+        },
+        "value": {
+            "$id": "#root/allintensities/value",
+            "title": "value",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 255
         }
       }
     }
