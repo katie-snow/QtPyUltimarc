@@ -4,6 +4,8 @@
 #
 import json
 import os
+
+from python_easy_json import JSONObject
 from unittest import TestCase
 from unittest.mock import patch
 
@@ -221,3 +223,29 @@ class UltimateIODeviceTest(TestCase):
         os.chdir(os.path.abspath(__file__).split('/QtPyUltimarc/')[0])
         self.assertTrue(dev.load_config_schema('ultimateio-led.schema'))
         os.chdir(prev_dir)
+
+    @patch.object(USBDeviceHandle, '_get_descriptor_fields', return_value=None)
+    @patch('libusb.get_device', return_value='pointer')
+    def test_led_config(self, dev_handle_mock, lib_usb_mock):
+        """ Test setting All Intensities """
+
+        dev = USBDeviceHandle('test_handle', '0000:0000')
+        self.assertTrue(dev)
+
+        dev.__class__ = UltimateIODevice
+
+        # Test that message is populated correctly
+        data = dev._create_led_device_message_(0x80, 34)
+
+        self.assertTrue(data.action == 0x80, data.action)
+        self.assertTrue(data.value == 0x22, data.value)
+
+        data = dev._create_led_device_message_(4, 40)
+
+        self.assertTrue(data.action == 0x04, data.action)
+        self.assertTrue(data.value == 0x28, data.value)
+
+        data = dev._create_led_device_message_(93, 111)
+
+        self.assertTrue(data.action == 0x5D, data.action)
+        self.assertTrue(data.value == 0x6F, data.value)
