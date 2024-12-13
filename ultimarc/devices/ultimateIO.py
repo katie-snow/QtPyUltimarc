@@ -11,7 +11,7 @@ from ultimarc import translate_gettext as _
 from ultimarc.devices._device import USBDeviceHandle, USBRequestCode
 from ultimarc.devices._mappings import get_ipac_series_macro_mapping_index, get_ipac_series_mapping_key, \
     get_ipac_series_debounce_key, IPACSeriesMapping, IPACSeriesDebounce
-from ultimarc.devices._structures import PacHeaderStruct, PacStruct, PacConfigUnion
+from ultimarc.devices._structures import PacHeaderStruct, PacStruct, PacConfigUnion, LEDConfigStruct
 
 _logger = logging.getLogger('ultimarc')
 
@@ -193,8 +193,74 @@ class UltimateIODevice(USBDeviceHandle):
             _logger.debug(err)
             return False
 
+    def set_led_config(self, config_file):
+        """ Write a new LED configuration to the current UltimateUI device """
+
+        # List of possible 'resourceType' values in the config file for an ultimateIO device.
+        resource_types = ['ultimateIO-led']
+
+        # Validate against the base schema.
+        valid_config = self.validate_config_base(config_file, resource_types)
+        if not valid_config:
+            return False
+
+        config = JSONObject(valid_config)
+
+        if config.deviceClass != 'ultimateIO':
+            _logger.error(_('Configuration device class is not "ultimateIO".'))
+            return False
+
+        if config.resourceType == 'ultimateio-led':
+            if not self.validate_config(config, 'ultimateio-led.schema'):
+                return False
+
+        if config.allIntensities.active:
+            self.set_all_led_intensities(config.allIntensities.value)
+        else:
+            for intensity in config.intensities:
+                self.set_led_intensity(intensity.led, intensity.value)
+
+        try:
+            if config.randomState:
+                self.set_led_random_state()
+
+            if config.fadeRate:
+                self.set_led_fade_rate(config.fadeRate)
+        except AttributeError:
+            None
+
+        return True
+
+    def set_all_led_intensities (self, value):
+        """ Set all LED intensities with one value """
+        data = self._create_led_device_message_(0x80, value)
+
+        return self.write(USBRequestCode.SET_CONFIGURATION, int(0x03), self.ULTIMATEIO_INDEX,
+                          data, ct.sizeof(data))
+
+    def set_led_intensity(self, led, value):
+        """ Set the intensity for an LED """
+        data = self._create_led_device_message_(led, value)
+
+        return self.write(USBRequestCode.SET_CONFIGURATION, int(0x03), self.ULTIMATEIO_INDEX,
+                          data, ct.sizeof(data))
+
+    def set_led_random_state(self):
+        """ Set the LEDs to a random states """
+        data = self._create_led_device_message_(0x89, 0)
+
+        return self.write(USBRequestCode.SET_CONFIGURATION, int(0x03), self.ULTIMATEIO_INDEX,
+                          data, ct.sizeof(data))
+
+    def set_all_led_intensities(self, rate):
+        """ Set the fade rate for the LEDs """
+        data = self._create_led_device_message_(0xc0, rate)
+
+        return self.write(USBRequestCode.SET_CONFIGURATION, int(0x03), self.ULTIMATEIO_INDEX,
+                          data, ct.sizeof(data))
+
     def set_config(self, config_file, use_current):
-        """ Write a new configuration to the current UltimateIO device """
+        """ Write a new pin configuration to the current UltimateIO device """
 
         # Get the current configuration from the device
         cur_config = self.read_device() if use_current else None
@@ -290,11 +356,20 @@ class UltimateIODevice(USBDeviceHandle):
         return self.write_alt(USBRequestCode.SET_CONFIGURATION, int(0x03), self.ULTIMATEIO_INDEX, data, ct.sizeof(data)) \
             if res else False
 
+    def _create_led_device_message_(self, action, value):
+        """ Create led message to be sent to the device """
+        data = LEDConfigStruct()
+
+        data.action = action
+        data.value = value
+
+        return data
+
     def _create_device_message_(self, config_file: str, cur_device_config=None):
         """ Create the message to be sent to the device """
 
         # List of possible 'resourceType' values in the config file for an ultimateIO device.
-        resource_types = ['ultimateIO-pin', 'ultimateIO-led']
+        resource_types = ['ultimateIO-pin']
 
         # Validate against the base schema.
         valid_config = self.validate_config_base(config_file, resource_types)
@@ -313,127 +388,120 @@ class UltimateIODevice(USBDeviceHandle):
 
         # Determine which config resource type we have.
         if config.resourceType == 'ultimateIO-pin':
-            if not self.validate_config(config, 'ultimateio-pin.schema'):
-                return False, None
-
-            # Prep the data structure
-            data.bytes[13] = 0xff
-            data.bytes[15] = 0xff
-            data.bytes[63] = 0xff
-            data.bytes[65] = 0xff
-
-            for x in range(100, 149):
-                data.bytes[x] = 0x01
-
-            # set these back to 0
-            data.bytes[108] = 0
-            data.bytes[109] = 0
-            data.bytes[113] = 0
-            data.bytes[115] = 0
-            data.bytes[116] = 0
-            data.bytes[118] = 0
-            data.bytes[120] = 0
-            data.bytes[122] = 0
-            data.bytes[139] = 0
-            data.bytes[157] = 0x7f
-
-            # Header
-            data.header.type = 0x50
-            data.header.byte_2 = 0xdd
-            data.header.byte_3 = 0x0f
-
-            # Header configuration options
-            header = PacConfigUnion()
-            val = config.debounce.lower()
-            if val in IPACSeriesDebounce:
-                header.config.debounce = IPACSeriesDebounce[val]
-            else:
-                _logger.info(_(f'"{config.debounce}" is not a valid debounce value'))
-                return False, None
-
-            # set data header
-            data.header.byte_4 = header.asByte
-
-            # bug: Current limitation, macros are not kept between configurations.  To prevent lingering macro
-            #   values in pac structure
-            # Clear current macro structure
-            if cur_device_config is not None:
-                for x in range(self.MACRO_START_INDEX, self.MACRO_MAX_COUNT):
-                    data.bytes[x] = 0
-
-            # key: Macro name value: macro value (e0 - fe)
-            macro_dict = {}
-            try:
-                # Macros
-                # Each macro starts with control character e0 - fe.  Total of 30 macros possible
-                # overall total macro characters is 56
-                cur_size_count = 0
-                cur_macro = 0xe0
-                cur_position = self.MACRO_START_INDEX
-
-                if len(config.macros) > self.MACRO_MAX_COUNT:
-                    _logger.debug(_(f'There are more than {self.MACRO_MAX_COUNT} '
-                                    f'macros defined for the ultimateIO device'))
-                    return False, None
-
-                for macro in config.macros:
-                    if len(macro.action) > 0:
-                        # Set the start point of the new macro
-                        data.bytes[cur_position] = cur_macro
-                        macro_dict[macro.name.upper()] = cur_macro
-
-                        cur_position += 1
-                        cur_macro += 1
-                        cur_size_count += 1
-
-                        for action in macro.action:
-                            if action.upper() in IPACSeriesMapping:
-                                data.bytes[cur_position] = IPACSeriesMapping[action.upper()]
-                                cur_position += 1
-                                cur_size_count += 1
-
-                            if cur_size_count > self.MACRO_MAX_SIZE:
-                                _logger.debug(_(f'There are more than {self.MACRO_MAX_SIZE} '
-                                                f'macro values defined for the ultimateIO device'))
-                                return False, None
-            except AttributeError:
-                pass
-
-            # Pins
-            # Places the action value, alternate action value and if assigned as shift key
-            # 0x40 in the shift position for all pins designated as shift pins in json config
-            for pin in config.pins:
-                try:
-                    action_index, alternate_action_index, shift_index = PinMapping[pin.name]
-                    action = pin.action.upper()
-                    if action in IPACSeriesMapping:
-                        data.bytes[action_index] = IPACSeriesMapping[action]
-                    elif action in macro_dict:
-                        data.bytes[action_index] = macro_dict[action]
-                    else:
-                        _logger.info(_(f'{pin.name} action "{action}" is not a valid value'))
-
-                    try:
-                        alternate_action = pin.alternate_action.upper()
-                        if alternate_action in IPACSeriesMapping:
-                            data.bytes[alternate_action_index] = IPACSeriesMapping[alternate_action]
-                        elif alternate_action in macro_dict:
-                            data.bytes[alternate_action_index] = macro_dict[alternate_action]
-                        elif alternate_action:
-                            _logger.info(_(f'{pin.name} alternate action "{alternate_action}" is not a valid value'))
-                    except AttributeError:
-                        pass
-
-                    # Pin designated as shift
-                    try:
-                        if pin.shift:
-                            data.bytes[shift_index] = 0x40
-                    except AttributeError:
-                        pass
-
-                except KeyError:
-                    _logger.debug(_(f'Pin {pin.name} does not exists in ultimateIO device'))
-
-            return True, data
+            return self._create_pin_data_(config, cur_device_config, data)
 
         return False, None
+
+    def _create_pin_data_(self, config, cur_device_config, data):
+        if not self.validate_config(config, 'ultimateio-pin.schema'):
+            return False, None
+        # Prep the data structure
+        data.bytes[13] = 0xff
+        data.bytes[15] = 0xff
+        data.bytes[63] = 0xff
+        data.bytes[65] = 0xff
+        for x in range(100, 149):
+            data.bytes[x] = 0x01
+        # set these back to 0
+        data.bytes[108] = 0
+        data.bytes[109] = 0
+        data.bytes[113] = 0
+        data.bytes[115] = 0
+        data.bytes[116] = 0
+        data.bytes[118] = 0
+        data.bytes[120] = 0
+        data.bytes[122] = 0
+        data.bytes[139] = 0
+        data.bytes[157] = 0x7f
+        # Header
+        data.header.type = 0x50
+        data.header.byte_2 = 0xdd
+        data.header.byte_3 = 0x0f
+        # Header configuration options
+        header = PacConfigUnion()
+        val = config.debounce.lower()
+        if val in IPACSeriesDebounce:
+            header.config.debounce = IPACSeriesDebounce[val]
+        else:
+            _logger.info(_(f'"{config.debounce}" is not a valid debounce value'))
+            return False, None
+        # set data header
+        data.header.byte_4 = header.asByte
+        # bug: Current limitation, macros are not kept between configurations.  To prevent lingering macro
+        #   values in pac structure
+        # Clear current macro structure
+        if cur_device_config is not None:
+            for x in range(self.MACRO_START_INDEX, self.MACRO_MAX_COUNT):
+                data.bytes[x] = 0
+        # key: Macro name value: macro value (e0 - fe)
+        macro_dict = {}
+        try:
+            # Macros
+            # Each macro starts with control character e0 - fe.  Total of 30 macros possible
+            # overall total macro characters is 56
+            cur_size_count = 0
+            cur_macro = 0xe0
+            cur_position = self.MACRO_START_INDEX
+
+            if len(config.macros) > self.MACRO_MAX_COUNT:
+                _logger.debug(_(f'There are more than {self.MACRO_MAX_COUNT} '
+                                f'macros defined for the ultimateIO device'))
+                return False, None
+
+            for macro in config.macros:
+                if len(macro.action) > 0:
+                    # Set the start point of the new macro
+                    data.bytes[cur_position] = cur_macro
+                    macro_dict[macro.name.upper()] = cur_macro
+
+                    cur_position += 1
+                    cur_macro += 1
+                    cur_size_count += 1
+
+                    for action in macro.action:
+                        if action.upper() in IPACSeriesMapping:
+                            data.bytes[cur_position] = IPACSeriesMapping[action.upper()]
+                            cur_position += 1
+                            cur_size_count += 1
+
+                        if cur_size_count > self.MACRO_MAX_SIZE:
+                            _logger.debug(_(f'There are more than {self.MACRO_MAX_SIZE} '
+                                            f'macro values defined for the ultimateIO device'))
+                            return False, None
+        except AttributeError:
+            pass
+        # Pins
+        # Places the action value, alternate action value and if assigned as shift key
+        # 0x40 in the shift position for all pins designated as shift pins in json config
+        for pin in config.pins:
+            try:
+                action_index, alternate_action_index, shift_index = PinMapping[pin.name]
+                action = pin.action.upper()
+                if action in IPACSeriesMapping:
+                    data.bytes[action_index] = IPACSeriesMapping[action]
+                elif action in macro_dict:
+                    data.bytes[action_index] = macro_dict[action]
+                else:
+                    _logger.info(_(f'{pin.name} action "{action}" is not a valid value'))
+
+                try:
+                    alternate_action = pin.alternate_action.upper()
+                    if alternate_action in IPACSeriesMapping:
+                        data.bytes[alternate_action_index] = IPACSeriesMapping[alternate_action]
+                    elif alternate_action in macro_dict:
+                        data.bytes[alternate_action_index] = macro_dict[alternate_action]
+                    elif alternate_action:
+                        _logger.info(_(f'{pin.name} alternate action "{alternate_action}" is not a valid value'))
+                except AttributeError:
+                    pass
+
+                # Pin designated as shift
+                try:
+                    if pin.shift:
+                        data.bytes[shift_index] = 0x40
+                except AttributeError:
+                    pass
+
+            except KeyError:
+                _logger.debug(_(f'Pin {pin.name} does not exists in ultimateIO device'))
+        return True, data
