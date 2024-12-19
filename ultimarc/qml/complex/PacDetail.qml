@@ -1,13 +1,11 @@
 import QtQuick 2.4
-import QtQuick.Controls 2.15 as QQC2
+import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.12
-
-import "../simple"
 
 Item {
     id: root
 
-    QQC2.Label {
+    Label {
         id: referenceLabel
         visible: false
         opacity: 0
@@ -27,7 +25,7 @@ Item {
 
             RowLayout {
                 ColumnLayout {
-                    QQC2.Label {
+                    Label {
                         id: selectedName
                         Layout.alignment: Qt.AlignHCenter
                         font.pointSize: referenceLabel.font.pointSize + 1
@@ -37,12 +35,12 @@ Item {
 
                     RowLayout {
                         spacing: _units.large_spacing
-                        QQC2.Label {
+                        Label {
                             leftPadding: _units.small_spacing - 2
                             font.pointSize: referenceLabel.font.pointSize - 1
                             text: "Debounce:"
                         }
-                        QQC2.ComboBox {
+                        ComboBox {
                             implicitWidth: 87
                             implicitHeight: 26
                             model: ['standard', 'none', 'short', 'long']
@@ -59,17 +57,17 @@ Item {
                 ColumnLayout {
                     Layout.alignment: Qt.AlignTop
                     RowLayout {
-                        QQC2.CheckBox {
+                        CheckBox {
                             id: selectedShift
                             font.pointSize: referenceLabel.font.pointSize - 1
                             text: qsTr("Shift")
                         }
-                        QQC2.Label {
+                        Label {
                             color: "blue"
                             font.pointSize: referenceLabel.font.pointSize - 1
                             text: "Primary Action:"
                         }
-                        QQC2.ComboBox {
+                        ComboBox {
                             id: selectedAction
                             implicitWidth: 130
                             model: _devices.device.actions
@@ -79,12 +77,12 @@ Item {
                                 }
                             }
                         }
-                        QQC2.Label {
+                        Label {
                             color: "red"
                             font.pointSize: referenceLabel.font.pointSize - 1
                             text: "Alternative Action:"
                         }
-                        QQC2.ComboBox {
+                        ComboBox {
                             id: selectedAltAction
                             implicitWidth: 130
                             model: _devices.device.alt_actions
@@ -96,7 +94,7 @@ Item {
                         }
                     }
                     RowLayout {
-                        QQC2.CheckBox {
+                        CheckBox {
                             id: paclink
                             font.pointSize: referenceLabel.font.pointSize - 1
                             text: qsTr("PacLink")
@@ -108,7 +106,7 @@ Item {
                                 checked = _devices.device.paclink
                             }
                         }
-                        QQC2.Button {
+                        Button {
                             text: {
                                 "Macros"
                             }
@@ -188,7 +186,7 @@ Item {
                     RowLayout {
                         Layout.fillHeight: true
                         Layout.fillWidth: true
-                        QQC2.Label {
+                        Label {
                             id: pinName
                             leftPadding: 3
                             font.pointSize: referenceLabel.font.pointSize + 1
@@ -198,7 +196,7 @@ Item {
                         Item {
                             Layout.fillWidth: true
                         }
-                        QQC2.Label {
+                        Label {
                             id: shift
                             text: qsTr("Shift")
                             font.pointSize: referenceLabel.font.pointSize - 1
@@ -228,7 +226,7 @@ Item {
                                 height: childrenRect.height
                                 color: "transparent"
 
-                                QQC2.Label {
+                                Label {
                                     id: action
                                     color: "blue"
                                     bottomPadding: 1
@@ -255,7 +253,7 @@ Item {
                                 height: childrenRect.height
                                 color: "transparent"
 
-                                QQC2.Label {
+                                Label {
                                     id: altAction
                                     color: "red"
                                     bottomPadding: 1

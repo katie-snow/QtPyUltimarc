@@ -8,8 +8,6 @@ Item {
     id: deviceDetails
     anchors.fill: parent
 
-    signal stepForward
-
     ListView {
         id: detailList
         anchors {

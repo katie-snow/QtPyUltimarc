@@ -3,13 +3,8 @@
         <file>views/DeviceDetails.qml</file>
         <file>views/DeviceList.qml</file>
         <file>complex/PacDetail.qml</file>
-        <file>complex/DelegateDevice.qml</file>
         <file>complex/DelegateDetail.qml</file>
-        <file>complex/IndicatedImage.qml</file>
-        <file>complex/ZoomableImage.qml</file>
         <file>complex/MacroPopup.qml</file>
-        <file>simple/Arrow.qml</file>
-        <file>simple/FocusRectangle.qml</file>
         <file>dialogs/FileDialog.qml</file>
         <file>main.qml</file>
     </qresource>

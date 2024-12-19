@@ -1,9 +1,7 @@
 import QtQuick 2.4
-import QtQuick.Controls 2.5 as QQC2
+import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.15
-import Qt.labs.platform 1.1
 
-import "../simple"
 import "../complex"
 import "../dialogs"
 
@@ -11,14 +9,28 @@ Item {
     id: deviceDelegate
     anchors.fill: parent
 
-    signal stepForward
     property bool focused: contentList.currentIndex === 1
+    property bool cleared: false
     enabled: focused
 
-    QQC2.Label {
+    Label {
         id: referenceLabel
         visible: false
         opacity: 0
+    }
+
+    Connections {
+        // Clear loader when leaving the page
+        target: contentList
+        function onCurrentIndexChanged() {
+            if (!focused && !cleared) {
+                detailLoader.source = ''
+                cleared = true
+            }
+            else {
+                cleared = false
+            }
+        }
     }
 
     FileDialog {
@@ -43,21 +55,6 @@ Item {
         }
     }
 
-
-    function toMainScreen() {
-        canGoBack = false
-        detailLoader.source = ''
-        contentList.currentIndex--
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        acceptedButtons: Qt.BackButton
-        onClicked:
-            if (mouse.button == Qt.BackButton)
-                toMainScreen()
-    }
-
     ColumnLayout {
         x: mainWindow.margin
         y: _units.grid_unit
@@ -68,16 +65,10 @@ Item {
             Layout.fillWidth: true
             spacing: _units.large_spacing * 3
 
-            QQC2.Button {
-                id: backButton
-                icon.name: "qrc:/icons/go-previous"
-                text: qsTr("Back")
-                onClicked: toMainScreen()
-            }
             Item {
                 Layout.fillWidth: true
             }
-            QQC2.Button {
+            Button {
                 text: {
                     "Load File"
                 }
@@ -87,7 +78,7 @@ Item {
                     loadFileDialog.open()
                 }
             }
-            QQC2.Button {
+            Button {
                 text: {
                     "Write Device"
                 }
@@ -95,7 +86,7 @@ Item {
                 visible: model.attached
                 onClicked: model.write_device
             }
-            QQC2.Button {
+            Button {
                 text: {
                     "Write File"
                 }
@@ -127,12 +118,12 @@ Item {
                 spacing: _units.large_spacing
                 RowLayout {
                     Layout.fillWidth: true
-                    QQC2.Label {
+                    Label {
                         Layout.fillWidth: true
                         font.pointSize: referenceLabel.font.pointSize + 4
                         text: model.device_class_descr
                     }
-                    QQC2.Label {
+                    Label {
                         font.pointSize: referenceLabel.font.pointSize + 2
                         visible: model.attached
                         text: model.device_name
@@ -142,13 +133,13 @@ Item {
                 ColumnLayout {
                     width: parent.width
                     spacing: _units.large_spacing
-                    QQC2.Label {
+                    Label {
                         font.pointSize: referenceLabel.font.pointSize + 1
                         visible: model.attached
                         text: model.device_key
                         opacity: 0.6
                     }
-                    QQC2.Label {
+                    Label {
                         font.pointSize: referenceLabel.font.pointSize - 1
                         text: model.description
                         opacity: 0.6

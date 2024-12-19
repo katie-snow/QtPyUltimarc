@@ -21,6 +21,8 @@ class DevicesSortProxyModel(QSortFilterProxyModel, QObject):
         class_right = source_right.data(DevicesRoles.DEVICE_CLASS_DESCR)
         connected_left = source_left.data(DevicesRoles.ATTACHED)
         connected_right = source_right.data(DevicesRoles.ATTACHED)
+
+        # Empty devices, then connected devices
         if connected_right == connected_left:
-            return class_left < class_right
-        return connected_right < connected_left
+            return class_left > class_right
+        return connected_right > connected_left

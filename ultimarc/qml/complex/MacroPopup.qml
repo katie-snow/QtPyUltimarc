@@ -2,8 +2,6 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
-import "../simple"
-
 Popup {
     id: root
     height: 275
