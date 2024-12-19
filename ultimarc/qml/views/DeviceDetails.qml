@@ -19,11 +19,8 @@ Item {
         }
 
         clip: true
-        focus: true
 
         model: _devices.device_model
-        delegate: DelegateDetail {
-            focus: true
-        }
+        delegate: DelegateDetail {}
     }
 }

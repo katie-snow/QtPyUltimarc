@@ -21,24 +21,57 @@ Item {
             id: gridDeviceList
             Layout.fillWidth: true
             Layout.fillHeight: true
+            Layout.leftMargin: parent.width / 2 - cellWidth / 2
+            // Adjust bottomMargin as empty devices are added to the list
+            Layout.bottomMargin: _units.grid_unit * 8
             cellWidth: 200
             cellHeight: 30
             flow: GridView.FlowTopToBottom
             clip: true
             interactive: false
+            keyNavigationEnabled: true
+            keyNavigationWraps: true
+            focus: true
+
+            highlight: Rectangle {
+                color: 'transparent'
+                width: gridDeviceList.width
+            }
 
             model: _sort_devices
             delegate: RadioButton {
                 width: gridDeviceList.cellWidth
                 height: gridDeviceList.cellHeight
+                clip: true
 
                 text: model.device_name
                 ButtonGroup.group: btnGrp
 
-                onClicked: {
+                contentItem: Text {
+                    text: parent.text
+                    font.pointSize: 14
+                    leftPadding: parent.indicator.width + parent.spacing + 4
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+                Component.onCompleted: {
+                    if (index === 0) {
+                        checked = true
+                        moveCurrentIndex()
+                        focus = true
+                    }
+                }
+
+                onClicked: moveCurrentIndex ()
+
+                function moveCurrentIndex () {
                     gridDeviceList.currentIndex = index
                     // Make sure the grid has the focus again
                     gridDeviceList.focus = true
+                }
+
+                Keys.onReleased: {
+                    checked = true
                 }
 
                 Connections {
