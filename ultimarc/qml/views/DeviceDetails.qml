@@ -15,7 +15,6 @@ Item {
             left: parent.left
             right: parent.right
             bottom: parent.bottom
-            rightMargin: mainWindow.margin + 1
         }
 
         clip: true
