@@ -56,17 +56,50 @@ Item {
     }
 
     ColumnLayout {
-        x: mainWindow.margin
+        x: mainWindow.margin - (mainWindow.margin / 2)
         y: _units.grid_unit
-        width: parent.width - mainWindow.margin
+        width: parent.width - (mainWindow.margin - (mainWindow.margin / 2))
         spacing: _units.large_spacing * 3
         RowLayout {
             id: tools
             Layout.fillWidth: true
             spacing: _units.large_spacing * 3
 
-            Item {
+            ColumnLayout {
                 Layout.fillWidth: true
+                spacing: _units.large_spacing
+
+                Label {
+                    Layout.fillWidth: true
+                    font.pointSize: referenceLabel.font.pointSize + 4
+                    text: model.device_class_descr
+                }
+
+                RowLayout {
+                    width: parent.width
+                    spacing: _units.large_spacing
+
+                    Label {
+                        font.pointSize: referenceLabel.font.pointSize + 2
+                        visible: model.attached
+                        text: model.device_name
+                        opacity: 0.6
+                    }
+
+                    Label {
+                        font.pointSize: referenceLabel.font.pointSize
+                        text: model.attached ? model.device_key : model.description
+                        opacity: 0.6
+                    }
+                }
+            }
+            Button {
+                text: {
+                    "Write Device"
+                }
+                highlighted: true
+                visible: model.attached
+                onClicked: model.write_device
             }
             Button {
                 text: {
@@ -80,70 +113,12 @@ Item {
             }
             Button {
                 text: {
-                    "Write Device"
-                }
-                highlighted: true
-                visible: model.attached
-                onClicked: model.write_device
-            }
-            Button {
-                text: {
                     "Write File"
                 }
                 highlighted: true
                 onClicked: {
                     saveFileDialog.fileMode = FileDialog.SaveFile
                     saveFileDialog.open()
-                }
-            }
-        }
-        RowLayout {
-            spacing: _units.large_spacing
-            Item {
-                Layout.preferredWidth: Math.round(_units.grid_unit * 3.5) + _units.grid_unit
-                Layout.preferredHeight: Math.round(_units.grid_unit * 3.5)
-                Layout.alignment: Qt.AlignHCenter
-
-                IndicatedImage {
-                    anchors.fill: parent
-                    x: _units.grid_unit
-                    source: model.icon
-                    fillMode: Image.PreserveAspectFit
-                    sourceSize.width: parent.width
-                    sourceSize.height: parent.height
-                }
-            }
-            ColumnLayout {
-                Layout.fillHeight: true
-                spacing: _units.large_spacing
-                RowLayout {
-                    Layout.fillWidth: true
-                    Label {
-                        Layout.fillWidth: true
-                        font.pointSize: referenceLabel.font.pointSize + 4
-                        text: model.device_class_descr
-                    }
-                    Label {
-                        font.pointSize: referenceLabel.font.pointSize + 2
-                        visible: model.attached
-                        text: model.device_name
-                        opacity: 0.6
-                    }
-                }
-                ColumnLayout {
-                    width: parent.width
-                    spacing: _units.large_spacing
-                    Label {
-                        font.pointSize: referenceLabel.font.pointSize + 1
-                        visible: model.attached
-                        text: model.device_key
-                        opacity: 0.6
-                    }
-                    Label {
-                        font.pointSize: referenceLabel.font.pointSize - 1
-                        text: model.description
-                        opacity: 0.6
-                    }
                 }
             }
         }
