@@ -102,7 +102,7 @@ Window {
 
                     function activate () {
                         if (contentList.currentIndex === 0) {
-                            activateButton.text = "Prev"
+                            activateButton.text = "Back"
                             contentList.currentIndex++
                         }
                         else {
