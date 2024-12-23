@@ -56,9 +56,7 @@ Item {
     }
 
     ColumnLayout {
-        x: mainWindow.margin - (mainWindow.margin / 2)
-        y: _units.grid_unit
-        width: parent.width - (mainWindow.margin - (mainWindow.margin / 2))
+        anchors.fill: parent
         spacing: _units.large_spacing * 3
         RowLayout {
             id: tools
