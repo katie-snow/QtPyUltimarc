@@ -16,114 +16,127 @@ Item {
         anchors.fill: parent
 
         Rectangle {
-            width: parent.width
-            height: childrenRect.height + _units.small_spacing
+            implicitWidth: parent.width
+            height: childrenRect.height + _units.large_spacing
 
             color: 'transparent'
             border.color: Qt.darker(palette.window, 1.2)
             border.width: 2
 
-            RowLayout {
-                ColumnLayout {
-                    Label {
-                        id: selectedName
-                        Layout.alignment: Qt.AlignHCenter
-                        font.pointSize: referenceLabel.font.pointSize + 1
-                        font.bold: true
-                        text: qsTr('Pin Name')
-                    }
+            ColumnLayout {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
 
-                    RowLayout {
-                        spacing: _units.large_spacing
-                        Label {
-                            leftPadding: _units.small_spacing - 2
-                            font.pointSize: referenceLabel.font.pointSize - 1
-                            text: "Debounce:"
-                        }
-                        ComboBox {
-                            implicitWidth: 87
-                            implicitHeight: 26
-                            model: ['standard', 'none', 'short', 'long']
-                            Component.onCompleted: {
-                                currentIndex = find(_devices.device.debounce)
-                            }
-                            onActivated: {
-                                _devices.device.debounce = textAt(currentIndex)
-                            }
-                        }
-                    }
+                Item {
+                    Layout.fillWidth: true
+                    implicitHeight: _units.large_spacing / 2
                 }
 
-                ColumnLayout {
-                    Layout.alignment: Qt.AlignTop
-                    RowLayout {
-                        CheckBox {
-                            id: selectedShift
-                            font.pointSize: referenceLabel.font.pointSize - 1
-                            text: qsTr("Shift")
-                        }
+                RowLayout {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+
+                    ColumnLayout {
                         Label {
-                            color: "blue"
-                            font.pointSize: referenceLabel.font.pointSize - 1
-                            text: "Primary Action:"
+                            id: selectedName
+                            Layout.alignment: Qt.AlignHCenter
+                            font.pointSize: referenceLabel.font.pointSize + 1
+                            font.bold: true
+                            text: qsTr('Pin Name')
                         }
-                        ComboBox {
-                            id: selectedAction
-                            implicitWidth: 130
-                            model: _devices.device.actions
-                            onCurrentIndexChanged: {
-                                if(activeFocus) {
-                                    model.action = selectedAction.textAt(currentIndex)
-                                }
+
+                        RowLayout {
+                            spacing: _units.large_spacing
+                            Label {
+                                leftPadding: _units.small_spacing - 2
+                                font.pointSize: referenceLabel.font.pointSize - 1
+                                text: "Debounce:"
                             }
-                        }
-                        Label {
-                            color: "red"
-                            font.pointSize: referenceLabel.font.pointSize - 1
-                            text: "Alternative Action:"
-                        }
-                        ComboBox {
-                            id: selectedAltAction
-                            implicitWidth: 130
-                            model: _devices.device.alt_actions
-                            onCurrentIndexChanged: {
-                                if (activeFocus) {
-                                    model.action = selectedAltAction.textAt(currentIndex)
+                            ComboBox {
+                                implicitWidth: 87
+                                implicitHeight: 26
+                                model: ['standard', 'none', 'short', 'long']
+                                Component.onCompleted: {
+                                    currentIndex = find(_devices.device.debounce)
+                                }
+                                onActivated: {
+                                    _devices.device.debounce = textAt(currentIndex)
                                 }
                             }
                         }
                     }
-                    RowLayout {
-                        CheckBox {
-                            id: paclink
-                            font.pointSize: referenceLabel.font.pointSize - 1
-                            text: qsTr("PacLink")
 
-                            onToggled: {
-                                _devices.device.paclink = checked
+                    ColumnLayout {
+                        Layout.alignment: Qt.AlignTop
+                        RowLayout {
+                            CheckBox {
+                                id: selectedShift
+                                font.pointSize: referenceLabel.font.pointSize - 1
+                                text: qsTr("Shift")
                             }
-                            Component.onCompleted: {
-                                checked = _devices.device.paclink
+                            Label {
+                                color: "blue"
+                                font.pointSize: referenceLabel.font.pointSize - 1
+                                text: "Primary Action:"
+                            }
+                            ComboBox {
+                                id: selectedAction
+                                implicitWidth: 130
+                                model: _devices.device.actions
+                                onCurrentIndexChanged: {
+                                    if(activeFocus) {
+                                        model.action = selectedAction.textAt(currentIndex)
+                                    }
+                                }
+                            }
+                            Label {
+                                color: "red"
+                                font.pointSize: referenceLabel.font.pointSize - 1
+                                text: "Alternative Action:"
+                            }
+                            ComboBox {
+                                id: selectedAltAction
+                                implicitWidth: 130
+                                model: _devices.device.alt_actions
+                                onCurrentIndexChanged: {
+                                    if (activeFocus) {
+                                        model.action = selectedAltAction.textAt(currentIndex)
+                                    }
+                                }
                             }
                         }
-                        Button {
-                            text: {
-                                "Macros"
-                            }
-                            highlighted: true
-                            function macroAction () {
-                                macrosPopup.open()
-                            }
-                            onClicked: {
-                                macroAction()
-                            }
-                            Keys.onSpacePressed: macroAction()
-                        }
+                        RowLayout {
+                            CheckBox {
+                                id: paclink
+                                font.pointSize: referenceLabel.font.pointSize - 1
+                                text: qsTr("PacLink")
 
-                        MacroPopup {
-                            id: macrosPopup
-                            onClosed: {
-                                _devices.device.update_macro
+                                onToggled: {
+                                    _devices.device.paclink = checked
+                                }
+                                Component.onCompleted: {
+                                    checked = _devices.device.paclink
+                                }
+                            }
+                            Button {
+                                text: {
+                                    "Macros"
+                                }
+                                highlighted: true
+                                function macroAction () {
+                                    macrosPopup.open()
+                                }
+                                onClicked: {
+                                    macroAction()
+                                }
+                                Keys.onSpacePressed: macroAction()
+                            }
+
+                            MacroPopup {
+                                id: macrosPopup
+                                onClosed: {
+                                    _devices.device.update_macro
+                                }
                             }
                         }
                     }
@@ -131,6 +144,21 @@ Item {
             }
         }
 
+        RowLayout {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                color: 'orange'
+            }
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                color: 'purple'
+            }
+        }
         GridView {
             id: grid
             y: _units.grid_unit
