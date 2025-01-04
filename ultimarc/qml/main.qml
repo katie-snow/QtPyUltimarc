@@ -107,7 +107,6 @@ Window {
                         }
                         else {
                             activateButton.text = "Next"
-                            contentList.currentIndex = -1
                             contentList.currentIndex = 0
 
                             // Currently this allows the Loader qml to work correctly.  Leaving the button selected and
