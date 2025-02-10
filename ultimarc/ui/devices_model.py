@@ -7,7 +7,7 @@ import typing
 from collections import OrderedDict
 
 from enum import IntEnum
-from PySide6.QtCore import QAbstractListModel, QModelIndex, QObject, Property
+from PySide6.QtCore import QAbstractListModel, QModelIndex, QObject, Property, Signal
 
 from ultimarc.devices import DeviceClassID
 from ultimarc.tools import ToolEnvironmentObject
@@ -25,40 +25,31 @@ UNKNOWN_DEVICE = 'Ultimarc Device'
 
 class DevicesRoles(IntEnum):
     DEVICE_CLASS_DESCR = 1
-    DEVICE_CLASS_ID = 2
     DEVICE_NAME = 3
-    DEVICE_KEY = 4
-    CATEGORY = 5
-    ICON = 6
-    ATTACHED = 7
-    SELECTED_DEVICE = 8
-    DEVICE = 9
-    DESCRIPTION = 10
+    ATTACHED = 5
+    SELECTED_DEVICE = 6
 
 
 # Map Role Enum values to class property names.
-DeviceRolePropertyMap = OrderedDict(zip(list(DevicesRoles), [k.name.lower() for k in DevicesRoles]))
+DevicesRolePropertyMap = OrderedDict(zip(list(DevicesRoles), [k.name.lower() for k in DevicesRoles]))
 
 
 class DevicesModel(QAbstractListModel, QObject):
     """ List model that accesses the devices for the view """
+    _change_selected_device_ = Signal(int)
 
-    def __init__(self, args, env: (ToolEnvironmentObject, None)):
+    def __init__(self, args, env: (ToolEnvironmentObject, None), device_model: DeviceModel):
         super().__init__()
 
         self.args = args
         self.env = env
-        self._device_count_ = self.env.devices.device_count
-        self._category_ = 'Ultimarc Configurations'
         self._devices_ = []
-        self._device_model_ = DeviceModel(args, env)
-        self._selected_device_ = None
-        self.selected_row = -1
+        self._device_model_ = device_model
 
         self.setup_info()
 
     def setup_info(self):
-        """ setup up meta data for the devices and configurations """
+        """ setup up metadata for the devices and configurations """
         for dev in self.get_devices():
             if dev.class_id == DeviceClassID.MiniPac.value:
                 device = MiniPacUI(self.args, self.env, True, DeviceClassID(dev.class_id), dev.product_name,
@@ -91,18 +82,15 @@ class DevicesModel(QAbstractListModel, QObject):
                 tmp = Device(self.args, self.env, False, device_class)
             self._devices_.append(tmp)
 
-    def has_connected_devices(self):
-        return True if self._device_count_ > 0 else False
-
     def get_devices(self):
         """ Return a list of devices we should show information for. """
         return self.env.devices.filter()
 
     def roleNames(self):
-        """ Return the DeviceRolePropertyMap dict, but convert key values to byte arrays first for QT. """
+        """ Return the DevicesRolePropertyMap dict, but convert key values to byte arrays first for QT. """
         # TODO: Add device information to role dict
         roles = OrderedDict()
-        for k, v in DeviceRolePropertyMap.items():
+        for k, v in DevicesRolePropertyMap.items():
             roles[k] = v.encode('utf-8')
         return roles
 
@@ -115,16 +103,10 @@ class DevicesModel(QAbstractListModel, QObject):
         if not index.isValid():
             return None
 
-        if role == DevicesRoles.CATEGORY:
-            return 'main' if index.row() < self._device_count_ else self._category_
-
-        if role == DevicesRoles.DEVICE:
-            return self._device_model_
-
         for x in range(len(self._devices_)):
             if x == index.row():
                 dev_cls = self._devices_[x]
-                return getattr(dev_cls, DeviceRolePropertyMap[role])
+                return getattr(dev_cls, DevicesRolePropertyMap[role])
         return None
 
     def setData(self, index: QModelIndex, value, role: int = ...):
@@ -132,25 +114,11 @@ class DevicesModel(QAbstractListModel, QObject):
             return False
 
         if role == DevicesRoles.SELECTED_DEVICE:
-            self.selected_row = index.row()
-            self._selected_device_ = self._devices_[index.row()]
             self._device_model_.set_device(self._devices_[index.row()])
             return True
         return False
 
-    def get_category(self):
-        return self._category_
-
-    def get_device_count(self):
-        return self._device_count_ if self._device_count_ < 4 else 4
-
-    def get_device_model(self):
+    def get_selected_device(self):
         return self._device_model_
 
-    def get_device(self):
-        return self._selected_device_
-
-    device = Property(QObject, get_device, constant=True)
-    device_model = Property(QObject, get_device_model, constant=True)
-    count = Property(int, get_device_count, constant=True)
-    category = Property(str, get_category, constant=True)
+    selected_device = Property(QObject, get_selected_device,  constant=True)
