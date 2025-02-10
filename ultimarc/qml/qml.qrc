@@ -2,8 +2,7 @@
     <qresource prefix="/">
         <file>views/DeviceDetails.qml</file>
         <file>views/DeviceList.qml</file>
-        <file>complex/PacDetail.qml</file>
-        <file>complex/DelegateDetail.qml</file>
+        <file>views/PacDetail.qml</file>
         <file>complex/MacroPopup.qml</file>
         <file>dialogs/FileDialog.qml</file>
         <file>main.qml</file>

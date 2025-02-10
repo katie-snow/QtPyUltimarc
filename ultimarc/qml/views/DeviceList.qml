@@ -2,53 +2,52 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
-import "../complex"
-
 Item {
-    id: deviceList
+    id: devicesList
 
-    ColumnLayout {
-        anchors.fill: parent
+    property string activate_str: 'devicesList'
 
-        // Image
-        Rectangle {
-            color: "light blue"
-            Layout.fillWidth: true
-            Layout.preferredHeight: Math.round(_units.grid_unit * 4.5)
+    GridView {
+        id: gridView
+        anchors {
+            top: parent.top
+            bottom: parent.bottom
+            left: parent.horizontalCenter
+            right: parent.right
+            leftMargin: -cellWidth / 2
+
+            // Adjust this number to keep empty configuration on one side of the grid
+            bottomMargin: 200
         }
 
-        GridView {
-            id: gridDeviceList
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            Layout.leftMargin: parent.width / 2 - cellWidth / 2
-            // Adjust bottomMargin as empty devices are added to the list
-            Layout.bottomMargin: _units.grid_unit * 8
-            cellWidth: 200
-            cellHeight: 30
-            flow: GridView.FlowTopToBottom
-            clip: true
-            interactive: false
-            keyNavigationEnabled: true
-            keyNavigationWraps: true
-            focus: true
+        model: _sort_devices
 
-            highlight: Rectangle {
-                color: 'transparent'
-                width: gridDeviceList.width
-            }
+        cellWidth: 200
+        cellHeight: 30
 
-            model: _sort_devices
-            delegate: RadioButton {
-                width: gridDeviceList.cellWidth
-                height: gridDeviceList.cellHeight
-                clip: true
+        flow: GridView.FlowTopToBottom
+        clip: true
 
+        interactive: false
+        keyNavigationEnabled: true
+        keyNavigationWraps: true
+        focus: true
+
+        highlight: Rectangle {
+            color: 'light gray'
+            width: gridView.cellWidth
+        }
+
+        delegate: Component {
+            RadioButton {
+                property GridView __gv: GridView.view
+                width: gridView.cellWidth
+                height: gridView.cellHeight
+
+                // keep
                 text: model.device_name
-                ButtonGroup.group: btnGrp
-
                 contentItem: Text {
-                    text: parent.text
+                    text: model.device_name
                     font.pointSize: 14
                     leftPadding: parent.indicator.width + parent.spacing + 4
                     verticalAlignment: Text.AlignVCenter
@@ -58,33 +57,22 @@ Item {
                     if (index === 0) {
                         checked = true
                         moveCurrentIndex()
-                        focus = true
                     }
                 }
 
                 onClicked: moveCurrentIndex ()
 
                 function moveCurrentIndex () {
-                    gridDeviceList.currentIndex = index
-                    // Make sure the grid has the focus again
-                    gridDeviceList.focus = true
+                    __gv.currentIndex = model.index
+
+                    // This sets the currently selected device in the underlying model
+                    // Allows DeviceDetails to get the correct model later
+                    model.selected_device = model.index
                 }
 
                 Keys.onReleased: {
                     checked = true
-                }
-
-                Connections {
-                    // Loads the selected device to be displayed on the next page
-                    target: activateButton
-                    function onClicked(button) {
-                        if (gridDeviceList.currentIndex === index) {
-                            model.selected_device = gridDeviceList.currentIndex
-                            // Reset the currentIndex so the grid doesn't set the selected device when there isn't a
-                            // selection anymore
-                            gridDeviceList.currentIndex = -1
-                        }
-                    }
+                    moveCurrentIndex()
                 }
             }
         }

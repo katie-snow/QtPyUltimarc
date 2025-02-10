@@ -6,6 +6,8 @@ import logging
 import os
 import sys
 
+from ultimarc.ui.device_model import DeviceModel
+
 try:
     from PySide6 import QtCore, QtWidgets, QtQml
 except ImportError:
@@ -16,7 +18,7 @@ except ImportError:
 from ultimarc import translate_gettext as _
 from ultimarc.tools import ToolContextManager
 from ultimarc.ui.devices_model import DevicesModel
-from ultimarc.ui.devices_sort_proxy_model import DevicesSortProxyModel
+from ultimarc.ui.devices_sort_filter_proxy_model import DevicesSortProxyModel, DevicesFilterProxyModel
 from ultimarc.ui.units import Units
 
 import ultimarc.qml.rc_assets
@@ -54,17 +56,23 @@ def run():
         # Local class instantiation
         units = Units()
 
-        devices = DevicesModel(args, tool_env)
+        device_model = DeviceModel(args, tool_env)
+        devices = DevicesModel(args, tool_env, device_model)
         sort_devices = DevicesSortProxyModel()
+
+        filter_model = DevicesFilterProxyModel()
 
         # Attach source model to proxy models
         sort_devices.setSourceModel(devices)
+        filter_model.setSourceModel(sort_devices)
 
         # Connect Python to QML
         context = engine.rootContext()
         context.setContextProperty('_ultimarc_version', _tool_version)
         context.setContextProperty('_devices', devices)
         context.setContextProperty('_sort_devices', sort_devices)
+        context.setContextProperty('_filter', filter_model)
+        context.setContextProperty('_device_model', device_model)
         context.setContextProperty('_units', units)
 
         url = QtCore.QUrl.fromLocalFile(os.path.join(app_base, _tool_qml))

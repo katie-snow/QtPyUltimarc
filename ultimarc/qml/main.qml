@@ -5,119 +5,89 @@ import QtQuick.Window
 import QtQuick.Layouts
 import QtQml
 
-import "views"
+import "complex"
 
 Window {
     id: mainWindow
     visible: true
-    minimumWidth: 800
-    minimumHeight: 580
+    minimumWidth: 1024
+    minimumHeight: 680
     title: "Ultimarc Editor"
     color: palette.window
 
-    Component.onCompleted: {
-        width = 860
-        height = 480
-    }
-
-    property alias mainList_currentIndex: contentList.currentIndex
     property real margin: 50 + (width - 800) / 4
 
+    // Temp object
     Rectangle {
-        id: mainWindowContainer
+        id: centerLine
+        width: 1
+        border.width: 1
         anchors {
-            fill: parent
+            top: parent.top
+            bottom: parent.bottom
+            horizontalCenter: parent.horizontalCenter
+            horizontalCenterOffset: -width / 2
+        }
+    }
+
+    ImageBar {
+        id: imageBar
+    }
+
+    Loader {
+        id: mainLoader
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: imageBar.bottom
+            bottom: activateButton.top
+
             leftMargin: margin
             rightMargin: margin
-            bottomMargin: margin
+            topMargin: 20
         }
-        color: "transparent"
-        clip: true
+        focus: true
+        source: 'views/DeviceStackView.qml'
+    }
 
-        ButtonGroup {
-            id: btnGrp
+    Button {
+        id: activateButton
+        anchors {
+            left: parent.horizontalCenter
+            bottom: parent.bottom
+            horizontalCenterOffset: -width / 2
+            leftMargin: 7
+            topMargin: 20
+            bottomMargin: 80
         }
+        text: 'Next'
+        highlighted: true
 
-        ColumnLayout {
-            anchors {
-                fill: parent
+        function activate () {
+            if (mainLoader.item.svItem.currentItem.activate_str  === 'devicesList') {
+                mainLoader.item.svItem.push('views/DeviceDetails.qml')
+                text = 'Back'
             }
-
-            ListView {
-                id: contentList
-
-                Layout.preferredWidth: parent.width
-                Layout.preferredHeight: parent.height - margin
-
-                model: ["views/DeviceList.qml", "views/DeviceDetails.qml"]
-                orientation: ListView.Horizontal
-                snapMode: ListView.SnapToItem
-                highlightFollowsCurrentItem: true
-                highlightRangeMode: ListView.StrictlyEnforceRange
-                interactive: false
-                highlightMoveVelocity: 3 * contentList.width
-                highlightResizeDuration: 0
-                cacheBuffer: 2*width
-                delegate: Item {
-                    id: contentComponent
-                    width: contentList.width
-                    height: contentList.height
-                    Loader {
-                        id: contentLoader
-                        source: contentList.model[index]
-                        anchors.fill: parent
-                    }
-                }
-            }
-
-            RowLayout {
-                Layout.alignment: Qt.AlignBottom
-                Layout.maximumHeight: activateButton.height
-                Button {
-                    text: "About"
-                    Layout.alignment: Qt.AlignLeft
-                }
-                Item {
-                    Layout.fillWidth: true
-                }
-                Button {
-                    id: activateButton
-                    text: "Next"
-
-                    Component.onCompleted: {
-                        if (btnGrp.checkState === Qt.Unchecked) {
-                            enabled = false
-                        }
-                    }
-
-                    Connections {
-                        target: btnGrp
-                        function onClicked(button) {
-                            activateButton.enabled = true
-                        }
-                    }
-
-                    onClicked: activate ()
-
-
-                    function activate () {
-                        if (contentList.currentIndex === 0) {
-                            activateButton.text = "Back"
-                            contentList.currentIndex++
-                        }
-                        else {
-                            activateButton.text = "Next"
-                            contentList.currentIndex = 0
-
-                            // Currently this allows the Loader qml to work correctly.  Leaving the button selected and
-                            // entering the detail page will not reload the Loader if the user does not click on the
-                            // radio button again
-                            btnGrp.checkState = Qt.Unchecked
-                            enabled = false
-                        }
-                    }
-                }
+            else {
+                mainLoader.item.svItem.pop()
+                text = 'Next'
             }
         }
+
+        onClicked: activate ()
+    }
+
+    Button {
+        id: aboutButton
+        anchors {
+            right: parent.horizontalCenter
+            bottom: parent.bottom
+            horizontalCenterOffset: -width / 2
+            rightMargin: 12
+            topMargin: 20
+            bottomMargin: 80
+        }
+        text: 'About'
+        highlighted: true
     }
 }

@@ -2,6 +2,8 @@ import QtQuick 2.4
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.12
 
+import "../complex"
+
 Item {
     id: root
     Layout.fillWidth: true
@@ -159,6 +161,42 @@ Item {
                 color: 'transparent'
                 border.color: Qt.darker(palette.window, 1.2)
                 border.width: 2
+
+                ListView {
+                    id: groupList
+
+                    implicitWidth: parent.width
+                    implicitHeight: parent.height
+                    leftMargin: 5
+
+                    clip: true
+                    interactive: true
+                    focus: true
+
+                    highlight: Rectangle {
+                        color: 'lightblue'
+                        radius: 5
+                    }
+
+                    model: _devices.device.pac_filter
+                    delegate: Rectangle {
+                        width: parent.width
+                        height: childrenRect.height
+                        color: groupList.currentIndex == index ? 'lightblue' : 'transparent'
+
+                        Text {
+                            text: model.name
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: filter_action
+                                function filter_action () {
+                                    groupList.currentIndex = index
+                                    model.filter = index
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             GridView {
@@ -174,7 +212,7 @@ Item {
                 cellWidth: 100
                 cellHeight: 42
 
-                model: _devices.device_model.details_model
+                model: _device_model.details_model
                 delegate: Rectangle {
                     width: grid.cellWidth
                     height: grid.cellHeight
