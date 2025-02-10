@@ -26,7 +26,6 @@ Item {
                     }
                     font.pointSize: 20
                     text: model.device_class_descr
-                    //text: model.qml
                 }
 
                 Label {
