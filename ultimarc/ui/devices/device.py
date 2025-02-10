@@ -9,6 +9,7 @@ from enum import Enum
 from PySide6.QtCore import QModelIndex, QObject
 
 from ultimarc.devices import DeviceClassID
+from ultimarc.ui.device_details_model import DeviceDetailsModel
 
 _logger = logging.getLogger('ultimarc')
 
@@ -20,8 +21,7 @@ class Device(QObject):
     device_class_descr = 'Unknown Class'  # USB_PRODUCT_DESCRIPTIONS
     device_class_id = 'Unknown Type'  # DeviceClassId
     device_key = ''  # Key representing the hardware attached
-    icon = 'qrc:/logos/placeholder'  # Unknown product icon
-    description = 'Device class description' # Description of the device
+    details_model = None # Details Model for QT
 
     def __init__(self, args, env, attached,
                  device_class_id,
@@ -81,9 +81,6 @@ class Device(QObject):
     def load_file(self, value):
         return False
 
-    def get_description(self):
-        return self.description
-
     def get_attached(self):
         return self.attached
 
@@ -99,6 +96,10 @@ class Device(QObject):
     def get_device_key(self):
         return self.device_key
 
-    def get_icon(self):
-        return self.icon
+    def get_details_model(self):
+        return self.details_model
+
+    def set_details_model(self, new_detail_model: DeviceDetailsModel):
+        self.details_model = new_detail_model
+        self.details_model.set_device(self)
 
