@@ -6,8 +6,7 @@ import "../complex"
 
 Item {
     id: root
-    Layout.fillWidth: true
-    Layout.fillHeight: true
+    anchors.fill: parent
 
     Label {
         id: referenceLabel
@@ -23,6 +22,7 @@ Item {
         Rectangle {
             implicitWidth: mainWindow.width - margin * 2
             height: childrenRect.height + _units.large_spacing
+            Layout.topMargin: 20
 
             color: 'transparent'
             border.color: Qt.darker(palette.window, 1.2)
@@ -53,7 +53,7 @@ Item {
                         RowLayout {
                             spacing: _units.large_spacing
                             Label {
-                                leftPadding: _units.small_spacing - 2
+                                leftPadding: _units.large_spacing + 10
                                 font.pointSize: referenceLabel.font.pointSize - 1
                                 text: "Debounce:"
                             }
@@ -62,10 +62,10 @@ Item {
                                 implicitHeight: 26
                                 model: ['standard', 'none', 'short', 'long']
                                 Component.onCompleted: {
-                                    currentIndex = find(_devices.device.debounce)
+                                    currentIndex = find(_device_model.debounce)
                                 }
                                 onActivated: {
-                                    _devices.device.debounce = textAt(currentIndex)
+                                    _device_model.debounce = textAt(currentIndex)
                                 }
                             }
                         }
@@ -80,6 +80,7 @@ Item {
                                 text: qsTr("Shift")
                             }
                             Label {
+                                Layout.leftMargin: _units.large_spacing * 10
                                 color: "blue"
                                 font.pointSize: referenceLabel.font.pointSize - 1
                                 text: "Primary Action:"
@@ -87,7 +88,7 @@ Item {
                             ComboBox {
                                 id: selectedAction
                                 implicitWidth: 130
-                                model: _devices.device.actions
+                                model: _device_model.device.actions
                                 onCurrentIndexChanged: {
                                     if(activeFocus) {
                                         model.action = selectedAction.textAt(currentIndex)
@@ -102,7 +103,7 @@ Item {
                             ComboBox {
                                 id: selectedAltAction
                                 implicitWidth: 130
-                                model: _devices.device.alt_actions
+                                model: _device_model.device.alt_actions
                                 onCurrentIndexChanged: {
                                     if (activeFocus) {
                                         model.action = selectedAltAction.textAt(currentIndex)
@@ -117,10 +118,10 @@ Item {
                                 text: qsTr("PacLink")
 
                                 onToggled: {
-                                    _devices.device.paclink = checked
+                                    _device_model.device.paclink = checked
                                 }
                                 Component.onCompleted: {
-                                    checked = _devices.device.paclink
+                                    checked = _device_model.device.paclink
                                 }
                             }
                             Button {
@@ -140,7 +141,7 @@ Item {
                             MacroPopup {
                                 id: macrosPopup
                                 onClosed: {
-                                    _devices.device.update_macro
+                                    _device_model.device.update_macro
                                 }
                             }
                         }
@@ -149,27 +150,25 @@ Item {
             }
         }
 
+        // Data Section
         RowLayout {
-            Layout.fillHeight: true
-            implicitWidth: mainWindow.width - margin * 2
-
             Rectangle {
                 Layout.alignment: Qt.AlignTop
                 implicitWidth: (mainWindow.width - margin) / 6
-                implicitHeight: mainWindow.height - margin * 4.5
+                implicitHeight: mainWindow.height - margin * 3.75
 
                 color: 'transparent'
                 border.color: Qt.darker(palette.window, 1.2)
                 border.width: 2
 
                 ListView {
-                    id: groupList
+                    id: filterList
 
                     implicitWidth: parent.width
                     implicitHeight: parent.height
                     leftMargin: 5
 
-                    clip: true
+                    clip: false
                     interactive: true
                     focus: true
 
@@ -178,166 +177,184 @@ Item {
                         radius: 5
                     }
 
-                    model: _devices.device.pac_filter
+                    model: _device_model.device.pac_filter
                     delegate: Rectangle {
-                        width: parent.width
+                        width: parent.width - 2
                         height: childrenRect.height
-                        color: groupList.currentIndex == index ? 'lightblue' : 'transparent'
+                        color: filterList.currentIndex == index ? 'lightblue' : 'transparent'
 
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+
+                            onClicked: {
+                                filter_action ()
+                            }
+
+                            function filter_action () {
+                                filterList.currentIndex = index
+                                _device_model.device.pin_filter.filter = model.filter
+                            }
+                        }
                         Text {
                             text: model.name
-                            MouseArea {
-                                anchors.fill: parent
-                                onClicked: filter_action
-                                function filter_action () {
-                                    groupList.currentIndex = index
-                                    model.filter = index
-                                }
-                            }
                         }
                     }
                 }
             }
 
-            GridView {
-                id: grid
+            Rectangle {
                 Layout.alignment: Qt.AlignTop
+                //Layout.margins: 10
+                implicitWidth: mainWindow.width - margin * 3.5
+                implicitHeight: mainWindow.height - margin * 3.75
 
-                implicitWidth: ((mainWindow.width * 4) / 6) - _units.grid_unit
-                implicitHeight: mainWindow.height - margin * 4.5 - 35
+                color: 'transparent'
+                border.color: Qt.darker(palette.window, 1.2)
+                border.width: 2
 
-                clip: true
-                interactive: false
+                GridView {
+                    id: grid
 
-                cellWidth: 100
-                cellHeight: 42
+                    implicitWidth: parent.implicitWidth
+                    implicitHeight: parent.implicitHeight - 4
+                    leftMargin: 4
+                    topMargin: 4
 
-                model: _device_model.details_model
-                delegate: Rectangle {
-                    width: grid.cellWidth
-                    height: grid.cellHeight
+                    clip: true
+                    interactive: false
 
-                    color: {
-                        detailMouse.containsPress ? Qt.darker(palette.button, 1.2) : palette.window
-                    }
-                    border {
-                        color: Qt.darker(palette.window, 1.2)
-                        width: 1
-                    }
-                    MouseArea {
-                        id: detailMouse
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        function mouseAction() {
-                            grid.currentIndex = index
-                            // Make sure the grid has the focus again
-                            grid.focus = true
+                    cellWidth: 104
+                    cellHeight: 46
 
-                            selectedName.text = model.name
-                            selectedShift.checked = model.shift
-                            selectedAction.currentIndex = selectedAction.find(model.action, Qt.MatchFixedString)
-                            selectedAltAction.currentIndex = selectedAltAction.find(model.alt_action, Qt.MatchFixedString)
+                    model: _device_model.device.pin_filter
+                    delegate: Rectangle {
+                        width: grid.cellWidth - 1
+                        height: grid.cellHeight - 1
+
+                        color: {
+                            detailMouse.containsPress ? Qt.darker(palette.button, 1.2) : palette.window
                         }
-                        onClicked: {
-                            mouseAction()
+                        border {
+                            color: Qt.darker(palette.window, 1.2)
+                            width: 1
                         }
-                        // Not the best way to do this, but it gets the job done.  Setting the first pin
-                        // as the selected pin
-                        Component.onCompleted: {
-                            if (index == 0) {
+                        MouseArea {
+                            id: detailMouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            function mouseAction() {
+                                grid.currentIndex = index
+                                // Make sure the grid has the focus again
+                                grid.focus = true
+
+                                selectedName.text = model.name
+                                selectedShift.checked = model.shift
+                                selectedAction.currentIndex = selectedAction.find(model.action, Qt.MatchFixedString)
+                                selectedAltAction.currentIndex = selectedAltAction.find(model.alt_action, Qt.MatchFixedString)
+                            }
+                            onClicked: {
                                 mouseAction()
                             }
-                        }
-                    }
-                    ColumnLayout {
-                        spacing: 1
-                        RowLayout {
-                            Layout.fillHeight: true
-                            Layout.fillWidth: true
-                            Label {
-                                id: pinName
-                                leftPadding: 3
-                                font.pointSize: referenceLabel.font.pointSize + 1
-                                font.bold: true
-                                text: qsTr(model.name)
-                            }
-                            Item {
-                                Layout.fillWidth: true
-                            }
-                            Label {
-                                id: shift
-                                text: qsTr("Shift")
-                                font.pointSize: referenceLabel.font.pointSize - 1
-                                rightPadding: 5
-                                font.bold: { model.shift }
-
-                                Connections {
-                                    target: selectedShift
-                                    function onCheckedChanged() {
-                                        if (grid.currentIndex == index && selectedShift.activeFocus) {
-                                            model.shift = selectedShift.checked
-                                        }
-                                    }
+                            // Not the best way to do this, but it gets the job done.  Setting the first pin
+                            // as the selected pin
+                            Component.onCompleted: {
+                                if (index == 0) {
+                                    mouseAction()
                                 }
                             }
                         }
-                        Rectangle {
-                            Layout.preferredWidth: 98
-                            height: childrenRect.height
-                            Layout.margins: 1
-
+                        ColumnLayout {
+                            spacing: 1
                             RowLayout {
-                                spacing: 0
+                                Layout.fillHeight: true
+                                Layout.fillWidth: true
+                                Label {
+                                    id: pinName
+                                    leftPadding: 3
+                                    font.pointSize: referenceLabel.font.pointSize + 1
+                                    font.bold: true
+                                    text: qsTr(model.name)
+                                }
+                                Item {
+                                    Layout.fillWidth: true
+                                }
+                                Label {
+                                    id: shift
+                                    text: qsTr("Shift")
+                                    font.pointSize: referenceLabel.font.pointSize - 1
+                                    rightPadding: 5
+                                    font.bold: { model.shift }
 
-                                Rectangle {
-                                    width: childrenRect.width
-                                    height: childrenRect.height
-                                    color: "transparent"
-
-                                    Label {
-                                        id: action
-                                        color: "blue"
-                                        bottomPadding: 1
-                                        leftPadding: 1
-                                        width: 49
-                                        font.pointSize: referenceLabel.font.pointSize
-                                        text: model.action
-                                        font.bold: true
-                                        elide: Text.ElideRight
-
-                                        Connections {
-                                            target: selectedAction
-                                            function onCurrentIndexChanged() {
-                                                if (grid.currentIndex == index && selectedAction.activeFocus) {
-                                                    model.action = selectedAction.textAt(selectedAction.currentIndex)
-                                                }
+                                    Connections {
+                                        target: selectedShift
+                                        function onCheckedChanged() {
+                                            if (grid.currentIndex == index && selectedShift.activeFocus) {
+                                                model.shift = selectedShift.checked
                                             }
                                         }
                                     }
                                 }
+                            }
+                            Rectangle {
+                                Layout.preferredWidth: 98
+                                height: childrenRect.height
+                                Layout.margins: 1
 
-                                Rectangle {
-                                    width: childrenRect.width
-                                    height: childrenRect.height
-                                    color: "transparent"
+                                RowLayout {
+                                    spacing: 0
 
-                                    Label {
-                                        id: altAction
-                                        color: "red"
-                                        bottomPadding: 1
-                                        leftPadding: 3
-                                        width: 49
-                                        font.pointSize: referenceLabel.font.pointSize
-                                        text: model.alt_action
-                                        font.bold: true
-                                        elide: Text.ElideRight
+                                    Rectangle {
+                                        width: childrenRect.width
+                                        height: childrenRect.height
+                                        color: "transparent"
 
-                                        Connections {
-                                            target: selectedAltAction
-                                            function onCurrentIndexChanged() {
-                                                if (grid.currentIndex == index && selectedAltAction.activeFocus) {
-                                                    model.alt_action = selectedAltAction.textAt(selectedAltAction.currentIndex)
+                                        Label {
+                                            id: action
+                                            color: "blue"
+                                            bottomPadding: 1
+                                            leftPadding: 1
+                                            width: 49
+                                            font.pointSize: referenceLabel.font.pointSize
+                                            text: model.action
+                                            font.bold: true
+                                            elide: Text.ElideRight
+
+                                            Connections {
+                                                target: selectedAction
+                                                function onCurrentIndexChanged() {
+                                                    if (grid.currentIndex == index && selectedAction.activeFocus) {
+                                                        model.action = selectedAction.textAt(selectedAction.currentIndex)
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    Rectangle {
+                                        width: childrenRect.width
+                                        height: childrenRect.height
+                                        color: "transparent"
+
+                                        Label {
+                                            id: altAction
+                                            color: "red"
+                                            bottomPadding: 1
+                                            leftPadding: 3
+                                            width: 49
+                                            font.pointSize: referenceLabel.font.pointSize
+                                            text: model.alt_action
+                                            font.bold: true
+                                            elide: Text.ElideRight
+
+                                            Connections {
+                                                target: selectedAltAction
+                                                function onCurrentIndexChanged() {
+                                                    if (grid.currentIndex == index && selectedAltAction.activeFocus) {
+                                                        model.alt_action = selectedAltAction.textAt(selectedAltAction.currentIndex)
+                                                    }
                                                 }
                                             }
                                         }
