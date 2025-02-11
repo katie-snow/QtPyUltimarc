@@ -17,7 +17,7 @@ Item {
             leftMargin: -cellWidth / 2
 
             // Adjust this number to keep empty configuration on one side of the grid
-            bottomMargin: 200
+            bottomMargin: 250
         }
 
         model: _sort_devices
