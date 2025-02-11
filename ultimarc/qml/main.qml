@@ -17,11 +17,12 @@ Window {
 
     property real margin: 50 + (width - 800) / 4
 
-    // Temp object
+    // Used to show center line
     Rectangle {
         id: centerLine
         width: 1
-        border.width: 1
+        // adjust width to see center line
+        border.width: 0
         anchors {
             top: parent.top
             bottom: parent.bottom
