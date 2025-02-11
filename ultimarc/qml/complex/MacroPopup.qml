@@ -38,7 +38,7 @@ Popup {
                 ComboBox {
                     id: action
                     implicitWidth: 130
-                    model: _device_model.actions
+                    model: _device_model.device.actions
                     onCurrentIndexChanged: {
                         if(activeFocus) {
                             var seperator = ""
@@ -114,7 +114,7 @@ Popup {
                         }
                     }
 
-                    model: _device_model.macros
+                    model: _device_model.device.macros
                     delegate: Item {
                         id: macroRow
                         activeFocusOnTab: true
@@ -185,7 +185,7 @@ Popup {
                         highlighted: true
                         onClicked: {
                             macroEdit.text = 'Edit'
-                            _devices.device.macros.add_macro = macro_name.text + ':' + macro_actions.text
+                            _device_model.device.macros.add_macro = macro_name.text + ':' + macro_actions.text
                         }
                     }
                     Button {
@@ -199,7 +199,7 @@ Popup {
                         highlighted: true
                         onClicked: {
                             macroEdit.text = 'Edit'
-                            _devices.device.macros.remove_macro = list.currentIndex
+                            _device_model.device.macros.remove_macro = list.currentIndex
                         }
                     }
                     Item {
