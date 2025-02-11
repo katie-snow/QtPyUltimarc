@@ -78,7 +78,6 @@ class Ipac2UI(Device):
         self._macro_model_ = MacroModel()
 
         self._filter_model_ = PacFilterModel()
-
         self._filter_pins = PacDetailsFilterProxyModel ()
 
     def populate(self):
