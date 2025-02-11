@@ -39,7 +39,7 @@ class DeviceModel(QAbstractListModel, QObject):
     """ This class/model holds the detailed information for the view.
      Other classes will copy their data into this one to display. """
 
-    _selected_device_ = Signal(int)
+    _device_ = Signal(int)
 
     def __init__(self, args, env: (ToolEnvironmentObject, None)):
         super().__init__()
@@ -97,10 +97,9 @@ class DeviceModel(QAbstractListModel, QObject):
         # self._details_model_.set_device(device)
         self.beginResetModel()
         self._device_ = device
-        self._device_.set_details_model(self._details_model_)
         self.endResetModel()
 
-    def get_details_model(self):
-        return self._device_.get_details_model()
+    def get_device(self):
+        return self._device_
 
-    details_model = Property(QObject, get_details_model, constant=True)
+    device = Property(QObject, get_device, constant=True)
