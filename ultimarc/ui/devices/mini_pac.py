@@ -4,10 +4,11 @@
 #
 import logging
 import typing
+import re
 from collections import OrderedDict
 from enum import IntEnum
 
-from PySide6.QtCore import QModelIndex, QObject, Property, Signal
+from PySide6.QtCore import QModelIndex, QObject, Property, Signal, QPersistentModelIndex, QSortFilterProxyModel
 
 from python_easy_json import JSONObject
 from ultimarc.devices import DeviceClassID
@@ -15,6 +16,7 @@ from ultimarc.devices.mini_pac import PinMapping, MiniPacDevice
 from ultimarc.ui.action_model import ActionModel
 from ultimarc.ui.devices.device import Device
 from ultimarc.ui.macro_model import MacroModel
+from ultimarc.ui.pac_filter_model import PacFilterModel
 
 _logger = logging.getLogger('ultimarc')
 
@@ -28,6 +30,34 @@ class MiniPacRoles(IntEnum):
 
 # Map Role Enum values to class property names.
 MiniPacRoleMap = OrderedDict(zip(list(MiniPacRoles), [k.name.lower() for k in MiniPacRoles]))
+
+
+class PacDetailsFilterProxyModel(QSortFilterProxyModel, QObject):
+    _changed_filter_ = Signal(str)
+
+    def __init__(self):
+        super().__init__()
+        self._filter = ''
+
+    def filterAcceptsRow(self, source_row, source_parent: QModelIndex):
+        index = self.sourceModel().index(source_row, 0, source_parent)
+
+        pin_name = self.sourceModel().data(index, MiniPacRoles.NAME)
+        if re.match(self._filter, pin_name) is None:
+            return False
+
+        return True
+
+    def get_filter (self):
+        return self._filter
+
+    def set_filter(self, new_filter):
+        self.beginResetModel()
+        self._filter = new_filter
+        self.endResetModel()
+        self.invalidateFilter()
+
+    filter = Property(str, get_filter, set_filter, notify=_changed_filter_)
 
 
 class MiniPacUI(Device):
@@ -50,7 +80,14 @@ class MiniPacUI(Device):
         self._alternate_action_model = ActionModel()
         self._macro_model_ = MacroModel()
 
+        self._filter_model_ = PacFilterModel()
+        self._filter_pins = PacDetailsFilterProxyModel()
+
     def populate(self):
+        self._filter_model_.set_filter_names(['Player 1', 'Player 2', 'All'], ['1', '2', ''])
+        self._filter_pins.setSourceModel(self)
+        self._filter_pins.set_filter('1')
+
         if self.config is None:
             if self.attached:
                 devices = [dev for dev in
@@ -100,10 +137,13 @@ class MiniPacUI(Device):
                 return True
         return False
 
-    def roleNames(self):
-        return MiniPacRoleMap.items()
+    def roleNames(self) -> typing.Dict:
+        roles = OrderedDict()
+        for k, v in MiniPacRoleMap.items():
+            roles[k] = v.encode('utf-8')
+        return roles
 
-    def rowCount(self):
+    def rowCount(self, parent: QModelIndex | QPersistentModelIndex = ...) -> int:
         return len(PinMapping)
 
     def data(self, index: QModelIndex, role: int = ...) -> typing.Any:
@@ -184,9 +224,17 @@ class MiniPacUI(Device):
         self._action_model.set_macro_names(self.config['macros'])
         self._alternate_action_model.set_macro_names(self.config['macros'])
 
+    def get_pac_filter(self):
+        return self._filter_model_
+
+    def get_pin_filter(self):
+        return self._filter_pins
+
     actions = Property(QObject, get_action_model, constant=True)
     alt_actions = Property(QObject, get_alternate_action_model, constant=True)
     debounce = Property(str, get_debounce, set_debounce, notify=_changed_debounce_)
     paclink = Property(bool, get_paclink, set_paclink, notify=_changed_paclink_)
     macros = Property(QObject, get_macros, constant=True)
     update_macro = Property(bool, update_macros, constant=True)
+    pac_filter = Property(QObject, get_pac_filter, constant=True)
+    pin_filter = Property(QObject, get_pin_filter, constant=True)
