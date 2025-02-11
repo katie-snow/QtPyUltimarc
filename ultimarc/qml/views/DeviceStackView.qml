@@ -8,5 +8,6 @@ Item {
         id: stackview
         anchors.fill: parent
         initialItem: "DeviceList.qml"
+        focus: true
     }
 }

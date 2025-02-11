@@ -223,7 +223,7 @@ Item {
                     topMargin: 4
 
                     clip: true
-                    interactive: false
+                    interactive: true
 
                     cellWidth: 104
                     cellHeight: 46

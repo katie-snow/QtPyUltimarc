@@ -12,6 +12,9 @@ Item {
         id: detailList
         anchors.fill: parent
         clip: true
+        interactive: false
+        focus:true
+
         model: _devices.selected_device
 
         delegate:
