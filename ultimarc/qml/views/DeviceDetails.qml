@@ -8,7 +8,7 @@ import "../dialogs"
 Item {
     id: deviceDetails
 
-   ListView {
+    ListView {
         id: detailList
         anchors.fill: parent
         clip: true
