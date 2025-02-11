@@ -1,8 +1,4 @@
 <RCC>
-    <qresource prefix="/logos">
-        <file alias="placeholder">assets/logos/png/media-optical-symbolic.png</file>
-        <file alias="workstation">assets/logos/png/workstation-logo_color.png</file>
-    </qresource>
     <qresource prefix="/">
     </qresource>
 </RCC>
