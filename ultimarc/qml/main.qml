@@ -58,7 +58,7 @@ Window {
             horizontalCenterOffset: -width / 2
             leftMargin: 7
             topMargin: 20
-            bottomMargin: 80
+            bottomMargin: 60
         }
         text: 'Next'
         highlighted: true
@@ -85,7 +85,7 @@ Window {
             horizontalCenterOffset: -width / 2
             rightMargin: 12
             topMargin: 20
-            bottomMargin: 80
+            bottomMargin: 60
         }
         text: 'About'
         highlighted: true
