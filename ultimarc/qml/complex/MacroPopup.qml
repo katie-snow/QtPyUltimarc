@@ -38,7 +38,7 @@ Popup {
                 ComboBox {
                     id: action
                     implicitWidth: 130
-                    model: _devices.device.actions
+                    model: _device_model.actions
                     onCurrentIndexChanged: {
                         if(activeFocus) {
                             var seperator = ""
@@ -114,7 +114,7 @@ Popup {
                         }
                     }
 
-                    model: _devices.device.macros
+                    model: _device_model.macros
                     delegate: Item {
                         id: macroRow
                         activeFocusOnTab: true
