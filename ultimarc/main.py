@@ -9,7 +9,10 @@ import sys
 from ultimarc.ui.device_model import DeviceModel
 
 try:
-    from PySide6 import QtCore, QtWidgets, QtQml
+    from PySide6.QtCore import QCoreApplication
+    from PySide6.QtQuickControls2 import QQuickStyle
+    from PySide6.QtGui import QGuiApplication
+    from PySide6.QtQml import QQmlApplicationEngine
 except ImportError:
     print("\nError: Ultimarc QT libraries not installed, unable to launch UI.")
     print("   To install, run: 'pip install ultimarc[ui]'\n")
@@ -38,7 +41,7 @@ def run():
     os.environ['PYTHONPATH'] = proj_path
 
     """ Main UI entry point """
-    app = QtWidgets.QApplication(sys.argv)
+    app = QGuiApplication(sys.argv)
 
     ToolContextManager.initialize_logging('ultimarc')  # Configure logging
 
@@ -47,10 +50,12 @@ def run():
     args = parser.parse_args()
 
     # Instantiate UI.
-    QtCore.QCoreApplication.setOrganizationDomain('SnowyWhitewater.org')
-    QtCore.QCoreApplication.setOrganizationName('SnowyWhitewater')
-    QtCore.QCoreApplication.setApplicationName('Ultimarc Editor')
-    engine = QtQml.QQmlApplicationEngine()
+    QCoreApplication.setOrganizationDomain('SnowyWhitewater.org')
+    QCoreApplication.setOrganizationName('SnowyWhitewater')
+    QCoreApplication.setApplicationName('Ultimarc Editor')
+
+    engine = QQmlApplicationEngine()
+    engine.addImportPath(app_base)
 
     with ToolContextManager(_tool_cmd, args) as tool_env:
         # Local class instantiation
@@ -71,9 +76,7 @@ def run():
         context.setContextProperty('_device_model', device_model)
         context.setContextProperty('_units', units)
 
-        url = QtCore.QUrl.fromLocalFile(os.path.join(app_base, _tool_qml))
-
-        engine.load(url)
+        engine.loadFromModule('qml', 'Main')
         if not engine.rootObjects():
             _logger.error(_('Bad UI settings found, aborting.'))
             sys.exit(-1)
