@@ -78,15 +78,13 @@ class Ipac2UI(Device):
         self._macro_model_ = MacroModel()
 
         self._filter_model_ = PacFilterModel()
-        self._filter_model_.set_filter_names(['Player 1', 'Player 2', 'All'], ['1', '2', ''])
 
         self._filter_pins = PacDetailsFilterProxyModel ()
-        self._filter_pins.setSourceModel(self)
-
-        self._filter_pins.set_filter('1')
 
     def populate(self):
-
+        self._filter_model_.set_filter_names(['Player 1', 'Player 2', 'All'], ['1', '2', ''])
+        self._filter_pins.setSourceModel(self)
+        self._filter_pins.set_filter('1')
 
         if self.config is None:
             if self.attached:
