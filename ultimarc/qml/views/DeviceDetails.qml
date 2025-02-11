@@ -59,7 +59,7 @@ Item {
                         right: parent.right
                         topMargin: 5
                     }
-                    text: "Write File"
+                    text: "Save"
                     highlighted: true
                     onClicked: {
                         saveFileDialog.fileMode = FileDialog.SaveFile
@@ -75,7 +75,11 @@ Item {
                         topMargin: 5
                         rightMargin: 10
                     }
-                    text: "Format Device"
+
+                    contentItem: Text {
+                        text: 'Format Device'
+                        color: model.attached ? 'black' : Qt.darker(palette.window, 1.2)
+                    }
 
                     highlighted: model.attached
                     enabled: model.attached
@@ -90,7 +94,7 @@ Item {
                         topMargin: 5
                         rightMargin: 10
                     }
-                    text: "Load File"
+                    text: "Load"
                     highlighted: true
                     onClicked: {
                         loadFileDialog.fileMode = FileDialog.OpenFile
