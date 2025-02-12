@@ -50,9 +50,9 @@ def run():
     args = parser.parse_args()
 
     # Instantiate UI.
-    QCoreApplication.setOrganizationDomain('SnowyWhitewater.org')
-    QCoreApplication.setOrganizationName('SnowyWhitewater')
-    QCoreApplication.setApplicationName('Ultimarc Editor')
+    # QCoreApplication.setOrganizationDomain('')
+    # QCoreApplication.setOrganizationName('')
+    QCoreApplication.setApplicationName(_tool_title)
 
     engine = QQmlApplicationEngine()
     engine.addImportPath(app_base)
@@ -70,7 +70,7 @@ def run():
 
         # Connect Python to QML
         context = engine.rootContext()
-        context.setContextProperty('_ultimarc_version', _tool_version)
+        context.setContextProperty('_version', _tool_version)
         context.setContextProperty('_devices', devices)
         context.setContextProperty('_sort_devices', sort_devices)
         context.setContextProperty('_device_model', device_model)
