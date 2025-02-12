@@ -135,13 +135,13 @@ class JpacUI(Device):
                 return True
         return False
 
-    def roleNames(self) -> typing.Dict:
+    def roleNames(self) -> typing.Optional[typing.Dict]:
         roles = OrderedDict()
         for k, v in jpacRoleMap.items():
             roles[k] = v.encode('utf-8')
         return roles
 
-    def rowCount(self, parent: QModelIndex | QPersistentModelIndex = ...) -> int:
+    def rowCount(self, parent: typing.Union[QModelIndex, QPersistentModelIndex] = ...) -> int:
         return len(PinMapping)
 
     def data(self, index: QModelIndex, role: int = ...) -> typing.Any:

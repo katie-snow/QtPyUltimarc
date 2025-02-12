@@ -48,11 +48,11 @@ class Device(QAbstractListModel, QObject):
         self.attached = attached
 
     # Implement function in child class
-    def roleNames(self) -> typing.Dict:
+    def roleNames(self) -> typing.Optional[typing.Dict]:
         return None
 
     # Implement function in child class
-    def rowCount(self, parent: QModelIndex | QPersistentModelIndex = ...) -> int:
+    def rowCount(self, parent: typing.Union[QModelIndex, QPersistentModelIndex] = ...) -> int:
         return 0
 
     # Implement function in child class
