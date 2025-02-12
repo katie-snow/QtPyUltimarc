@@ -140,6 +140,7 @@ Item {
 
                             MacroPopup {
                                 id: macrosPopup
+                                anchors.centerIn: Overlay.overlay
                                 onClosed: {
                                     _device_model.device.update_macro
                                 }
