@@ -90,5 +90,15 @@ Window {
         }
         text: 'About'
         highlighted: true
+        function activate () {
+            aboutDialog.open ()
+        }
+
+        onClicked: activate ()
+    }
+
+    AboutDialog {
+        id: aboutDialog
+        anchors.centerIn: Overlay.overlay
     }
 }
