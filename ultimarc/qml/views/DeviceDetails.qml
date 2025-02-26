@@ -22,35 +22,24 @@ Item {
                 height: detailList.height
 
                 Label {
-                    id: deviceClass
+                    id: deviceName
                     anchors {
                         top: parent.top
                         left: parent.left
                     }
                     font.pointSize: 20
-                    text: model.device_class_descr
-                }
-
-                Label {
-                    id: deviceName
-                    anchors {
-                        top: deviceClass.bottom
-                        left: parent.left
-                    }
-                    font.pointSize: 16
                     text: model.device_name
-                    opacity: 0.6
-               }
+                }
 
                 Label {
                     id: deviceKey
                     anchors {
-                        top: deviceClass.bottom
-                        left: deviceName.right
+                        top: deviceName.bottom
+                        left: parent.left
                         leftMargin: 5
                         topMargin: 6
                     }
-                    font.pointSize: 11
+                    font.pointSize: 13
                     text: model.device_key
                     opacity: 0.6
                }
@@ -107,7 +96,7 @@ Item {
 
                 Rectangle {
                     anchors {
-                            top: deviceName.bottom
+                            top: deviceKey.bottom
                             left: parent.left
                             right: parent.right
                             bottom: parent.bottom
