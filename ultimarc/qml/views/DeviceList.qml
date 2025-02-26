@@ -18,7 +18,7 @@ Item {
             topMargin: 80
 
             // Adjust this number to keep empty configuration on one side of the grid
-            bottomMargin: 200
+            bottomMargin: 150
         }
 
         model: _sort_devices
