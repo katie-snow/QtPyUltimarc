@@ -13,7 +13,8 @@ Window {
     minimumWidth: 1024
     minimumHeight: 680
     title: "Ultimarc Editor"
-    color: palette.window
+    palette.active.window: "light blue"
+
 
     property real margin: 50 + (width - 800) / 4
 
@@ -21,8 +22,8 @@ Window {
     Rectangle {
         id: centerLine
         width: 1
-        // adjust width to see center line
-        border.width: 0
+        visible: false
+        border.width: 2
         anchors {
             top: parent.top
             bottom: parent.bottom
@@ -30,25 +31,48 @@ Window {
             horizontalCenterOffset: -width / 2
         }
     }
+    Rectangle {
+        id: centerLine2
+        height: 1
+        border.width: 2
+        visible: false
+        anchors {
+            left: parent.left
+            right: parent.right
+            verticalCenter: parent.verticalCenter
+            verticalCenterOffset: height / 2
+        }
+    }
+
+    BackgroundImage {
+        id: backgroundImage
+    }
 
     ImageBar {
         id: imageBar
     }
 
-    Loader {
-        id: mainLoader
+
+    Rectangle {
         anchors {
-            left: parent.left
+            left: backgroundImage.right
             right: parent.right
             top: imageBar.bottom
             bottom: activateButton.top
 
-            leftMargin: margin
-            rightMargin: margin
+            rightMargin: 20
             topMargin: 20
+            bottomMargin: 20
         }
-        focus: true
-        source: 'views/DeviceStackView.qml'
+
+        Loader {
+            id: mainLoader
+            anchors {
+                fill: parent
+            }
+            focus: true
+            source: 'views/DeviceStackView.qml'
+        }
     }
 
     Button {
@@ -59,7 +83,7 @@ Window {
             horizontalCenterOffset: -width / 2
             leftMargin: 7
             topMargin: 20
-            bottomMargin: 60
+            bottomMargin: 40
         }
         text: 'Next'
         highlighted: true
@@ -86,7 +110,7 @@ Window {
             horizontalCenterOffset: -width / 2
             rightMargin: 12
             topMargin: 20
-            bottomMargin: 60
+            bottomMargin: 40
         }
         text: 'About'
         highlighted: true

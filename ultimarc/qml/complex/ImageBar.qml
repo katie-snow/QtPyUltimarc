@@ -6,11 +6,14 @@ Rectangle {
     id: imageBar
     anchors {
         left: parent.left
-        right: parent.right
         top: parent.top
         margins: 20
     }
-    color: 'light blue'
-    height: 90
+
+    height: childrenRect.height
+
+    Image {
+        source: '../assets/ultimarctitle.jpg'
+    }
 }
 

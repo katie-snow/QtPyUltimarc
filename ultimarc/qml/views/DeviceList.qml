@@ -12,12 +12,13 @@ Item {
         anchors {
             top: parent.top
             bottom: parent.bottom
-            left: parent.horizontalCenter
+            left: parent.left
             right: parent.right
-            leftMargin: -cellWidth / 2
+            leftMargin: 80
+            topMargin: 80
 
             // Adjust this number to keep empty configuration on one side of the grid
-            bottomMargin: 250
+            bottomMargin: 200
         }
 
         model: _sort_devices
