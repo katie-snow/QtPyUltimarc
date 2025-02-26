@@ -6,7 +6,6 @@ import "../complex"
 
 Item {
     id: root
-    anchors.fill: parent
 
     Label {
         id: referenceLabel
@@ -20,9 +19,11 @@ Item {
         Layout.fillHeight: true
 
         Rectangle {
-            implicitWidth: mainWindow.width - margin * 2
+            id: singleItemData
+            implicitWidth: root.width
             height: childrenRect.height + _units.large_spacing
             Layout.topMargin: 20
+            Layout.rightMargin: 10
 
             color: 'transparent'
             border.color: Qt.darker(palette.window, 1.2)
@@ -80,7 +81,9 @@ Item {
                                 text: qsTr("Shift")
                             }
                             Label {
-                                Layout.leftMargin: _units.large_spacing * 10
+                                Layout.leftMargin: _units.large_spacing * 21.5
+
+                                //Layout.leftMargin: _units.large_spacing * 10
                                 color: "blue"
                                 font.pointSize: referenceLabel.font.pointSize - 1
                                 text: "Primary Action:"
@@ -92,21 +95,6 @@ Item {
                                 onCurrentIndexChanged: {
                                     if(activeFocus) {
                                         model.action = selectedAction.textAt(currentIndex)
-                                    }
-                                }
-                            }
-                            Label {
-                                color: "red"
-                                font.pointSize: referenceLabel.font.pointSize - 1
-                                text: "Alternative Action:"
-                            }
-                            ComboBox {
-                                id: selectedAltAction
-                                implicitWidth: 130
-                                model: _device_model.device.alt_actions
-                                onCurrentIndexChanged: {
-                                    if (activeFocus) {
-                                        model.action = selectedAltAction.textAt(currentIndex)
                                     }
                                 }
                             }
@@ -145,6 +133,22 @@ Item {
                                     _device_model.device.update_macro
                                 }
                             }
+                            Label {
+                                Layout.leftMargin: 50
+                                color: "red"
+                                font.pointSize: referenceLabel.font.pointSize - 1
+                                text: "Alternative Action:"
+                            }
+                            ComboBox {
+                                id: selectedAltAction
+                                implicitWidth: 130
+                                model: _device_model.device.alt_actions
+                                onCurrentIndexChanged: {
+                                    if (activeFocus) {
+                                        model.action = selectedAltAction.textAt(currentIndex)
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -153,10 +157,17 @@ Item {
 
         // Data Section
         RowLayout {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+
             Rectangle {
+                id: filterRect
+
                 Layout.alignment: Qt.AlignTop
-                implicitWidth: (mainWindow.width - margin) / 6
-                implicitHeight: mainWindow.height - margin * 3.75
+
+                implicitWidth: root.width / 6
+                implicitHeight: root.height - singleItemData.height - 25
+
 
                 color: 'transparent'
                 border.color: Qt.darker(palette.window, 1.2)
@@ -206,10 +217,11 @@ Item {
             }
 
             Rectangle {
+                implicitWidth: root.width - filterRect.width - 5
+                implicitHeight: root.height - singleItemData.height - 25
+
                 Layout.alignment: Qt.AlignTop
-                //Layout.margins: 10
-                implicitWidth: mainWindow.width - margin * 3.5
-                implicitHeight: mainWindow.height - margin * 3.75
+                Layout.rightMargin: 10
 
                 color: 'transparent'
                 border.color: Qt.darker(palette.window, 1.2)

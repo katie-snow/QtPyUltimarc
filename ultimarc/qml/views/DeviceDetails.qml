@@ -16,10 +16,10 @@ Item {
         focus:true
 
         model: _devices.selected_device
-
         delegate:
             Item {
-                anchors.fill: parent
+                width: detailList.width
+                height: detailList.height
 
                 Label {
                     id: deviceClass
@@ -105,15 +105,23 @@ Item {
                     }
                 }
 
-                Loader {
-                    id: detailLoader
+                Rectangle {
                     anchors {
-                        top: deviceName.bottom
-                        left: parent.left
-                        right: parent.right
-                        bottom: parent.bottom
+                            top: deviceName.bottom
+                            left: parent.left
+                            right: parent.right
+                            bottom: parent.bottom
                     }
-                    source: model.qml
+                    color: "transparent"
+
+                    Loader {
+                        id: detailLoader
+
+                        Component.onCompleted: {
+                                detailLoader.setSource (model.qml, {"width": parent.width, "height": parent.height})
+
+                        }
+                    }
                 }
 
                 FileDialog {
