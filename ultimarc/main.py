@@ -43,6 +43,8 @@ def run():
     """ Main UI entry point """
     app = QGuiApplication(sys.argv)
 
+    QQuickStyle.setStyle("Fusion")
+
     ToolContextManager.initialize_logging('ultimarc')  # Configure logging
 
     # Setup default argparser arguments.

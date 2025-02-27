@@ -13,7 +13,8 @@ Window {
     minimumWidth: 1024
     minimumHeight: 680
     title: "Ultimarc Editor"
-    palette.active.window: "light blue"
+    //palette.active.window: "light blue"
+    //property bool darkMode: Application.styleHints.colorScheme === Qt.ColorScheme.Dark
 
 
     property real margin: 50 + (width - 800) / 4
