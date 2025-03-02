@@ -9,8 +9,8 @@ import sys
 from ultimarc.ui.device_model import DeviceModel
 
 try:
-    from PySide6.QtCore import QCoreApplication
     from PySide6.QtQuickControls2 import QQuickStyle
+    from PySide6.QtCore import QCoreApplication
     from PySide6.QtGui import QGuiApplication
     from PySide6.QtQml import QQmlApplicationEngine
 except ImportError:
@@ -43,7 +43,7 @@ def run():
     """ Main UI entry point """
     app = QGuiApplication(sys.argv)
 
-    QQuickStyle.setStyle("Fusion")
+    QQuickStyle.setStyle('Fusion')
 
     ToolContextManager.initialize_logging('ultimarc')  # Configure logging
 
