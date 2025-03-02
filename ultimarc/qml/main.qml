@@ -1,9 +1,9 @@
 
-import QtQuick
-import QtQuick.Controls
-import QtQuick.Window
-import QtQuick.Layouts
-import QtQml
+import QtQuick 6.6
+import QtQuick.Controls 6.6
+import QtQuick.Window 6.6
+import QtQuick.Layouts 6.6
+import QtQml 6.6
 
 import "complex"
 
@@ -13,8 +13,17 @@ Window {
     minimumWidth: 1024
     minimumHeight: 680
     title: "Ultimarc Editor"
-    //palette.active.window: "light blue"
-    //property bool darkMode: Application.styleHints.colorScheme === Qt.ColorScheme.Dark
+
+    // Set palette items to the light theme
+    // Buttons and a few other button related controls are implementing the bark background even though the code
+    // says that it will be a light backgroup
+    palette.base: Qt.lighter('lightblue', 1.5)
+    palette.alternateBase: 'white'
+    palette.window: 'white'
+    palette.windowText: 'black'
+    palette.text: 'black'
+    palette.button: Qt.lighter('lightblue', 1.5)
+    palette.buttonText: 'black'
 
 
     property real margin: 50 + (width - 800) / 4
