@@ -48,6 +48,7 @@ Item {
                             Layout.alignment: Qt.AlignHCenter
                             font.pointSize: referenceLabel.font.pointSize + 1
                             font.bold: true
+                            color: 'black'
                             text: qsTr('Pin Name')
                         }
 
@@ -56,6 +57,7 @@ Item {
                             Label {
                                 leftPadding: _units.large_spacing + 10
                                 font.pointSize: referenceLabel.font.pointSize - 1
+                                color: 'black'
                                 text: "Debounce:"
                             }
                             ComboBox {
@@ -247,7 +249,7 @@ Item {
                         height: grid.cellHeight - 1
 
                         color: {
-                            detailMouse.containsPress ? Qt.darker(palette.button, 1.2) : palette.window
+                            detailMouse.containsPress ? Qt.darker(palette.button, 1.2) : Qt.lighter('light blue', 1.3)
                         }
                         border {
                             color: Qt.darker(palette.window, 1.2)
