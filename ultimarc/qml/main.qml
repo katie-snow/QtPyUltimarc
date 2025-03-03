@@ -16,7 +16,7 @@ Window {
 
     // Set palette items to the light theme
     // Buttons and a few other button related controls are implementing the bark background even though the code
-    // says that it will be a light backgroup
+    // says that it will be a light background
     palette.base: Qt.lighter('lightblue', 1.5)
     palette.alternateBase: 'white'
     palette.window: 'white'
