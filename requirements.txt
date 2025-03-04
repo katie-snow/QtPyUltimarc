@@ -22,11 +22,11 @@ packaging==23.2
     # via pkg-about
 pkg-about==1.1.5
     # via libusb
-pyside6==6.6.1
+pyside6>=6.6.1
     # via -r requirements.in
-pyside6-addons==6.6.1
+pyside6-addons>=6.6.1
     # via pyside6
-pyside6-essentials==6.6.1
+pyside6-essentials>=6.6.1
     # via
     #   pyside6
     #   pyside6-addons
