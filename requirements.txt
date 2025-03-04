@@ -40,7 +40,7 @@ pytz==2024.1
     # via
     #   dateutils
     #   python-easy-json
-shiboken6==6.6.1
+shiboken6>=6.6.1
     # via
     #   pyside6
     #   pyside6-addons
