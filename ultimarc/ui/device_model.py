@@ -8,11 +8,10 @@ import typing
 from collections import OrderedDict
 from enum import IntEnum
 
-from PySide6.QtCore import QObject, QAbstractListModel, QModelIndex, Property
+from PySide6.QtCore import QObject, QAbstractListModel, QModelIndex, Property, Signal
 
 from ultimarc.tools import ToolEnvironmentObject
 from ultimarc.ui.devices.device import Device
-from ultimarc.ui.device_details_model import DeviceDetailsModel
 
 _logger = logging.getLogger('ultimarc')
 
@@ -23,13 +22,11 @@ class DeviceRoles(IntEnum):
     DEVICE_CLASS_VALUE = 3
     DEVICE_NAME = 4
     DEVICE_KEY = 5
-    ICON = 6
-    ATTACHED = 7
-    DESCRIPTION = 8
-    QML = 9
-    WRITE_DEVICE = 10
-    SAVE_LOCATION = 11
-    LOAD_LOCATION = 12
+    ATTACHED = 6
+    QML = 7
+    WRITE_DEVICE = 8
+    SAVE_LOCATION = 9
+    LOAD_LOCATION = 10
     # TODO: Create role to return result of writes and loads
 
 
@@ -41,10 +38,11 @@ class DeviceModel(QAbstractListModel, QObject):
     """ This class/model holds the detailed information for the view.
      Other classes will copy their data into this one to display. """
 
+    _device_ = Signal(int)
+
     def __init__(self, args, env: (ToolEnvironmentObject, None)):
         super().__init__()
         self._device_ = Device(args, env, False, '')
-        self._details_model_ = DeviceDetailsModel()
 
     def roleNames(self) -> typing.Dict:
         roles = OrderedDict()
@@ -71,10 +69,6 @@ class DeviceModel(QAbstractListModel, QObject):
             return self._device_.get_device_class_id().value
         if role == DeviceRoles.DEVICE_KEY:
             return self._device_.get_device_key()
-        if role == DeviceRoles.ICON:
-            return self._device_.get_icon()
-        if role == DeviceRoles.DESCRIPTION:
-            return self._device_.get_description()
         if role == DeviceRoles.QML:
             return self._device_.get_qml()
         if role == DeviceRoles.WRITE_DEVICE:
@@ -98,13 +92,11 @@ class DeviceModel(QAbstractListModel, QObject):
         return False
 
     def set_device(self, device):
-        self._details_model_.set_device(device)
         self.beginResetModel()
         self._device_ = device
         self.endResetModel()
 
-    def get_details_model(self):
-        return self._details_model_
+    def get_device(self):
+        return self._device_
 
-    details_model = Property(QObject, get_details_model, constant=True
-                             )
+    device = Property(QObject, get_device, constant=True)

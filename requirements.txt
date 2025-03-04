@@ -12,7 +12,7 @@ babel==2.14.0
     # via -r requirements.in
 dateutils==0.6.12
     # via python-easy-json
-jsonschema==4.21.1
+jsonschema==4.17.3
     # via -r requirements.in
 jsonschema-specifications==2023.12.1
     # via jsonschema
@@ -22,11 +22,11 @@ packaging==23.2
     # via pkg-about
 pkg-about==1.1.5
     # via libusb
-pyside6==6.6.1
+pyside6>=6.6.1
     # via -r requirements.in
-pyside6-addons==6.6.1
+pyside6-addons>=6.6.1
     # via pyside6
-pyside6-essentials==6.6.1
+pyside6-essentials>=6.6.1
     # via
     #   pyside6
     #   pyside6-addons
@@ -40,15 +40,7 @@ pytz==2024.1
     # via
     #   dateutils
     #   python-easy-json
-referencing==0.33.0
-    # via
-    #   jsonschema
-    #   jsonschema-specifications
-rpds-py==0.17.1
-    # via
-    #   jsonschema
-    #   referencing
-shiboken6==6.6.1
+shiboken6>=6.6.1
     # via
     #   pyside6
     #   pyside6-addons

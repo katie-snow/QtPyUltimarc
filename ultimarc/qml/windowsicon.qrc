@@ -1,5 +1,4 @@
 <RCC>
     <qresource prefix="/">
-        <file alias="icon.ico">assets/icon/mediawriter.ico</file>
     </qresource>
 </RCC>

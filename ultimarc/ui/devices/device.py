@@ -6,22 +6,20 @@ import logging
 import typing
 from enum import Enum
 
-from PySide6.QtCore import QModelIndex, QObject
+from PySide6.QtCore import QModelIndex, QObject, QAbstractListModel, QPersistentModelIndex
 
 from ultimarc.devices import DeviceClassID
 
 _logger = logging.getLogger('ultimarc')
 
 
-class Device(QObject):
+class Device(QAbstractListModel, QObject):
     """ Holds the information for a single device """
     attached = False  # True if hardware is attached
     device_name = 'Unknown Name'  # USB_PRODUCT_DESCRIPTIONS
     device_class_descr = 'Unknown Class'  # USB_PRODUCT_DESCRIPTIONS
     device_class_id = 'Unknown Type'  # DeviceClassId
     device_key = ''  # Key representing the hardware attached
-    icon = 'qrc:/logos/placeholder'  # Unknown product icon
-    description = 'Device class description' # Description of the device
 
     def __init__(self, args, env, attached,
                  device_class_id,
@@ -50,11 +48,11 @@ class Device(QObject):
         self.attached = attached
 
     # Implement function in child class
-    def roleNames(self):
+    def roleNames(self) -> typing.Optional[typing.Dict]:
         return None
 
     # Implement function in child class
-    def rowCount(self):
+    def rowCount(self, parent: typing.Union[QModelIndex, QPersistentModelIndex] = ...) -> int:
         return 0
 
     # Implement function in child class
@@ -81,9 +79,6 @@ class Device(QObject):
     def load_file(self, value):
         return False
 
-    def get_description(self):
-        return self.description
-
     def get_attached(self):
         return self.attached
 
@@ -98,7 +93,3 @@ class Device(QObject):
 
     def get_device_key(self):
         return self.device_key
-
-    def get_icon(self):
-        return self.icon
-
