@@ -7,11 +7,12 @@ Rectangle {
     anchors {
         left: parent.left
         verticalCenter: parent.verticalCenter
+        leftMargin: 15
     }
     implicitHeight: childrenRect.height
     implicitWidth: childrenRect.width
 
     Image {
-        source: '../assets/arcademachine.jpg'
+        source: '../assets/arcadeGameMachine.jpg'
     }
 }

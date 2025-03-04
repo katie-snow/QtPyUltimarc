@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file alias="arcademachine.jpg">assets/arcademachine.jpg</file>
+        <file alias="arcademachine">assets/arcadeGameMachine.jpg</file>
         <file alias="ultimarctitle.jpg">assets/ultimarctitle.jpg</file>
     </qresource>
 </RCC>
