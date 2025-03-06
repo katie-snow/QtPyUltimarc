@@ -5,8 +5,7 @@
 import json
 import os
 
-from jsonschema import validate
-from jsonschema.exceptions import ValidationError
+import fastjsonschema
 from unittest import TestCase
 
 from ultimarc.system_utils import git_project_root
@@ -16,6 +15,8 @@ class USBButtonSchemaTest(TestCase):
 
     color_schema = None
     color_config = None
+
+    config_validation = None
 
     def setUp(self) -> None:
         """ This is called before every test method in the test class. """
@@ -32,50 +33,52 @@ class USBButtonSchemaTest(TestCase):
         with open(config_file) as h:
             self.color_config = json.loads(h.read())
 
+        self.config_validation = fastjsonschema.compile(self.color_schema)
+
     def test_button_color_good(self):
         """ Test that the test color config matches the color schema. """
-        self.assertIsNone(validate(self.color_config, self.color_schema))
+        self.assertIsNotNone(self.config_validation(self.color_config))
 
     def test_button_color_out_of_range(self):
         """ Test that the test color config matches the color schema. """
         # Set an invalid color range value that is more than 255.
         self.color_config['colorRGB']['red'] = 900
 
-        with self.assertRaises(ValidationError):
-            validate(self.color_config, self.color_schema)
+        with self.assertRaises(fastjsonschema.JsonSchemaValueException):
+            self.config_validation(self.color_config)
 
         self.color_config['colorRGB']['red'] = 100
         self.color_config['colorRGB']['green'] = 900
 
-        with self.assertRaises(ValidationError):
-            validate(self.color_config, self.color_schema)
+        with self.assertRaises(fastjsonschema.JsonSchemaValueException):
+            self.config_validation(self.color_config)
 
         self.color_config['colorRGB']['green'] = 100
         self.color_config['colorRGB']['blue'] = 900
 
-        with self.assertRaises(ValidationError):
-            validate(self.color_config, self.color_schema)
+        with self.assertRaises(fastjsonschema.JsonSchemaValueException):
+            self.config_validation(self.color_config)
 
         # reset values and test a good result.
         self.color_config['colorRGB']['red'] = 100
         self.color_config['colorRGB']['green'] = 100
         self.color_config['colorRGB']['blue'] = 100
-        self.assertIsNone(validate(self.color_config, self.color_schema))
+        self.assertIsNotNone(self.config_validation(self.color_config))
 
         # Set an invalid color range value that is less than 0.
         self.color_config['colorRGB']['red'] = -900
 
-        with self.assertRaises(ValidationError):
-            validate(self.color_config, self.color_schema)
+        with self.assertRaises(fastjsonschema.JsonSchemaValueException):
+            self.config_validation(self.color_config)
 
         self.color_config['colorRGB']['red'] = 100
         self.color_config['colorRGB']['green'] = -900
 
-        with self.assertRaises(ValidationError):
-            validate(self.color_config, self.color_schema)
+        with self.assertRaises(fastjsonschema.JsonSchemaValueException):
+            self.config_validation(self.color_config)
 
         self.color_config['colorRGB']['green'] = 100
         self.color_config['colorRGB']['blue'] = -900
 
-        with self.assertRaises(ValidationError):
-            validate(self.color_config, self.color_schema)
+        with self.assertRaises(fastjsonschema.JsonSchemaValueException):
+            self.config_validation(self.color_config)

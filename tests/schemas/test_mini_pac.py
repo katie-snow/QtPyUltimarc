@@ -6,8 +6,7 @@ import json
 import os
 from unittest import TestCase
 
-from jsonschema import validate
-from jsonschema.exceptions import ValidationError
+import fastjsonschema
 
 from ultimarc.system_utils import git_project_root
 
@@ -16,6 +15,7 @@ class MiniPacSchemaTest(TestCase):
     mini_pac_schema = None
     mini_pac_config = None
     mini_pac_bad_config = None
+    config_validation = None
 
     def setUp(self) -> None:
         """ This is called before every test method in the test class """
@@ -32,9 +32,11 @@ class MiniPacSchemaTest(TestCase):
         with open(config_file) as h:
             self.mini_pac_config = json.loads(h.read())
 
+        self.config_validation = fastjsonschema.compile(self.mini_pac_schema)
+
     def test_mini_pac_good(self):
         """ Test that the test mini-pac config matches the mini-pac schema """
-        self.assertIsNone(validate(self.mini_pac_config, self.mini_pac_schema))
+        self.assertIsNotNone(self.config_validation(self.mini_pac_config))
 
     def test_mini_pac_bad_json(self):
         """ Test that bad json configurations fail against the mini-pac schema """
@@ -47,8 +49,8 @@ class MiniPacSchemaTest(TestCase):
         with open(bad_config_file) as h:
             bad_config = json.loads(h.read())
 
-        with self.assertRaises(ValidationError):
-            validate(bad_config, self.mini_pac_schema)
+        with self.assertRaises(fastjsonschema.JsonSchemaValueException):
+            self.config_validation(bad_config)
 
         # Pin entry
         bad_config_file = os.path.join(git_project_root(),
@@ -58,8 +60,8 @@ class MiniPacSchemaTest(TestCase):
         with open(bad_config_file) as h:
             bad_config = json.loads(h.read())
 
-        with self.assertRaises(ValidationError):
-            validate(bad_config, self.mini_pac_schema)
+        with self.assertRaises(fastjsonschema.JsonSchemaValueException):
+            self.config_validation(bad_config)
 
         # Debounce entry
         bad_config_file = os.path.join(git_project_root(),
@@ -69,8 +71,8 @@ class MiniPacSchemaTest(TestCase):
         with open(bad_config_file) as h:
             bad_config = json.loads(h.read())
 
-        with self.assertRaises(ValidationError):
-            validate(bad_config, self.mini_pac_schema)
+        with self.assertRaises(fastjsonschema.JsonSchemaValueException):
+            self.config_validation(bad_config)
 
         # Paclink entry
         bad_config_file = os.path.join(git_project_root(),
@@ -80,8 +82,8 @@ class MiniPacSchemaTest(TestCase):
         with open(bad_config_file) as h:
             bad_config = json.loads(h.read())
 
-        with self.assertRaises(ValidationError):
-            validate(bad_config, self.mini_pac_schema)
+        with self.assertRaises(fastjsonschema.JsonSchemaValueException):
+            self.config_validation(bad_config)
 
     def test_mini_pac_optional_json(self):
         """ Test validation when optional entries are not present """
@@ -93,4 +95,4 @@ class MiniPacSchemaTest(TestCase):
         with open(opt_config_file) as h:
             opt_config = json.loads(h.read())
 
-        self.assertIsNone(validate(opt_config, self.mini_pac_schema))
+        self.assertIsNotNone(self.config_validation(opt_config))

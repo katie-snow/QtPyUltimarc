@@ -4,16 +4,16 @@
 #
 import json
 import os
+import fastjsonschema
 
 from glob import glob
 
-from jsonschema import validate
 from unittest import TestCase
 
 from ultimarc.system_utils import git_project_root
 
 
-class USBButtonSchemaTest(TestCase):
+class BaseSchemaTest(TestCase):
 
     def test_all_schemas(self):
         """
@@ -30,4 +30,6 @@ class USBButtonSchemaTest(TestCase):
         for file in files:
             with open(file) as h:
                 config = json.loads(h.read())
-            self.assertIsNone(validate(config, schema))
+                validate_config = fastjsonschema.compile(schema)
+                self.assertTrue(validate_config(config), 'Testing config: ' + file)
+

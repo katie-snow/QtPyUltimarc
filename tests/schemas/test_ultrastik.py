@@ -7,8 +7,8 @@ import json
 import os
 from typing import List
 
-from jsonschema import validate
-from jsonschema.exceptions import ValidationError
+import fastjsonschema
+
 from unittest import TestCase
 
 from ultimarc.system_utils import git_project_root
@@ -23,6 +23,9 @@ class UltraStikSchemaTest(TestCase):
 
     invalid_config_files: List[str] = None
     invalid_controller_id_config_files: List[str] = None
+
+    config_validation = None
+    controller_id_config_validation = None
 
     def setUp(self) -> None:
         """ This is called before every test method in the test class """
@@ -51,6 +54,9 @@ class UltraStikSchemaTest(TestCase):
             self.ultrastik_config_schema = json.loads(h.read())
         with open(controller_schema_file) as h:
             self.ultrastik_controller_id_config_schema = json.loads(h.read())
+
+        self.config_validation = fastjsonschema.compile(self.ultrastik_config_schema)
+        self.controller_id_config_validation = fastjsonschema.compile(self.ultrastik_controller_id_config_schema)
 
         # Load list of invalid config files
         invalid_config_files = glob(os.path.join(test_config_root, 'ultrastik_*.json'))
@@ -92,7 +98,7 @@ class UltraStikSchemaTest(TestCase):
         for file in self.valid_controller_id_config_files:
             with open(file) as h:
                 config = json.loads(h.read())
-                self.assertIsNone(validate(config, self.ultrastik_controller_id_config_schema))
+                self.assertIsNotNone(self.controller_id_config_validation(config))
 
     def test_valid_configs(self):
         """ Test valid config files """
@@ -101,7 +107,8 @@ class UltraStikSchemaTest(TestCase):
         for file in self.valid_config_files:
             with open(file) as h:
                 config = json.loads(h.read())
-                self.assertIsNone(validate(config, self.ultrastik_config_schema))
+                self.assertIsNotNone(self.config_validation(config))
+
 
     def test_invalid_controller_id_change_configs(self):
         """ Test that invalid configs raise a validation exception """
@@ -111,8 +118,8 @@ class UltraStikSchemaTest(TestCase):
         for file in self.invalid_controller_id_config_files:
             with open(file) as h:
                 bad_config = json.loads(h.read())
-                with self.assertRaises(ValidationError):
-                    validate(bad_config, self.ultrastik_controller_id_config_schema)
+                with self.assertRaises(fastjsonschema.JsonSchemaValueException):
+                    self.controller_id_config_validation(bad_config)
 
     def test_invalid_configs(self):
         """ Test that invalid configs raise a validation exception """
@@ -122,5 +129,5 @@ class UltraStikSchemaTest(TestCase):
             with open(file) as h:
                 print(file)
                 bad_config = json.loads(h.read())
-                with self.assertRaises(ValidationError):
-                    validate(bad_config, self.ultrastik_config_schema)
+                with self.assertRaises(fastjsonschema.JsonSchemaValueException):
+                    self.config_validation(bad_config)
