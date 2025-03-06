@@ -6,16 +6,11 @@
 #
 attrs==23.2.0
     # via
-    #   jsonschema
     #   referencing
 babel==2.14.0
     # via -r requirements.in
 dateutils==0.6.12
     # via python-easy-json
-jsonschema==4.17.3
-    # via -r requirements.in
-jsonschema-specifications==2023.12.1
-    # via jsonschema
 libusb==1.0.27
     # via -r requirements.in
 packaging==23.2
@@ -51,6 +46,8 @@ six==1.16.0
     #   python-easy-json
 tomli==2.0.1
     # via pkg-about
+fastjsonschema>=2.21.1
+    # via -r requirements.in
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
