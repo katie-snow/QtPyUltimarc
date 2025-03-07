@@ -86,7 +86,7 @@ class JpacSchemaTest(TestCase):
         """ Test validation when optional entries are not present """
         # Macro entry
         opt_config_file = Path(git_project_root()) / 'tests/test-data/jpac/jpac-pin-optional.json'
-        self.assertTrue(os.path.exists(opt_config_file))
+        self.assertTrue(opt_config_file.is_file())
 
         with open(opt_config_file) as h:
             opt_config = json.loads(h.read())
