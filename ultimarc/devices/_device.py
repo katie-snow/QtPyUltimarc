@@ -8,9 +8,10 @@
 import ctypes as ct
 import json
 import logging
-import os
+
 from enum import IntEnum
 from json import JSONDecodeError
+from pathlib import Path
 
 import fastjsonschema
 import libusb as usb
@@ -401,12 +402,13 @@ class USBDeviceHandle:
         :param schema_file: Schema file name only, no path included.
         :return: schema dict.
         """
-        proj_path = os.path.abspath(__file__).split('/ultimarc/')[0]
-        import_base = os.path.join(proj_path, 'ultimarc')
-        schema_base = os.path.join(import_base, 'schemas')
-        schema_path = os.path.abspath(os.path.join(schema_base, schema_file))
+        file_path = Path.resolve(Path(__file__))
+        proj_path = file_path.parents[2]
+        import_base = proj_path / 'ultimarc'
+        schema_base = import_base / 'schemas'
+        schema_path = schema_base / schema_file
 
-        if not schema_path:
+        if not schema_path.is_file():
             _logger.error(_('Unable to locate schema directory.'))
             return None
 
