@@ -7,6 +7,7 @@ import logging
 import os.path
 import sys
 import traceback
+import platform
 
 from ultimarc import translate_gettext as _
 from ultimarc.devices import USBDevices
@@ -68,11 +69,12 @@ class ToolContextManager(object):
             'devices': USBDevices(_VENDOR_FILTER)
         }
 
-        write_pidfile_or_die(command)
+        if platform.system() == 'Linux':
+            write_pidfile_or_die(command)
 
-        if not self._env:
-            remove_pidfile(command)
-            exit(1)
+            if not self._env:
+                remove_pidfile(command)
+                exit(1)
 
     def __enter__(self):
         """ Return object with properties set to config values """
