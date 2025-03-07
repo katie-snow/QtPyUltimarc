@@ -2,12 +2,13 @@
 # This file is subject to the terms and conditions defined in the
 # file 'LICENSE', which is part of this source code package.
 #
-from glob import glob
-import json
-import os
-from typing import List
 
+import json
 import fastjsonschema
+
+from pathlib import Path
+from typing import List
+from glob import glob
 
 from unittest import TestCase
 
@@ -37,19 +38,18 @@ class UltraStikSchemaTest(TestCase):
         self.invalid_config_files = []
         self.invalid_controller_id_config_files = []
 
-        schema_root = os.path.join(git_project_root(), 'ultimarc/schemas')
-        test_config_root = os.path.join(git_project_root(), 'tests/test-data/ultrastik')
-        self.assertTrue(os.path.exists(test_config_root))
-        example_config_root = os.path.join(git_project_root(), 'ultimarc/examples')
-        self.assertTrue(os.path.exists(example_config_root))
+        test_config_root = Path(git_project_root()) / 'tests/test-data/ultrastik'
+        self.assertTrue(test_config_root.is_dir())
+        example_config_root = Path(git_project_root()) / 'ultimarc/examples'
+        self.assertTrue(example_config_root.is_dir())
 
         # Load UltraStik schema files
-        config_schema_file = os.path.join(schema_root, 'ultrastik-config.schema')
-        self.assertTrue(os.path.exists(config_schema_file))
-        controller_schema_file = os.path.join(schema_root, 'ultrastik-controller-id.schema')
-        self.assertTrue(os.path.exists(controller_schema_file))
+        schema_dir = Path(git_project_root()) / 'ultimarc/schemas'
+        config_schema_file = Path(git_project_root()) / schema_dir / 'ultrastik-config.schema'
+        self.assertTrue(config_schema_file.is_file())
+        controller_schema_file = Path(git_project_root()) / schema_dir / 'ultrastik-controller-id.schema'
+        self.assertTrue(controller_schema_file.is_file())
 
-        # https://python-jsonschema.readthedocs.io/en/stable/
         with open(config_schema_file) as h:
             self.ultrastik_config_schema = json.loads(h.read())
         with open(controller_schema_file) as h:
@@ -59,7 +59,7 @@ class UltraStikSchemaTest(TestCase):
         self.controller_id_config_validation = fastjsonschema.compile(self.ultrastik_controller_id_config_schema)
 
         # Load list of invalid config files
-        invalid_config_files = glob(os.path.join(test_config_root, 'ultrastik_*.json'))
+        invalid_config_files = glob((test_config_root / 'ultrastik_*.json').__str__())
 
         # Load the invalid config test files and sort them by ResourceType value.
         for file in invalid_config_files:
@@ -76,7 +76,7 @@ class UltraStikSchemaTest(TestCase):
         self.assertIsNotNone(self.invalid_controller_id_config_files)
 
         # Load list of example config files and sort them by ResourceType value.
-        valid_config_files = glob(os.path.join(example_config_root, 'ultrastik-*.json'))
+        valid_config_files = glob((example_config_root / 'ultrastik-*.json').__str__())
         for file in valid_config_files:
             with open(file) as h:
                 config = h.read()
@@ -127,7 +127,6 @@ class UltraStikSchemaTest(TestCase):
 
         for file in self.invalid_config_files:
             with open(file) as h:
-                print(file)
                 bad_config = json.loads(h.read())
                 with self.assertRaises(fastjsonschema.JsonSchemaValueException):
                     self.config_validation(bad_config)
