@@ -5,8 +5,7 @@
 import json
 import os
 
-from jsonschema import validate
-from jsonschema.exceptions import ValidationError
+import fastjsonschema
 from unittest import TestCase
 
 from ultimarc.system_utils import git_project_root
@@ -17,6 +16,7 @@ class Ipac2SchemaTest(TestCase):
     ipac2_schema = None
     ipac2_config = None
     ipac2_bad_config = None
+    config_validation = None
 
     def setUp(self) -> None:
         """ This is called before every test method in the test class """
@@ -33,9 +33,11 @@ class Ipac2SchemaTest(TestCase):
         with open(config_file) as h:
             self.ipac2_config = json.loads(h.read())
 
+        self.config_validation = fastjsonschema.compile(self.ipac2_schema)
+
     def test_ipac2_good(self):
         """ Test that the test ipac2 config matches the ipac2 schema """
-        self.assertIsNone(validate(self.ipac2_config, self.ipac2_schema))
+        self.assertIsNotNone(self.config_validation(self.ipac2_config))
 
     def test_ipac2_bad_json(self):
         """ Test that bad json configurations fail against the ipac2 schema """
@@ -48,8 +50,8 @@ class Ipac2SchemaTest(TestCase):
         with open(bad_config_file) as h:
             bad_config = json.loads(h.read())
 
-        with self.assertRaises(ValidationError):
-            validate(bad_config, self.ipac2_schema)
+        with self.assertRaises(fastjsonschema.JsonSchemaValueException):
+            self.config_validation(bad_config)
 
         # Pin entry
         bad_config_file = os.path.join(git_project_root(),
@@ -59,8 +61,8 @@ class Ipac2SchemaTest(TestCase):
         with open(bad_config_file) as h:
             bad_config = json.loads(h.read())
 
-        with self.assertRaises(ValidationError):
-            validate(bad_config, self.ipac2_schema)
+        with self.assertRaises(fastjsonschema.JsonSchemaValueException):
+            self.config_validation(bad_config)
 
         # Debounce entry
         bad_config_file = os.path.join(git_project_root(),
@@ -70,8 +72,8 @@ class Ipac2SchemaTest(TestCase):
         with open(bad_config_file) as h:
             bad_config = json.loads(h.read())
 
-        with self.assertRaises(ValidationError):
-            validate(bad_config, self.ipac2_schema)
+        with self.assertRaises(fastjsonschema.JsonSchemaValueException):
+            self.config_validation(bad_config)
 
         # Paclink entry
         bad_config_file = os.path.join(git_project_root(),
@@ -81,8 +83,8 @@ class Ipac2SchemaTest(TestCase):
         with open(bad_config_file) as h:
             bad_config = json.loads(h.read())
 
-        with self.assertRaises(ValidationError):
-            validate(bad_config, self.ipac2_schema)
+        with self.assertRaises(fastjsonschema.JsonSchemaValueException):
+            self.config_validation(bad_config)
 
     def test_ipac2_optional_json(self):
         """ Test validation when optional entries are not present """
@@ -94,4 +96,4 @@ class Ipac2SchemaTest(TestCase):
         with open(opt_config_file) as h:
             opt_config = json.loads(h.read())
 
-        self.assertIsNone(validate(opt_config, self.ipac2_schema))
+        self.assertIsNotNone(self.config_validation(opt_config))

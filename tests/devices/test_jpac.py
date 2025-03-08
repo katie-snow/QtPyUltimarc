@@ -4,10 +4,8 @@
 #
 import json
 import os
-from unittest.mock import patch
 
-from jsonschema import validate
-from jsonschema.exceptions import ValidationError
+from unittest.mock import patch
 from unittest import TestCase
 
 from ultimarc.devices._device import USBDeviceHandle

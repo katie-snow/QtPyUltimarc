@@ -12,7 +12,7 @@ import os
 from enum import IntEnum
 from json import JSONDecodeError
 
-from jsonschema import validate, ValidationError
+import fastjsonschema
 import libusb as usb
 
 from ultimarc import translate_gettext as _
@@ -426,8 +426,9 @@ class USBDeviceHandle:
             return False
 
         try:
-            validate(config, schema)
-        except ValidationError as e:
+            config_validator = fastjsonschema.compile(schema)
+            config_validator(config)
+        except fastjsonschema.JsonSchemaException as e:
             _logger.error(_('Configuration file did not validate against config schema.'))
             _logger.error(e)
             return False
@@ -455,8 +456,9 @@ class USBDeviceHandle:
             return None
 
         try:
-            validate(config, base_schema)
-        except ValidationError as e:
+            config_validator = fastjsonschema.compile(base_schema)
+            config_validator(config)
+        except fastjsonschema.JsonSchemaException as e:
             _logger.error(_('Configuration file did not validate against the base schema.') + f'\n{e}')
             return None
 

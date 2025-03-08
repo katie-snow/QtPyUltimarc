@@ -9,7 +9,7 @@ babel
 libusb
 
 # JSON Schema Validation
-jsonschema
+fastjsonschema
 
 # JSONObject
 python_easy_json
