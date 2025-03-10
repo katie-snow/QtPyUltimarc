@@ -3,9 +3,9 @@
 # file 'LICENSE', which is part of this source code package.
 #
 import json
-import os
 import fastjsonschema
 
+from pathlib import Path
 from glob import glob
 
 from unittest import TestCase
@@ -19,14 +19,14 @@ class BaseSchemaTest(TestCase):
         """
         Test all example JSON configuration files against base.schema.
         """
-        schema_file = os.path.join(git_project_root(), 'ultimarc/schemas/base.schema')
-        self.assertTrue(os.path.exists(schema_file))
-        # https://python-jsonschema.readthedocs.io/en/stable/
+        schema_file = Path(git_project_root()) / 'ultimarc/schemas/base.schema'
+        self.assertTrue(schema_file.is_file())
+
         with open(schema_file) as h:
             schema = json.loads(h.read())
 
-        path = os.path.join(git_project_root(), 'ultimarc/examples/')
-        files = glob(os.path.join(path, "*.json"))
+        path = Path(git_project_root()) /  'ultimarc/examples/'
+        files = glob(Path(path / "*.json").__str__())
         for file in files:
             with open(file) as h:
                 config = json.loads(h.read())

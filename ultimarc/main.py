@@ -6,11 +6,13 @@ import logging
 import os
 import sys
 
+from pathlib import Path
+
 from ultimarc.ui.device_model import DeviceModel
 
 try:
     from PySide6.QtQuickControls2 import QQuickStyle
-    from PySide6.QtCore import QCoreApplication
+    from PySide6.QtCore import QCoreApplication, QUrl
     from PySide6.QtGui import QGuiApplication
     from PySide6.QtQml import QQmlApplicationEngine
 except ImportError:
@@ -35,10 +37,11 @@ _tool_version = _('1.0.0-alpha.7')
 
 
 def run():
-    proj_path = os.path.abspath(__file__).split('/ultimarc/')[0]
-    app_base = os.path.join(proj_path, 'ultimarc')
+    file_path = Path.resolve(Path(__file__))
+    proj_path = file_path.parents[1]
+    app_base = file_path.parents[0]
 
-    os.environ['PYTHONPATH'] = proj_path
+    os.environ['PYTHONPATH'] = proj_path.__str__()
 
     """ Main UI entry point """
     app = QGuiApplication(sys.argv)
@@ -57,7 +60,7 @@ def run():
     QCoreApplication.setApplicationName(_tool_title)
 
     engine = QQmlApplicationEngine()
-    engine.addImportPath(app_base)
+    engine.addImportPath(app_base.__str__())
 
     with ToolContextManager(_tool_cmd, args) as tool_env:
         # Local class instantiation
@@ -79,6 +82,7 @@ def run():
         context.setContextProperty('_units', units)
 
         engine.loadFromModule('qml', 'Main')
+
         if not engine.rootObjects():
             _logger.error(_('Bad UI settings found, aborting.'))
             sys.exit(-1)

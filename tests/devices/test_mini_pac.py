@@ -4,6 +4,8 @@
 #
 import json
 import os
+
+from pathlib import Path
 from unittest import TestCase
 from unittest.mock import patch
 
@@ -23,10 +25,10 @@ class MiniPacDeviceTest(TestCase):
         """ This is called before every test method in the test class """
         super(MiniPacDeviceTest, self).setUp()
 
-        schema_file = os.path.join(git_project_root(), 'ultimarc/schemas/mini-pac.schema')
-        self.assertTrue(os.path.exists(schema_file))
-        config_file = os.path.join(git_project_root(), 'ultimarc/examples/mini-pac.json')
-        self.assertTrue(os.path.exists(config_file))
+        schema_file = Path(git_project_root()) / 'ultimarc/schemas/mini-pac.schema'
+        self.assertTrue(schema_file.is_file())
+        config_file = Path(git_project_root()) / 'ultimarc/examples/mini-pac.json'
+        self.assertTrue(config_file.is_file())
 
         # https://python-jsonschema.readthedocs.io/en/stable/
         with open(schema_file) as h:
@@ -43,7 +45,7 @@ class MiniPacDeviceTest(TestCase):
 
         dev.__class__ = MiniPacDevice
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/minipac/mini-pac-good.json')
+        config_file = Path(git_project_root()) / 'tests/test-data/minipac/mini-pac-good.json'
         valid, data = dev._create_message_(config_file)
         # print(data)
         self.assertTrue(valid)
@@ -121,7 +123,7 @@ class MiniPacDeviceTest(TestCase):
 
         dev.__class__ = MiniPacDevice
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/minipac/mini-pac-pin-optional.json')
+        config_file = Path(git_project_root()) / 'tests/test-data/minipac/mini-pac-pin-optional.json'
         valid, data = dev._create_message_(config_file)
 
         # pin 1up values, has both optional values
@@ -146,7 +148,7 @@ class MiniPacDeviceTest(TestCase):
 
         dev.__class__ = MiniPacDevice
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/minipac/mini-pac-pin-optional.json')
+        config_file = Path(git_project_root()) / 'tests/test-data/minipac/mini-pac-pin-optional.json'
         # Validate against the base schema.
         resource_types = ['mini-pac-pins']
         json_dict = dev.validate_config_base(config_file, resource_types)
@@ -175,12 +177,12 @@ class MiniPacDeviceTest(TestCase):
         self.assertTrue(dev)
         dev.__class__ = MiniPacDevice
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/minipac/mini-pac-macro-large-count.json')
+        config_file = Path(git_project_root()) / 'tests/test-data/minipac/mini-pac-macro-large-count.json'
         valid, data = dev._create_message_(config_file)
         self.assertFalse(valid)
         self.assertIsNone(data)
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/minipac/mini-pac-macro-large-action-count.json')
+        config_file = Path(git_project_root()) / 'tests/test-data/minipac/mini-pac-macro-large-action-count.json'
         valid, data = dev._create_message_(config_file)
         self.assertFalse(valid)
         self.assertIsNone(data)
@@ -208,7 +210,7 @@ class MiniPacDeviceTest(TestCase):
 
         dev.__class__ = MiniPacDevice
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/minipac/mini-pac-good.json')
+        config_file = Path(git_project_root()) / 'tests/test-data/minipac/mini-pac-good.json'
         valid, data = dev._create_message_(config_file)
 
         header = PacConfigUnion()
@@ -218,7 +220,7 @@ class MiniPacDeviceTest(TestCase):
         # debounce is short (0x02)
         self.assertTrue(header.config.debounce == 0x02)
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/minipac/mini-pac-pin-optional.json')
+        config_file = Path(git_project_root()) / 'tests/test-data/minipac/mini-pac-pin-optional.json'
         valid, data = dev._create_message_(config_file)
 
         header = PacConfigUnion()
@@ -238,7 +240,8 @@ class MiniPacDeviceTest(TestCase):
 
         dev.__class__ = MiniPacDevice
 
-        prev_dir = os.path.abspath(os.curdir)
-        os.chdir(os.path.abspath(__file__).split('/QtPyUltimarc/')[0])
+        git_path = Path(git_project_root())
+        outside_project = git_path.parent
+        os.chdir(outside_project)
         self.assertTrue(dev.load_config_schema('mini-pac.schema'))
-        os.chdir(prev_dir)
+        os.chdir(git_path)

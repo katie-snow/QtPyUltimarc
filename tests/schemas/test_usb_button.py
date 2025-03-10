@@ -3,9 +3,9 @@
 # file 'LICENSE', which is part of this source code package.
 #
 import json
-import os
-
 import fastjsonschema
+
+from pathlib import Path
 from unittest import TestCase
 
 from ultimarc.system_utils import git_project_root
@@ -22,10 +22,10 @@ class USBButtonSchemaTest(TestCase):
         """ This is called before every test method in the test class. """
         super(USBButtonSchemaTest, self).setUp()
 
-        schema_file = os.path.join(git_project_root(), 'ultimarc/schemas/usb-button-color.schema')
-        self.assertTrue(os.path.exists(schema_file))
-        config_file = os.path.join(git_project_root(), 'ultimarc/examples/usb-button-color.json')
-        self.assertTrue(os.path.exists(config_file))
+        schema_file = Path(git_project_root()) / 'ultimarc/schemas/usb-button-color.schema'
+        self.assertTrue(schema_file.is_file())
+        config_file = Path(git_project_root()) / 'ultimarc/examples/usb-button-color.json'
+        self.assertTrue(config_file.is_file())
 
         # https://python-jsonschema.readthedocs.io/en/stable/
         with open(schema_file) as h:

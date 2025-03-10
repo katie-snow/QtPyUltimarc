@@ -3,8 +3,8 @@
 # file 'LICENSE', which is part of this source code package.
 #
 import json
-import os
 
+from pathlib import Path
 from unittest.mock import patch
 from unittest import TestCase
 
@@ -25,10 +25,10 @@ class JpacDeviceTest(TestCase):
         """ This is called before every test method in the test class """
         super(JpacDeviceTest, self).setUp()
 
-        schema_file = os.path.join(git_project_root(), 'ultimarc/schemas/jpac.schema')
-        self.assertTrue(os.path.exists(schema_file))
-        config_file = os.path.join(git_project_root(), 'ultimarc/examples/jpac.json')
-        self.assertTrue(os.path.exists(config_file))
+        schema_file = Path(git_project_root()) / 'ultimarc/schemas/jpac.schema'
+        self.assertTrue(schema_file.is_file())
+        config_file = Path(git_project_root()) / 'ultimarc/examples/jpac.json'
+        self.assertTrue(config_file.is_file())
 
         # https://python-jsonschema.readthedocs.io/en/stable/
         with open(schema_file) as h:
@@ -45,7 +45,7 @@ class JpacDeviceTest(TestCase):
 
         dev.__class__ = JpacDevice
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/jpac/jpac-good.json')
+        config_file = Path(git_project_root()) / 'tests/test-data/jpac/jpac-good.json'
         valid, data = dev._create_device_message_(config_file)
         # print(data)
         self.assertTrue(valid)
@@ -146,7 +146,7 @@ class JpacDeviceTest(TestCase):
 
         dev.__class__ = JpacDevice
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/jpac/jpac-pin-optional.json')
+        config_file = Path(git_project_root()) / 'tests/test-data/jpac/jpac-pin-optional.json'
         valid, data = dev._create_device_message_(config_file)
 
         # pin 1up values, has both optional values
@@ -171,7 +171,7 @@ class JpacDeviceTest(TestCase):
 
         dev.__class__ = JpacDevice
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/jpac/jpac-pin-optional.json')
+        config_file = Path(git_project_root()) / 'tests/test-data/jpac/jpac-pin-optional.json'
         # Validate against the base schema.
         resource_types = ['jpac-pins']
         json_dict = dev.validate_config_base(config_file, resource_types)
@@ -200,12 +200,12 @@ class JpacDeviceTest(TestCase):
         self.assertTrue(dev)
         dev.__class__ = JpacDevice
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/jpac/jpac-macro-large-count.json')
+        config_file = Path(git_project_root()) / 'tests/test-data/jpac/jpac-macro-large-count.json'
         valid, data = dev._create_device_message_(config_file)
         self.assertFalse(valid)
         self.assertIsNone(data)
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/jpac/jpac-macro-large-action-count.json')
+        config_file = Path(git_project_root()) / 'tests/test-data/jpac/jpac-macro-large-action-count.json'
         valid, data = dev._create_device_message_(config_file)
         self.assertFalse(valid)
         self.assertIsNone(data)
@@ -233,7 +233,7 @@ class JpacDeviceTest(TestCase):
 
         dev.__class__ = JpacDevice
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/jpac/jpac-good.json')
+        config_file = Path(git_project_root()) / 'tests/test-data/jpac/jpac-good.json'
         valid, data = dev._create_device_message_(config_file)
 
         header = PacConfigUnion()
@@ -243,7 +243,7 @@ class JpacDeviceTest(TestCase):
         # debounce is short (0x02)
         self.assertTrue(header.config.debounce == 0x02)
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/jpac/jpac-pin-optional.json')
+        config_file = Path(git_project_root()) / 'tests/test-data/jpac/jpac-pin-optional.json'
         valid, data = dev._create_device_message_(config_file)
 
         header = PacConfigUnion()
@@ -263,7 +263,7 @@ class JpacDeviceTest(TestCase):
 
         dev.__class__ = JpacDevice
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/jpac/jpac-good.json')
+        config_file = Path(git_project_root()) / 'tests/test-data/jpac/jpac-good.json'
         valid, data = dev._create_device_message_(config_file)
 
         # pin 1sw3 has 'disable' set to true

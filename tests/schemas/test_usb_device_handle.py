@@ -2,9 +2,7 @@
 # This file is subject to the terms and conditions defined in the
 # file 'LICENSE', which is part of this source code package.
 #
-import os
-import logging
-
+from pathlib import Path
 from unittest import TestCase
 from unittest.mock import patch
 
@@ -22,9 +20,9 @@ class USBDeviceHandleTest(TestCase):
         dev = USBDeviceHandle('test_handle', '0000:0000')
         self.assertTrue(dev)
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/usb-button/usb-button-color-good.json')
+        config_file = Path(git_project_root()) / 'tests/test-data/usb-button/usb-button-color-good.json'
         self.assertTrue(dev.validate_config_base(config_file, ['usb-button-color']))
         self.assertIsNone(dev.validate_config_base(config_file, ['bad-resource-type']))
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/usb-button/usb-button-color-bad.json')
+        config_file = Path(git_project_root()) / 'tests/test-data/usb-button/usb-button-color-bad.json'
         self.assertIsNone(dev.validate_config_base(config_file, ['usb-button-color']))
