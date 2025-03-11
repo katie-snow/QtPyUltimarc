@@ -79,7 +79,7 @@ Item {
                     enabled: model.attached
                     onClicked: {
                         result = model.write_device
-                        console.log(result)
+                        //console.log(result)
                         if (result == 1) {
                             deviceWritePopup.result = 'Write Complete'
                         }
