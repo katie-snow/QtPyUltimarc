@@ -3,8 +3,8 @@
 # file 'LICENSE', which is part of this source code package.
 #
 import json
-import os
 
+from pathlib import Path
 from unittest.mock import patch
 from unittest import TestCase
 
@@ -25,10 +25,10 @@ class Ipac2DeviceTest(TestCase):
         """ This is called before every test method in the test class """
         super(Ipac2DeviceTest, self).setUp()
 
-        schema_file = os.path.join(git_project_root(), 'ultimarc/schemas/ipac2.schema')
-        self.assertTrue(os.path.exists(schema_file))
-        config_file = os.path.join(git_project_root(), 'ultimarc/examples/ipac2.json')
-        self.assertTrue(os.path.exists(config_file))
+        schema_file = Path(git_project_root()) / 'ultimarc/schemas/ipac2.schema'
+        self.assertTrue(schema_file.is_file())
+        config_file = Path(git_project_root()) / 'ultimarc/examples/ipac2.json'
+        self.assertTrue(config_file.is_file())
 
         # https://python-jsonschema.readthedocs.io/en/stable/
         with open(schema_file) as h:
@@ -45,7 +45,7 @@ class Ipac2DeviceTest(TestCase):
 
         dev.__class__ = Ipac2Device
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/ipac2/ipac2-good.json')
+        config_file = Path(git_project_root()) / 'tests/test-data/ipac2/ipac2-good.json'
         valid, data = dev._create_device_message_(config_file)
         # print(data)
         self.assertTrue(valid)
@@ -131,7 +131,7 @@ class Ipac2DeviceTest(TestCase):
 
         dev.__class__ = Ipac2Device
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/ipac2/ipac2-pin-optional.json')
+        config_file = Path(git_project_root()) / 'tests/test-data/ipac2/ipac2-pin-optional.json'
         valid, data = dev._create_device_message_(config_file)
 
         # pin 1up values, has both optional values
@@ -156,7 +156,7 @@ class Ipac2DeviceTest(TestCase):
 
         dev.__class__ = Ipac2Device
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/ipac2/ipac2-pin-optional.json')
+        config_file = Path(git_project_root()) / 'tests/test-data/ipac2/ipac2-pin-optional.json'
         # Validate against the base schema.
         resource_types = ['ipac2-pins']
         json_dict = dev.validate_config_base(config_file, resource_types)
@@ -185,12 +185,12 @@ class Ipac2DeviceTest(TestCase):
         self.assertTrue(dev)
         dev.__class__ = Ipac2Device
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/ipac2/ipac2-macro-large-count.json')
+        config_file = Path(git_project_root()) / 'tests/test-data/ipac2/ipac2-macro-large-count.json'
         valid, data = dev._create_device_message_(config_file)
         self.assertFalse(valid)
         self.assertIsNone(data)
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/ipac2/ipac2-macro-large-action-count.json')
+        config_file = Path(git_project_root()) / 'tests/test-data/ipac2/ipac2-macro-large-action-count.json'
         valid, data = dev._create_device_message_(config_file)
         self.assertFalse(valid)
         self.assertIsNone(data)
@@ -218,7 +218,7 @@ class Ipac2DeviceTest(TestCase):
 
         dev.__class__ = Ipac2Device
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/ipac2/ipac2-good.json')
+        config_file = Path(git_project_root()) / 'tests/test-data/ipac2/ipac2-good.json'
         valid, data = dev._create_device_message_(config_file)
 
         header = PacConfigUnion()
@@ -228,7 +228,8 @@ class Ipac2DeviceTest(TestCase):
         # debounce is short (0x02)
         self.assertTrue(header.config.debounce == 0x02)
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/ipac2/ipac2-pin-optional.json')
+
+        config_file = Path(git_project_root()) / 'tests/test-data/ipac2/ipac2-pin-optional.json'
         valid, data = dev._create_device_message_(config_file)
 
         header = PacConfigUnion()

@@ -3,10 +3,10 @@
 # file 'LICENSE', which is part of this source code package.
 #
 import json
-import os
-from unittest import TestCase
-
 import fastjsonschema
+
+from pathlib import Path
+from unittest import TestCase
 
 from ultimarc.system_utils import git_project_root
 
@@ -21,10 +21,10 @@ class MiniPacSchemaTest(TestCase):
         """ This is called before every test method in the test class """
         super(MiniPacSchemaTest, self).setUp()
 
-        schema_file = os.path.join(git_project_root(), 'ultimarc/schemas/mini-pac.schema')
-        self.assertTrue(os.path.exists(schema_file))
-        config_file = os.path.join(git_project_root(), 'ultimarc/examples/mini-pac.json')
-        self.assertTrue(os.path.exists(config_file))
+        schema_file = Path(git_project_root()) / 'ultimarc/schemas/mini-pac.schema'
+        self.assertTrue(schema_file.is_file())
+        config_file = Path(git_project_root()) / 'ultimarc/examples/mini-pac.json'
+        self.assertTrue(config_file.is_file())
 
         # https://python-jsonschema.readthedocs.io/en/stable/
         with open(schema_file) as h:
@@ -42,9 +42,8 @@ class MiniPacSchemaTest(TestCase):
         """ Test that bad json configurations fail against the mini-pac schema """
 
         # Macro entry
-        bad_config_file = os.path.join(git_project_root(),
-                                       'tests/test-data/minipac/mini-pac-macro-bad.json')
-        self.assertTrue(os.path.exists(bad_config_file))
+        bad_config_file = Path(git_project_root()) / 'tests/test-data/minipac/mini-pac-macro-bad.json'
+        self.assertTrue(bad_config_file.is_file())
 
         with open(bad_config_file) as h:
             bad_config = json.loads(h.read())
@@ -53,9 +52,8 @@ class MiniPacSchemaTest(TestCase):
             self.config_validation(bad_config)
 
         # Pin entry
-        bad_config_file = os.path.join(git_project_root(),
-                                       'tests/test-data/minipac/mini-pac-pin-bad.json')
-        self.assertTrue(os.path.exists(bad_config_file))
+        bad_config_file = Path(git_project_root()) / 'tests/test-data/minipac/mini-pac-pin-bad.json'
+        self.assertTrue(bad_config_file.is_file())
 
         with open(bad_config_file) as h:
             bad_config = json.loads(h.read())
@@ -64,9 +62,8 @@ class MiniPacSchemaTest(TestCase):
             self.config_validation(bad_config)
 
         # Debounce entry
-        bad_config_file = os.path.join(git_project_root(),
-                                       'tests/test-data/minipac/mini-pac-debounce-bad.json')
-        self.assertTrue(os.path.exists(bad_config_file))
+        bad_config_file = Path(git_project_root()) / 'tests/test-data/minipac/mini-pac-debounce-bad.json'
+        self.assertTrue(bad_config_file.is_file())
 
         with open(bad_config_file) as h:
             bad_config = json.loads(h.read())
@@ -75,9 +72,8 @@ class MiniPacSchemaTest(TestCase):
             self.config_validation(bad_config)
 
         # Paclink entry
-        bad_config_file = os.path.join(git_project_root(),
-                                       'tests/test-data/minipac/mini-pac-paclink-bad.json')
-        self.assertTrue(os.path.exists(bad_config_file))
+        bad_config_file = Path(git_project_root()) / 'tests/test-data/minipac/mini-pac-paclink-bad.json'
+        self.assertTrue(bad_config_file.is_file())
 
         with open(bad_config_file) as h:
             bad_config = json.loads(h.read())
@@ -88,9 +84,8 @@ class MiniPacSchemaTest(TestCase):
     def test_mini_pac_optional_json(self):
         """ Test validation when optional entries are not present """
         # Macro entry
-        opt_config_file = os.path.join(git_project_root(),
-                                       'tests/test-data/minipac/mini-pac-pin-optional.json')
-        self.assertTrue(os.path.exists(opt_config_file))
+        opt_config_file = Path(git_project_root()) / 'tests/test-data/minipac/mini-pac-pin-optional.json'
+        self.assertTrue(opt_config_file.is_file())
 
         with open(opt_config_file) as h:
             opt_config = json.loads(h.read())

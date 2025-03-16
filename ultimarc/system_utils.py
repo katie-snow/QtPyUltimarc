@@ -7,9 +7,6 @@
 
 import logging
 import os
-import re
-import shlex
-import signal
 import subprocess
 import sys
 
@@ -207,37 +204,6 @@ def setup_logging(logger, progname, debug=False, quiet=False, logfile=None):
         logger.addHandler(handler)
 
 
-def which(program):
-    """
-  Find the path for a given program
-  http://stackoverflow.com/questions/377017/test-if-executable-exists-in-python
-  :param program: name of executable file to find
-  """
-
-    try:
-        path_spec = os.environ["PATH"]
-    except KeyError:
-        # for weird times when we don't have a good environment
-        path_spec = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin:/root/bin"
-
-    def is_exe(fpath):
-        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
-
-    # pylint: disable=unused-variable
-    fpath, fname = os.path.split(program)
-    if fpath:
-        if is_exe(program):
-            return program
-    else:
-        for path in path_spec.split(os.pathsep):
-            path = path.strip('"')
-            exe_file = os.path.join(path, program)
-            if is_exe(exe_file):
-                return exe_file
-
-    return None
-
-
 def run_external_program(args, cwd=None, env=None, shell=False, debug=False):
     """
   Run an external program, arguments
@@ -270,51 +236,6 @@ def run_external_program(args, cwd=None, env=None, shell=False, debug=False):
     return p.returncode, stdoutdata, stderrdata
 
 
-def is_valid_email(email):
-    """
-  Validate email parameter is a valid formatted email address
-  :param email: string containing email address
-  :return: True if email is valid otherwise False
-  """
-    if not email:
-        return False
-
-    return bool(re.match("^.+@(\[?)[a-zA-Z0-9-.]+.([a-zA-Z]{2,3}|[0-9]{1,3})(]?)$", email))
-
-
-def signal_process(name, signal_code=signal.SIGHUP):
-    """
-  Send a signal to a program
-  :param name: name of the executable, not a systemd service name
-  :param signal_code: signal code from signal object
-  """
-    pid = None
-
-    prog = which("pidof")
-
-    if not prog:
-        _logger.error('unable to locate "pidof" executable.')
-        return False
-
-    # Get the process id
-    try:
-
-        args = shlex.split("{0} {1}".format(prog, name))
-        pid = int(subprocess.check_output(args).decode("utf-8").strip())
-    except subprocess.CalledProcessError:
-        _logger.error("failed to get program pid ({0})".format(name))
-
-    # Send signal to process
-    if pid:
-        os.kill(pid, signal_code)
-        _logger.debug("send signal to {0} complete".format(name))
-        return True
-
-    _logger.debug("send signal to {0} failed".format(name))
-
-    return False
-
-
 def pid_is_running(pid: int):
     """
   Check For the existence of a unix pid.
@@ -334,43 +255,6 @@ def pid_is_running(pid: int):
                 if pid == int(line.strip().split(' ')[1]) and '<defunct>' not in line:
                     return True
     return False
-
-
-def get_process_pids(matches: list) -> list:
-    """
-    Get the pids of a currently running process.  May match more than one running process.
-    :param matches: parts of process command to match in process list
-    :return: List of PIDs
-    """
-    pids = list()
-
-    if not matches or len(matches) == 0:
-        raise ValueError('matches list may not be empty.')
-
-    for match in matches:
-        if not isinstance(match, str):
-            raise ValueError('invalid match value, must be string.')
-
-    # See if there is a currently running mysqld instance
-    # pylint: disable=unused-variable
-    args = ['ps', '-ef']
-    code, so, se = run_external_program(args=args)
-    if code == 0:
-        lines = so.split('\n')
-        for line in lines:
-            no_match = False
-            for match in matches:
-                if match not in line:
-                    no_match = True
-                    break
-
-            if no_match is True:
-                continue
-            while '  ' in line:
-                line = line.replace('  ', ' ')
-            pids.append(int(line.split(' ')[1]))
-
-    return pids
 
 
 def write_pidfile_or_die(progname: str, pid_file: str = None):
