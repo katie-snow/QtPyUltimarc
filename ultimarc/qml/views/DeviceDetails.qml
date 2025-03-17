@@ -68,6 +68,8 @@ Item {
                         rightMargin: 10
                     }
 
+                    property int result
+
                     contentItem: Text {
                         text: 'Format Device'
                         color: model.attached ? 'black' : Qt.darker(palette.window, 1.2)
@@ -75,7 +77,17 @@ Item {
 
                     highlighted: model.attached
                     enabled: model.attached
-                    onClicked: model.write_device
+                    onClicked: {
+                        result = model.write_device
+
+                        if (result === 1) {
+                            deviceWritePopup.result = 'Write Complete'
+                        }
+                        else {
+                            deviceWritePopup.result = 'Write Failed'
+                        }
+                        deviceWritePopup.open()
+                    }
                }
 
                Button {
@@ -132,6 +144,57 @@ Item {
                     function onAccepted() {
                         model.save_location = saveFileDialog.file
                         //console.log(saveFileDialog.file)
+                    }
+                }
+
+                Timer {
+                    id: timeout
+                    interval: 1500
+                    running: true
+                    repeat: false
+
+                    onTriggered: deviceWritePopup.close()
+                }
+
+                Popup {
+                    id: deviceWritePopup
+                    height: 100
+                    width: 200
+                    modal: true
+                    focus: true
+                    clip: true
+                    closePolicy: Popup.CloseOnEscape
+
+                    anchors.centerIn: parent
+
+                    property alias result: title.text
+
+                    onOpened: timeout.restart()
+                    Rectangle {
+                        anchors.fill: parent
+                        color:  'lavender'
+
+                        Label {
+                            id: title
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.top: parent.top
+                            anchors.topMargin: 20
+                            text: 'Something is happening'
+                            font.pointSize: 12
+                        }
+
+                        Button {
+                            anchors {
+                                top: title.bottom
+                                horizontalCenter: title.horizontalCenter
+                                topMargin: 10
+                            }
+                            text: "Close"
+                            highlighted: true
+                            onClicked: {
+                                deviceWritePopup.close()
+                            }
+                        }
                     }
                 }
             }
