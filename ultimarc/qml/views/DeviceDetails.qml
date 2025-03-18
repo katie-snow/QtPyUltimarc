@@ -78,14 +78,11 @@ Item {
                     highlighted: model.attached
                     enabled: model.attached
                     onClicked: {
-                        result = model.write_device
-
-                        if (result === 1) {
-                            deviceWritePopup.result = 'Write Complete'
-                        }
-                        else {
+                        if (model.write_device === undefined)
                             deviceWritePopup.result = 'Write Failed'
-                        }
+                        else
+                            deviceWritePopup.result = 'Write Complete'
+
                         deviceWritePopup.open()
                     }
                }
