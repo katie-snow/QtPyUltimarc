@@ -17,6 +17,7 @@ from ultimarc.ui.devices.ipac2 import Ipac2UI
 from ultimarc.ui.devices.ipac4 import Ipac4UI
 from ultimarc.ui.devices.jpac import JpacUI
 from ultimarc.ui.devices.mini_pac import MiniPacUI
+from ultimarc.ui.devices.usb_button import UsbButtonUI
 
 _logger = logging.getLogger('ultimarc')
 
@@ -63,6 +64,9 @@ class DevicesModel(QAbstractListModel, QObject):
             elif dev.class_id == DeviceClassID.JPAC.value:
                 device = JpacUI(self.args, self.env, True, DeviceClassID(dev.class_id), dev.product_name,
                                 dev.class_descr, dev.dev_key)
+            elif dev.class_id == DeviceClassID.USBButton.value:
+                device = UsbButtonUI(self.args, self.env, True, DeviceClassID(dev.class_id), dev.product_name,
+                                dev.class_descr, dev.dev_key)
             else:
                 device = Device(self.args, self.env, True, DeviceClassID(dev.class_id), dev.product_name,
                                 dev.class_descr, dev.dev_key)
@@ -78,6 +82,8 @@ class DevicesModel(QAbstractListModel, QObject):
                 tmp = Ipac4UI(self.args, self.env, False, device_class)
             elif device_class == DeviceClassID.JPAC:
                 tmp = JpacUI(self.args, self.env, False, device_class)
+            elif device_class == DeviceClassID.USBButton:
+                tmp = UsbButtonUI(self.args, self.env, False, device_class)
             else:
                 tmp = Device(self.args, self.env, False, device_class)
             self._devices_.append(tmp)
