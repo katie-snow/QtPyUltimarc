@@ -33,6 +33,7 @@ def get_ipac_series_debounce_key(val):
 # IPAC 2015 or newer key mapping.
 #
 IPACSeriesMapping = {
+    " ": 0x00,
     "A": 0x04,
     "B": 0x05,
     "C": 0x06,
