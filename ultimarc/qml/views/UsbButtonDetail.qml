@@ -2,6 +2,8 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
+import "../complex"
+
 Item {
     id: root
 
@@ -32,7 +34,7 @@ Item {
 
             checked: true
             onToggled: {
-                keyStack.push(priKey)
+                keyStack.replace(priKey)
             }
         }
         RadioButton {
@@ -45,7 +47,7 @@ Item {
             text: 'Secondary Keys'
 
             onToggled: {
-                keyStack.push(secKey)
+                keyStack.replace(secKey)
             }
         }
     }
@@ -63,93 +65,17 @@ Item {
         height: 125
     }
 
-    Component {
+    KeySequence {
         id: priKey
 
-        GridView {
-            id: keySequenceGrid
-            anchors {
-                margins: 2
-            }
-
-            clip:true
-            interactive: true
-            cellWidth: 113
-            cellHeight: 30
-
-            model: _device_model.device.primary_key_sequence
-            delegate: Rectangle {
-                width: keySequenceGrid.cellWidth
-                height: keySequenceGrid.cellHeight
-
-                anchors {
-                    margins: 2
-                }
-
-                border {
-                    color: Qt.darker(palette.window, 1.2)
-                    width: 1
-                }
-
-                ComboBox {
-                    id: action
-                    implicitWidth: keySequenceGrid.cellWidth
-                    height: keySequenceGrid.cellHeight
-                    currentIndex: -1
-
-                    model: _device_model.device.primary_key_sequence.actions
-                    onCurrentIndexChanged: {
-                        if(activeFocus) {
-                            model.textAt = action.textAt(currentIndex)
-                        }
-                    }
-                }
-            }
-        }
+        myModel: _device_model.device.primary_key_sequence
+        model: myModel
     }
 
-    Component {
+    KeySequence {
         id: secKey
 
-        GridView {
-            id: keySequenceGrid
-            anchors {
-                margins: 2
-            }
-
-            clip:true
-            interactive: true
-            cellWidth: 113
-            cellHeight: 30
-
-            model: _device_model.device.secondary_key_sequence
-            delegate: Rectangle {
-                width: keySequenceGrid.cellWidth
-                height: keySequenceGrid.cellHeight
-
-                anchors {
-                    margins: 2
-                }
-
-                border {
-                    color: Qt.darker(palette.window, 1.2)
-                    width: 1
-                }
-
-                ComboBox {
-                    id: action
-                    implicitWidth: keySequenceGrid.cellWidth
-                    height: keySequenceGrid.cellHeight
-                    currentIndex: -1
-
-                    model: _device_model.device.secondary_key_sequence.actions
-                    onCurrentIndexChanged: {
-                        if(activeFocus) {
-                            model.textAt = action.textAt(currentIndex)
-                        }
-                    }
-                }
-            }
-        }
+        myModel: _device_model.device.secondary_key_sequence
+        model: myModel
     }
 }

@@ -31,11 +31,14 @@ class UsbButtonRoles(IntEnum):
 usbButtonRoleMap = OrderedDict(zip(list(UsbButtonRoles), [k.name.lower() for k in UsbButtonRoles]))
 
 class KeySequenceUI(QAbstractListModel, QObject):
+    _change_key_ = Signal(str)
+    _change_index_ = Signal(int)
+
     def __init__(self):
         super().__init__()
 
         self._config = [0] * KEYCOUNT
-        self._action_model = ActionModel()
+        self._index = -1
 
     class KeySequenceRoles(QMetaEnum):
         TEXTROLE = 1
@@ -61,8 +64,24 @@ class KeySequenceUI(QAbstractListModel, QObject):
             self._config[index.row()] = value
         return True
 
-    def get_key_data(self):
-        return self._config
+    def set_key(self, key):
+        if self._index != -1:
+            self._config[self._index] = key
+
+    def get_key(self):
+        if self._index != -1:
+            return self._config[self._index]
+        else:
+            return None
+
+    def set_index(self, index):
+        self._index = index
+
+    def get_index(self):
+        return self._index
+
+    key = Property(str, get_key, set_key, notify=_change_key_)
+    keyIndex = Property(int, get_index, set_index, notify=_change_index_)
 
 
 class UsbButtonUI(Device):
@@ -77,6 +96,9 @@ class UsbButtonUI(Device):
         self.config_color = None
         self.config = None
         self._json_obj = None
+
+        self._action_model = ActionModel()
+
         self._primary_key_sequence = KeySequenceUI()
         self._secondary_key_sequence = KeySequenceUI()
 
@@ -120,11 +142,15 @@ class UsbButtonUI(Device):
 
         return True
 
+    def get_action_model(self):
+        return self._action_model
+
     def get_primary_key_sequence(self):
         return self._primary_key_sequence
 
     def get_secondary_key_sequence(self):
         return self._secondary_key_sequence
 
+    action_model = Property(QObject, get_action_model, constant=True)
     primary_key_sequence = Property(QObject, get_primary_key_sequence, constant=True)
     secondary_key_sequence = Property(QObject, get_secondary_key_sequence, constant=True)
