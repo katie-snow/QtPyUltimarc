@@ -67,18 +67,58 @@ Item {
         height: 125
     }
 
-    KeySequence {
+    //KeySequence {
+    //    id: priKey
+
+        //model: _device_model.device.primary_key_sequence
+        //model: myModel
+    //}
+    GridView {
         id: priKey
 
-        myModel: _device_model.device.primary_key_sequence
-        model: myModel
+        anchors {
+            margins: 2
+
+        }
+
+        Component.onCompleted: {
+            console.log(count)
+            console.log(width)
+            console.log (height)
+        }
+        clip: true
+        interactive: true
+        cellWidth: 113
+        cellHeight: 26
+        model: _device_model.device.primary_key_sequence
+        delegate: Rectangle {
+            id: key
+            width: priKey.cellWidth
+            height: priKey.cellHeight
+            anchors {
+                margins: 2
+            }
+
+            border {
+                color: Qt.darker(palette.window, 1.2)
+                width: 1
+            }
+
+            Label {
+                id: test
+                width: key.width
+                height: key.height
+
+                text: model.action
+            }
+        }
     }
 
     KeySequence {
         id: secKey
 
-        myModel: _device_model.device.secondary_key_sequence
-        model: myModel
+        gridModel: _device_model.device.secondary_key_sequence
+        //model: myModel
     }
 
     Rectangle {
@@ -194,36 +234,113 @@ Item {
             property real blue: blueSlider.value.toFixed(2)
         }
 
-        SliderGroup {
-            id: redSlider
+        Rectangle {
+            id: colorAction
             anchors {
                 top: ledLabel.bottom
                 left: colorRect.right
-                leftMargin: 30
+                leftMargin: 10
             }
-            text: 'Red'
+
+            width: childrenRect.width
+
+            RadioButton {
+                id: releasedColor
+                anchors {
+                    top: parent.top
+                    left: parent.left
+                }
+
+                text: 'Released Color'
+                font.pointSize: 12
+                checked: true
+                focusPolicy: Qt.StrongFocus
+
+                Keys.onPressed: function(event) {
+                    if (event.key === Qt.Key_Space || event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                        // Select this option on activation keys
+                        releasedColor.checked = true
+                        event.accepted = true
+                    } else if (event.key === Qt.Key_Down || event.key === Qt.Key_Right) {
+                        // Move to the other radio button with arrows
+                        pressedColor.forceActiveFocus()
+                        pressedColor.checked = true
+                        event.accepted = true
+                    }
+                }
+
+                onToggled: {
+                    console.log('released color')
+                }
+            }
+
+            RadioButton {
+                id: pressedColor
+                anchors {
+                    top: releasedColor.bottom
+                    left: parent.left
+                }
+
+                property int red: 0
+
+                text: 'Pressed Color'
+                font.pointSize: 12
+                focusPolicy: Qt.StrongFocus
+
+                Keys.onPressed: function(event) {
+                    if (event.key === Qt.Key_Space || event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                        pressedColor.checked = true
+                        event.accepted = true
+                    } else if (event.key === Qt.Key_Up || event.key === Qt.Key_Left) {
+                        releasedColor.forceActiveFocus()
+                        releasedColor.checked = true
+                        event.accepted = true
+                    }
+                }
+
+                onToggled: {
+                    console.log('pressed color')
+                    redSlider.value = .25
+                    greenSlider.value = .34
+                    blueSlider.value = .77
+                }
+            }
         }
 
-        SliderGroup {
+        RGBSlider {
+            id: redSlider
+            anchors {
+                top: ledLabel.bottom
+                left: colorAction.right
+                leftMargin: 10
+            }
+
+            text: 'Red'
+            sliderWidth: 350
+        }
+
+        RGBSlider {
             id: greenSlider
             anchors {
                 top: redSlider.bottom
-                left: colorRect.right
+                left: colorAction.right
                 topMargin: 10
-                leftMargin: 30
+                leftMargin: 10
             }
             text: 'Green'
+            sliderWidth: 350
         }
 
-        SliderGroup {
+        RGBSlider {
             id: blueSlider
             anchors {
                 top: greenSlider.bottom
-                left: colorRect.right
+                left: colorAction.right
                 topMargin: 10
-                leftMargin: 30
+                leftMargin: 10
             }
             text: 'Blue'
+            sliderWidth: 350
         }
     }
 }

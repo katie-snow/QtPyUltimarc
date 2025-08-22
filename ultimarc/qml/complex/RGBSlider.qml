@@ -2,30 +2,31 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
-Rectangle {
+Item {
     id: root
 
-    property alias text: sliderLabel.text
-    property alias value: slider.value
+    property string text: 'default'
+    property alias sliderWidth: mySlider.width
+    property alias value: mySlider.value
 
     height: childrenRect.height
     width: childrenRect.width
 
     Label {
-        id: sliderLabel
+        id: myLabel
         anchors {
             top: root.top
         }
+        text: root.text
     }
 
     Slider {
-        id: slider
+        id: mySlider
         anchors {
             top: root.top
-            left: sliderLabel.right
-            leftMargin: 60 - sliderLabel.width
+            left: myLabel.right
+            leftMargin: 60 - myLabel.width
         }
-        implicitWidth: 400
 
         from: 0
         to: 1
