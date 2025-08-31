@@ -74,11 +74,6 @@ Item {
             margins: 2
         }
 
-        Component.onCompleted: {
-            console.log(count)
-            console.log(width)
-            console.log (height)
-        }
         clip: true
         interactive: true
         cellWidth: 110
@@ -98,6 +93,7 @@ Item {
             }
 
             ComboBox {
+                id: actionCombo
                 indicator: Canvas {
                     id: canvas
                     // Don't paint an indicator on the dropdown
@@ -105,24 +101,74 @@ Item {
 
                 width: 130
                 model: _device_model.device.action_model
+
+                // Initialize the combo to reflect the item's current action
                 Component.onCompleted: {
-                    //currentIndex = find(model.action)
-                    //console.log(currentIndex)
+                    // 'action' is the role from the GridView's model (KeySequenceUI)
+                    if (action !== undefined && action !== null) {
+                        var idx = actionCombo.find(action)
+                        if (idx >= 0) actionCombo.currentIndex = idx
+                    }
                 }
+
+                // When user selects an option, write it back to the model entry
                 onActivated: {
-                    console.log(priKey.currentIndex)
-                    model.action = textAt(currentIndex)
-                    console.log(model.action)
+                    action = actionCombo.currentText
                 }
             }
         }
     }
 
-    KeySequence {
+    GridView {
         id: secKey
 
-        gridModel: _device_model.device.secondary_key_sequence
-        //model: myModel
+        anchors {
+            margins: 2
+        }
+
+        clip: true
+        interactive: true
+        cellWidth: 110
+        cellHeight: 26
+        model: _device_model.device.secondary_key_sequence
+        delegate: Rectangle {
+            id: key
+            width: secKey.cellWidth
+            height: secKey.cellHeight
+            anchors {
+                margins: 2
+            }
+
+            border {
+                color: Qt.darker(palette.window, 1.2)
+                width: 1
+            }
+
+            ComboBox {
+                id: actionCombo
+                indicator: Canvas {
+                    id: canvas
+                    // Don't paint an indicator on the dropdown
+                }
+
+                width: 130
+                model: _device_model.device.action_model
+
+                // Initialize the combo to reflect the item's current action
+                Component.onCompleted: {
+                    // 'action' is the role from the GridView's model (KeySequenceUI)
+                    if (action !== undefined && action !== null) {
+                        var idx = actionCombo.find(action)
+                        if (idx >= 0) actionCombo.currentIndex = idx
+                    }
+                }
+
+                // When user selects an option, write it back to the model entry
+                onActivated: {
+                    action = actionCombo.currentText
+                }
+            }
+        }
     }
 
     Rectangle {

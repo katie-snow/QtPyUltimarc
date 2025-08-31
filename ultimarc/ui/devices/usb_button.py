@@ -65,9 +65,11 @@ class KeySequenceUI(QAbstractListModel, QObject):
         _logger.debug(f'action=None')
         return None
 
-    def setData(self, index: QModelIndex, value, role: int = ...) -> None:
+    def setData(self, index: QModelIndex, value, role: int = ...):
         if role == self.SequenceRoles.ACTION:
             self._config[index.row()] = value
+
+        return True
 
     def get_config(self):
         return self._config
