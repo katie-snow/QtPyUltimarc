@@ -67,18 +67,11 @@ Item {
         height: 125
     }
 
-    //KeySequence {
-    //    id: priKey
-
-        //model: _device_model.device.primary_key_sequence
-        //model: myModel
-    //}
     GridView {
         id: priKey
 
         anchors {
             margins: 2
-
         }
 
         Component.onCompleted: {
@@ -88,7 +81,7 @@ Item {
         }
         clip: true
         interactive: true
-        cellWidth: 113
+        cellWidth: 110
         cellHeight: 26
         model: _device_model.device.primary_key_sequence
         delegate: Rectangle {
@@ -104,12 +97,23 @@ Item {
                 width: 1
             }
 
-            Label {
-                id: test
-                width: key.width
-                height: key.height
+            ComboBox {
+                indicator: Canvas {
+                    id: canvas
+                    // Don't paint an indicator on the dropdown
+                }
 
-                text: model.action
+                width: 130
+                model: _device_model.device.action_model
+                Component.onCompleted: {
+                    //currentIndex = find(model.action)
+                    //console.log(currentIndex)
+                }
+                onActivated: {
+                    console.log(priKey.currentIndex)
+                    model.action = textAt(currentIndex)
+                    console.log(model.action)
+                }
             }
         }
     }

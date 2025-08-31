@@ -25,6 +25,7 @@ KEYCOUNT = 24
 
 class UsbButtonRoles(IntEnum):
     MODE = 1
+    ACTION = 2
     RELEASE_COLOR = 4
     PRESSED_COLOR = 5
 
