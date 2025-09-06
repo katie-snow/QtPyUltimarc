@@ -25,7 +25,6 @@ KEYCOUNT = 24
 
 class UsbButtonRoles(IntEnum):
     MODE = 1
-    ACTION = 2
     RELEASE_COLOR = 4
     PRESSED_COLOR = 5
 
@@ -62,7 +61,7 @@ class KeySequenceUI(QAbstractListModel, QObject):
             # _logger.debug(f'action={self._config[index.row()]}')
             return self._config[index.row()]
 
-        _logger.debug(f'action=None')
+        _logger.debug(f'action_model=None')
         return None
 
     def setData(self, index: QModelIndex, value, role: int = ...):
@@ -78,6 +77,7 @@ class KeySequenceUI(QAbstractListModel, QObject):
 class UsbButtonUI(Device):
     _changed_released_ = Signal(int)
     _changed_pressed_ = Signal(int)
+    _changed_action_ = Signal(str)
 
     def __init__(self, args, env, attached,
                  device_class_id,
@@ -90,6 +90,7 @@ class UsbButtonUI(Device):
         self.config_keys = None
         self._json_color = None
         self._json_keys = None
+        self._action = 'extended'
 
         self._action_model = ActionModel()
 
@@ -166,8 +167,28 @@ class UsbButtonUI(Device):
     def set_pressed_color(self, color):
         self._json_keys.pressedColor = color
 
+    # Action for how the button will behave when pressed
+    # Extended: Send both sequences on every press
+    # Alternate: Send primary then secondary on alternate press
+    # Both: Send primary on short press, Secondary on long press
+    def get_action(self):
+        return self._action
+
+    def set_action(self, action):
+        if self._action == action:
+            return
+        self._action = action
+        _logger.debug(f'action={self._action}')
+        try:
+            self._changed_action_.emit(self._action)
+        except Exception as e:
+            _logger.debug(f'emit action changed failed: {e}')
+
+    # action_model is for the grid combo boxes that contain key presses
     action_model = Property(QObject, get_action_model, constant=True)
     primary_key_sequence = Property(QObject, get_primary_key_sequence, constant=True)
     secondary_key_sequence = Property(QObject, get_secondary_key_sequence, constant=True)
     released_color = Property(QObject, get_released_color, set_released_color, notify=_changed_released_)
     pressed_color = Property(QObject, get_pressed_color, set_pressed_color, notify=_changed_pressed_)
+    # action is the three options for usb-button (extended, both, alternate)
+    action = Property(str, get_action, set_action, notify=_changed_action_)

@@ -193,9 +193,13 @@ Item {
             font.pointSize: 13
         }
 
+        ButtonGroup {
+            id: actionGroup
+        }
+
         RadioButton {
             id: extended
-
+            ButtonGroup.group: actionGroup
             anchors {
                 top: actionLabel.bottom
                 left: parent.left
@@ -203,15 +207,12 @@ Item {
             }
             text: 'Extended: Send both sequences on every press'
             font.pointSize: 12
-
-            checked: true
-            onToggled: {
-
-            }
+            checked: _device_model.device.action === 'extended'
+            onToggled: if (extended.checked) _device_model.device.action = 'extended'
         }
         RadioButton {
             id: alternate
-
+            ButtonGroup.group: actionGroup
             anchors {
                 top: extended.bottom
                 left: parent.left
@@ -219,14 +220,12 @@ Item {
             }
             text: 'Alternate: Send primary then secondary on alternate presses'
             font.pointSize: 12
-
-            onToggled: {
-
-            }
+            checked: _device_model.device.action === 'alternate'
+            onToggled: if (alternate.checked) _device_model.device.action = 'alternate'
         }
         RadioButton {
             id: both
-
+            ButtonGroup.group: actionGroup
             anchors {
                 top: alternate.bottom
                 left: parent.left
@@ -234,10 +233,8 @@ Item {
             }
             text: 'Both: Send primary on short press, secondary on long press'
             font.pointSize: 12
-
-            onToggled: {
-
-            }
+            checked: _device_model.device.action === 'both'
+            onToggled: if (both.checked) _device_model.device.action = 'both'
         }
     }
 
