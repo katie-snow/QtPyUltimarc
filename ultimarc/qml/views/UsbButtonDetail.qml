@@ -7,6 +7,23 @@ import "../complex"
 Item {
     id: root
 
+    function applyColorToSliders(colorObj) {
+        if (!colorObj) return;
+        var r = colorObj.red; var g = colorObj.green; var b = colorObj.blue;
+        if (r !== undefined) redSlider.value = Math.max(0, Math.min(1, r / 255.0));
+        if (g !== undefined) greenSlider.value = Math.max(0, Math.min(1, g / 255.0));
+        if (b !== undefined) blueSlider.value = Math.max(0, Math.min(1, b / 255.0));
+    }
+
+    Component.onCompleted: {
+        try {
+            var c = _device_model.device.released_color;
+            applyColorToSliders(c);
+        } catch (e) {
+            // property might be unavailable; ignore
+        }
+    }
+
     Label {
         id: referenceLabel
         visible: false
@@ -317,7 +334,14 @@ Item {
                 }
 
                 onToggled: {
-                    console.log('released color')
+                    if (releasedColor.checked) {
+                        try {
+                            var c = _device_model.device.released_color
+                            applyColorToSliders(c)
+                        } catch (e) {
+                            // ignore if not available
+                        }
+                    }
                 }
             }
 
@@ -346,10 +370,14 @@ Item {
                 }
 
                 onToggled: {
-                    console.log('pressed color')
-                    redSlider.value = .25
-                    greenSlider.value = .34
-                    blueSlider.value = .77
+                    if (pressedColor.checked) {
+                        try {
+                            var c2 = _device_model.device.pressed_color
+                            applyColorToSliders(c2)
+                        } catch (e) {
+                            // ignore if not available
+                        }
+                    }
                 }
             }
         }
@@ -364,6 +392,20 @@ Item {
 
             text: 'Red'
             sliderWidth: 350
+
+            // When user adjusts the slider, update the model for whichever color option is selected
+            onValueChanged: {
+                var colorObj = {
+                    red: Math.round(redSlider.value * 255),
+                    green: Math.round(greenSlider.value * 255),
+                    blue: Math.round(blueSlider.value * 255)
+                }
+                if (releasedColor.checked) {
+                    _device_model.device.released_color = colorObj
+                } else if (pressedColor.checked) {
+                    _device_model.device.pressed_color = colorObj
+                }
+            }
         }
 
         RGBSlider {
@@ -376,6 +418,20 @@ Item {
             }
             text: 'Green'
             sliderWidth: 350
+
+            // When user adjusts the slider, update the model for whichever color option is selected
+            onValueChanged: {
+                var colorObj = {
+                    red: Math.round(redSlider.value * 255),
+                    green: Math.round(greenSlider.value * 255),
+                    blue: Math.round(blueSlider.value * 255)
+                }
+                if (releasedColor.checked) {
+                    _device_model.device.released_color = colorObj
+                } else if (pressedColor.checked) {
+                    _device_model.device.pressed_color = colorObj
+                }
+            }
         }
 
         RGBSlider {
@@ -388,6 +444,20 @@ Item {
             }
             text: 'Blue'
             sliderWidth: 350
+
+            // When user adjusts the slider, update the model for whichever color option is selected
+            onValueChanged: {
+                var colorObj = {
+                    red: Math.round(redSlider.value * 255),
+                    green: Math.round(greenSlider.value * 255),
+                    blue: Math.round(blueSlider.value * 255)
+                }
+                if (releasedColor.checked) {
+                    _device_model.device.released_color = colorObj
+                } else if (pressedColor.checked) {
+                    _device_model.device.pressed_color = colorObj
+                }
+            }
         }
     }
 }

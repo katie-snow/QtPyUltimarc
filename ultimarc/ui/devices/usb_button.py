@@ -75,8 +75,8 @@ class KeySequenceUI(QAbstractListModel, QObject):
 
 
 class UsbButtonUI(Device):
-    _changed_released_ = Signal(int)
-    _changed_pressed_ = Signal(int)
+    _changed_released_ = Signal()  # notify QML when released_color changes
+    _changed_pressed_ = Signal()   # notify QML when pressed_color changes
     _changed_action_ = Signal(str)
 
     def __init__(self, args, env, attached,
@@ -96,6 +96,10 @@ class UsbButtonUI(Device):
 
         self._primary_key_sequence = KeySequenceUI()
         self._secondary_key_sequence = KeySequenceUI()
+
+        # Internal color state (0..255 ints)
+        self._released_color = {'red': 255, 'green': 255, 'blue': 255}
+        self._pressed_color = {'red': 255, 'green': 255, 'blue': 255}
 
     def get_qml(self):
         self.populate()
@@ -155,17 +159,69 @@ class UsbButtonUI(Device):
     def get_secondary_key_sequence(self):
         return self._secondary_key_sequence
 
-    def get_released_color (self):
-        return self._json_keys.releasedColor
+    def _validate_color(self, color):
+        """Normalize color input to {'red': int, 'green': int, 'blue': int} with values clamped to [0, 255].
+        Accepts typical PySide6 QVariantMap (dict), mapping-like, or attribute-style objects.
+        """
+        if color is None:
+            return None
+
+        def get_comp(obj, name):
+            if isinstance(obj, dict):
+                return obj.get(name)
+            # Mapping-style via __getitem__
+            try:
+                return obj[name]
+            except Exception:
+                pass
+            # Attribute-style access
+            return getattr(obj, name, None)
+
+        def to_byte(v):
+            try:
+                iv = int(round(float(v)))
+            except Exception:
+                return None
+            return 0 if iv < 0 else 255 if iv > 255 else iv
+
+        r = to_byte(get_comp(color, 'red'))
+        g = to_byte(get_comp(color, 'green'))
+        b = to_byte(get_comp(color, 'blue'))
+        if None in (r, g, b):
+            return None
+        return {'red': r, 'green': g, 'blue': b}
+
+    def get_released_color(self):
+        return dict(self._released_color)
 
     def set_released_color(self, color):
-        self._json_keys.releasedColor = color
+        new_color = self._validate_color(color)
+        if new_color is None:
+            _logger.debug(f'Invalid released_color received: {color}')
+            return
+        if new_color == self._released_color:
+            return
+        self._released_color = new_color
+        try:
+            self._changed_released_.emit()
+        except Exception as e:
+            _logger.debug(f'emit released_color changed failed: {e}')
 
     def get_pressed_color(self):
-        return self._json_keys.pressedColor
+        return dict(self._pressed_color)
 
     def set_pressed_color(self, color):
-        self._json_keys.pressedColor = color
+        new_color = self._validate_color(color)
+        if new_color is None:
+            _logger.debug(f'Invalid pressed_color received: {color}')
+            return
+        if new_color == self._pressed_color:
+            return
+        self._pressed_color = new_color
+        try:
+            self._changed_pressed_.emit()
+        except Exception as e:
+            _logger.debug(f'emit pressed_color changed failed: {e}')
 
     # Action for how the button will behave when pressed
     # Extended: Send both sequences on every press
@@ -188,7 +244,7 @@ class UsbButtonUI(Device):
     action_model = Property(QObject, get_action_model, constant=True)
     primary_key_sequence = Property(QObject, get_primary_key_sequence, constant=True)
     secondary_key_sequence = Property(QObject, get_secondary_key_sequence, constant=True)
-    released_color = Property(QObject, get_released_color, set_released_color, notify=_changed_released_)
-    pressed_color = Property(QObject, get_pressed_color, set_pressed_color, notify=_changed_pressed_)
+    released_color = Property('QVariant', get_released_color, set_released_color, notify=_changed_released_)
+    pressed_color = Property('QVariant', get_pressed_color, set_pressed_color, notify=_changed_pressed_)
     # action is the three options for usb-button (extended, both, alternate)
     action = Property(str, get_action, set_action, notify=_changed_action_)
