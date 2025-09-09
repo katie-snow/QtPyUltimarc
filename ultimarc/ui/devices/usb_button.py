@@ -160,34 +160,48 @@ class UsbButtonUI(Device):
         return self._secondary_key_sequence
 
     def _validate_color(self, color):
-        """Normalize color input to {'red': int, 'green': int, 'blue': int} with values clamped to [0, 255].
-        Accepts typical PySide6 QVariantMap (dict), mapping-like, or attribute-style objects.
+        """Return a sanitized dict with red, green, blue ints in [0,255].
+        Accepts various inputs from QML/PySide (dict/QVariantMap, objects with attributes, or indexable mappings).
         """
         if color is None:
             return None
 
-        def get_comp(obj, name):
-            if isinstance(obj, dict):
-                return obj.get(name)
-            # Mapping-style via __getitem__
+        def extract(component):
+            # Try dict-like access first
+            if isinstance(color, dict):
+                return color.get(component)
+            # Try mapping-style access via []
             try:
-                return obj[name]
+                return color[component]
             except Exception:
                 pass
-            # Attribute-style access
-            return getattr(obj, name, None)
+            # Try attribute access (e.g., QObject/JS object proxy)
+            try:
+                return getattr(color, component)
+            except Exception:
+                pass
+            # Some QML bindings may pass objects with .toVariant() returning a dict
+            try:
+                to_variant = getattr(color, 'toVariant', None)
+                if callable(to_variant):
+                    v = to_variant()
+                    if isinstance(v, dict):
+                        return v.get(component)
+            except Exception:
+                pass
+            return None
 
-        def to_byte(v):
+        def to_int(v):
             try:
                 iv = int(round(float(v)))
             except Exception:
                 return None
-            return 0 if iv < 0 else 255 if iv > 255 else iv
+            return max(0, min(255, iv))
 
-        r = to_byte(get_comp(color, 'red'))
-        g = to_byte(get_comp(color, 'green'))
-        b = to_byte(get_comp(color, 'blue'))
-        if None in (r, g, b):
+        r = to_int(extract('red'))
+        g = to_int(extract('green'))
+        b = to_int(extract('blue'))
+        if r is None or g is None or b is None:
             return None
         return {'red': r, 'green': g, 'blue': b}
 
@@ -234,7 +248,7 @@ class UsbButtonUI(Device):
         if self._action == action:
             return
         self._action = action
-        _logger.debug(f'action={self._action}')
+        #_logger.debug(f'action={self._action}')
         try:
             self._changed_action_.emit(self._action)
         except Exception as e:
