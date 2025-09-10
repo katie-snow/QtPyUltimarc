@@ -69,6 +69,19 @@ class KeySequenceUI(QAbstractListModel, QObject):
     def get_config(self):
         return self._config
 
+    def set_config(self, seq):
+        # Replace entire sequence with a new one and notify views
+        self.beginResetModel()
+        items = list(seq or [])
+        # pad or truncate to KEYCOUNT
+        if len(items) < KEYCOUNT:
+            items.extend([''] * (KEYCOUNT - len(items)))
+        else:
+            items = items[:KEYCOUNT]
+        # ensure strings (allow None -> '')
+        self._config = [s if isinstance(s, str) else ('' if s is None else str(s)) for s in items]
+        self.endResetModel()
+
 
 class UsbButtonUI(Device):
     _changed_released_ = Signal()  # notify QML when released_color changes
@@ -116,6 +129,8 @@ class UsbButtonUI(Device):
                                         ]}
 
         self._json_config = JSONObject(self.config)
+        # Ensure UI key sequence models reflect current config
+        self._update_sequences_from_config()
 
     def _build_rows(self, flat_seq: typing.List[typing.Any]):
         """Convert a flat sequence of 24 entries into 4 rows of 6 strings each."""
@@ -145,6 +160,44 @@ class UsbButtonUI(Device):
         # Refresh JSON view used elsewhere
         self._json_config = JSONObject(self.config)
 
+    def _flatten_rows(self, rows_dict: dict) -> typing.List[str]:
+        """Flatten a rows dict {'row1':[],..'row4':[]} into a 24-length list of strings."""
+        seq = []
+        if not rows_dict:
+            return [''] * KEYCOUNT
+        for key in ('row1', 'row2', 'row3', 'row4'):
+            row = rows_dict.get(key, [])
+            # ensure list of 6 elements
+            row = list(row or [])
+            if len(row) < 6:
+                row.extend([''] * (6 - len(row)))
+            else:
+                row = row[:6]
+            # force to strings
+            seq.extend([s if isinstance(s, str) else ('' if s is None else str(s)) for s in row])
+        # safety: ensure 24
+        if len(seq) < KEYCOUNT:
+            seq.extend([''] * (KEYCOUNT - len(seq)))
+        else:
+            seq = seq[:KEYCOUNT]
+        return seq
+
+    def _update_sequences_from_config(self):
+        """Populate KeySequenceUI models from self.config['keys'] entries."""
+        keys_list = (self.config or {}).get('keys', []) or []
+        # find primary and secondary dicts
+        primary = None
+        secondary = None
+        for k in keys_list:
+            if isinstance(k, dict):
+                if k.get('sequence') == 'primary':
+                    primary = k
+                elif k.get('sequence') == 'secondary':
+                    secondary = k
+        # set sequences
+        self._primary_key_sequence.set_config(self._flatten_rows(primary))
+        self._secondary_key_sequence.set_config(self._flatten_rows(secondary))
+
     def write_device(self):
         # Ensure keys are up-to-date from UI models before writing to device
         self._update_keys_from_sequences()
@@ -163,6 +216,21 @@ class UsbButtonUI(Device):
             return True
         return False
 
+    def load_file(self, file):
+        resource_types = ['usb-button-config']
+        config = USBButtonDevice.validate_config_base(file.toLocalFile(), resource_types)
+        if not config:
+            return False
+        # ensure it matches full schema
+        if not USBButtonDevice.validate_config(config, 'usb-button-config.schema'):
+            return False
+        # assign and propagate to models
+        self.config = config
+        self._json_config = JSONObject(self.config)
+        # update key sequences for UI from loaded file
+        self._update_sequences_from_config()
+        return True
+    
     def roleNames(self) -> typing.Optional[typing.Dict]:
         roles = OrderedDict()
         for k, v in usbButtonRoleMap.items():
