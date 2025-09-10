@@ -3,6 +3,7 @@
 # file 'LICENSE', which is part of this source code package.
 #
 import ctypes as ct
+import json
 import logging
 from enum import IntEnum
 
@@ -193,3 +194,13 @@ class USBButtonDevice(USBDeviceHandle):
 
         return self.write_alt(USBRequestCode.SET_CONFIGURATION, 0x00, USBButtonWIndex, data,
                               ct.sizeof(data))
+
+    @classmethod
+    def write_to_file(cls, data: dict, file_path, indent=None):
+        try:
+            with open(file_path, 'w') as h:
+                json.dump(data, h, indent=indent)
+                return True
+        except FileNotFoundError as err:
+            _logger.debug(err)
+            return False

@@ -2,6 +2,7 @@
 # This file is subject to the terms and conditions defined in the
 # file 'LICENSE', which is part of this source code package.
 #
+import json
 import logging
 import typing
 
@@ -32,8 +33,7 @@ usbButtonRoleMap = OrderedDict(zip(list(UsbButtonRoles), [k.name.lower() for k i
 
 
 class KeySequenceUI(QAbstractListModel, QObject):
-    #_change_key_ = Signal(str)
-    #_change_index_ = Signal(int)
+    ### Holds the model data for the USB Button key sequence for the Primary and Secondary actions ###
 
     def __init__(self):
         super().__init__()
@@ -55,13 +55,9 @@ class KeySequenceUI(QAbstractListModel, QObject):
         if not index.isValid():
             return None
 
-        # _logger.debug(f'role={role} index={index.row()}')
-
         if role == self.SequenceRoles.ACTION:
-            # _logger.debug(f'action={self._config[index.row()]}')
             return self._config[index.row()]
 
-        _logger.debug(f'action_model=None')
         return None
 
     def setData(self, index: QModelIndex, value, role: int = ...):
@@ -86,57 +82,86 @@ class UsbButtonUI(Device):
         super(UsbButtonUI, self).__init__(args, env, attached, device_class_id,
                                           name, device_class_descr, key)
 
-        self.config_color = None
-        self.config_keys = None
-        self._json_color = None
-        self._json_keys = None
-        self._action = 'extended'
+        self.config = None
+        self._json_config = None
 
         self._action_model = ActionModel()
-
         self._primary_key_sequence = KeySequenceUI()
         self._secondary_key_sequence = KeySequenceUI()
-
-        # Internal color state (0..255 ints)
-        self._released_color = {'red': 255, 'green': 255, 'blue': 255}
-        self._pressed_color = {'red': 255, 'green': 255, 'blue': 255}
 
     def get_qml(self):
         self.populate()
         return 'UsbButtonDetail.qml'
 
     def populate(self):
-        if self.config_color is None:
+        if self.config is None:
             if self.attached:
                 devices = [dev for dev in
                            self.env.devices.filter(class_id=DeviceClassID.USBButton, bus=self.args.bus,
                                                    address=self.args.address)]
                 for dev in devices:
                     with dev as dev_h:
+                        # TODO: Add function to device for getting the complete configuration
                         self.config_color = dev_h.to_json_str(dev_h.get_color())
             else:
-                self.config_color = {'schemaVersion': 2.0, 'resourceType': 'usb-button-color',
-                                     'deviceClass': self.device_class_id.value,
-                                     'colorRGB': {'red': 1, 'green': 1, 'blue': 1}}
+                self.config = {'schemaVersion': 2.0, 'resourceType': 'usb-button-config',
+                               'deviceClass': self.device_class_id.value,
+                               'action': 'extended',
+                               'releasedColor': {'red': 255, 'green': 255, 'blue': 255},
+                               'pressedColor': {'red': 255, 'green': 255, 'blue': 255},
+                               'keys': [{'sequence': 'primary',
+                                         'row1':[], 'row2': [], 'row3': [], 'row4': []},
+                                        {'sequence': 'secondary',
+                                         'row1': [], 'row2': [], 'row3': [], 'row4': []}
+                                        ]}
 
-                self.config_keys = {}
-                # self.config_keys = {'schemaVersion': 2.0, 'resourceType': 'usb-button-color',
-                #                      'deviceClass': self.device_class_id.value, 'action': 'extended',
-                #                     'pressedColor': {'red': 255, 'green': 255, 'blue': 255},
-                #                     'releasedColor': {'red': 255, 'green': 255, 'blue': 255},
-                #                     'keys': {{'sequence': 'primary', 'row1': [], 'row2': [], 'row3': [], 'row4': []},
-                #                     {'sequence': 'secondary', 'row1': [], 'row2': [], 'row3': [], 'row4': []}}}
+        self._json_config = JSONObject(self.config)
 
-        self._json_color = JSONObject(self.config_color)
-        self._json_keys = JSONObject(self.config_keys)
+    def _build_rows(self, flat_seq: typing.List[typing.Any]):
+        """Convert a flat sequence of 24 entries into 4 rows of 6 strings each."""
+        # Ensure length
+        seq = list(flat_seq or [])
+        if len(seq) < KEYCOUNT:
+            seq.extend([''] * (KEYCOUNT - len(seq)))
+        else:
+            seq = seq[:KEYCOUNT]
+        # Coerce to strings; allow None -> ''
+        seq = [s if isinstance(s, str) else ('' if s is None else str(s)) for s in seq]
+        return {
+            'row1': seq[0:6],
+            'row2': seq[6:12],
+            'row3': seq[12:18],
+            'row4': seq[18:24],
+        }
+
+    def _update_keys_from_sequences(self):
+        """Build self.config['keys'] from the current KeySequenceUI models."""
+        primary_rows = self._build_rows(self._primary_key_sequence.get_config())
+        secondary_rows = self._build_rows(self._secondary_key_sequence.get_config())
+        self.config['keys'] = [
+            dict(sequence='primary', **primary_rows),
+            dict(sequence='secondary', **secondary_rows),
+        ]
+        # Refresh JSON view used elsewhere
+        self._json_config = JSONObject(self.config)
 
     def write_device(self):
+        # Ensure keys are up-to-date from UI models before writing to device
+        self._update_keys_from_sequences()
         devices = [dev for dev in
                    self.env.devices.filter(class_id=DeviceClassID.USBButton, bus=self.args.bus,
                                            address=self.args.address)]
         for dev in devices:
             with dev as dev_h:
                 return dev_h.set_config_ui(self.config)
+
+    def write_file(self, file):
+        # Ensure keys are up-to-date from UI models before writing to file
+        self._update_keys_from_sequences()
+        if USBButtonDevice.validate_config(self.config, 'usb-button-config.schema'):
+            USBButtonDevice.write_to_file(self.config, file.toLocalFile(), indent=2)
+            return True
+        return False
 
     def roleNames(self) -> typing.Optional[typing.Dict]:
         roles = OrderedDict()
@@ -206,53 +231,44 @@ class UsbButtonUI(Device):
         return {'red': r, 'green': g, 'blue': b}
 
     def get_released_color(self):
-        return dict(self._released_color)
+        return dict(self.config['releasedColor'])
 
     def set_released_color(self, color):
         new_color = self._validate_color(color)
         if new_color is None:
             _logger.debug(f'Invalid released_color received: {color}')
             return
-        if new_color == self._released_color:
+        if new_color == self.config['releasedColor']:
             return
-        self._released_color = new_color
-        try:
-            self._changed_released_.emit()
-        except Exception as e:
-            _logger.debug(f'emit released_color changed failed: {e}')
+        self.config['releasedColor'] = new_color
+        self._json_config = JSONObject(self.config)
 
     def get_pressed_color(self):
-        return dict(self._pressed_color)
+        return dict(self.config['pressedColor'])
 
     def set_pressed_color(self, color):
         new_color = self._validate_color(color)
         if new_color is None:
             _logger.debug(f'Invalid pressed_color received: {color}')
             return
-        if new_color == self._pressed_color:
+        if new_color == self.config['pressedColor']:
+        #if new_color == self._pressed_color:
             return
-        self._pressed_color = new_color
-        try:
-            self._changed_pressed_.emit()
-        except Exception as e:
-            _logger.debug(f'emit pressed_color changed failed: {e}')
+        self.config['pressedColor'] = new_color
+        self._json_config = JSONObject(self.config)
 
     # Action for how the button will behave when pressed
     # Extended: Send both sequences on every press
     # Alternate: Send primary then secondary on alternate press
     # Both: Send primary on short press, Secondary on long press
     def get_action(self):
-        return self._action
+        return self._json_config.action
 
     def set_action(self, action):
-        if self._action == action:
+        if self.config['action'] == action:
             return
-        self._action = action
-        #_logger.debug(f'action={self._action}')
-        try:
-            self._changed_action_.emit(self._action)
-        except Exception as e:
-            _logger.debug(f'emit action changed failed: {e}')
+        self.config['action'] = action
+        self._json_config = JSONObject(self.config)
 
     # action_model is for the grid combo boxes that contain key presses
     action_model = Property(QObject, get_action_model, constant=True)
@@ -260,5 +276,4 @@ class UsbButtonUI(Device):
     secondary_key_sequence = Property(QObject, get_secondary_key_sequence, constant=True)
     released_color = Property('QVariant', get_released_color, set_released_color, notify=_changed_released_)
     pressed_color = Property('QVariant', get_pressed_color, set_pressed_color, notify=_changed_pressed_)
-    # action is the three options for usb-button (extended, both, alternate)
     action = Property(str, get_action, set_action, notify=_changed_action_)
