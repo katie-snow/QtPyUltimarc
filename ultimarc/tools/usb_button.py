@@ -92,6 +92,13 @@ class USBButtonClass(object):
                         _logger.error(f'{dev.dev_key} ({dev.bus},{dev.address}): ' +
                                       _('failed to apply configuration to device.'))
 
+        elif self.args.get_config:
+            for dev in devices:
+                with dev as dev_h:
+                    #indent = int(self.args.indent) if self.args.indent else None
+                    # response = dev_h.get_device_config(indent, self.args.file)
+                    response = dev_h.read_device()
+                    _logger.info(response)
         return 0
 
 
@@ -109,12 +116,14 @@ def run():
                         action='store_true')
     parser.add_argument('--set-config', help=_('Set button config from config file.'), type=str, default=None,
                         metavar='CONFIG-FILE')
+    parser.add_argument('--get-config', help=_('output current usb button configuration'), default=False,
+                        action='store_true')
     parser.add_argument('--temporary', help=_('Apply config until device unplugged.'), default=False,
                         action='store_true')
 
     args = parser.parse_args()
 
-    num_args = sum([bool(args.set_color), args.set_random_color, args.get_color, bool(args.set_config)])
+    num_args = sum([bool(args.set_color), args.set_random_color, args.get_color, bool(args.set_config), args.get_config])
     if num_args == 0:
         _logger.warning(_('Nothing to do.'))
         return 0

@@ -115,7 +115,7 @@ class UsbButtonUI(Device):
                 for dev in devices:
                     with dev as dev_h:
                         # TODO: Add function to device for getting the complete configuration
-                        self.config_color = dev_h.to_json_str(dev_h.get_color())
+                        self.config = dev_h.convert_to_json(dev_h.read_device())
             else:
                 self.config = {'schemaVersion': 2.0, 'resourceType': 'usb-button-config',
                                'deviceClass': self.device_class_id.value,

@@ -70,6 +70,21 @@ class USBButtonConfigStruct(UltimarcStruct):
         ('padding', ROWARRAY)
     ]
 
+class USBButtonRequestStruct(UltimarcStruct):
+    """ Defines a request message for the USB button device. """
+    _fields_ = [
+        ('configApplication', ct.c_uint8),  # Must be 0x59 for request
+        ('opDetail', ct.c_uint8),  # Must always be 0xdd.
+        ('mode', ct.c_uint8),  # Must be 0x00
+        ('reserved', ct.c_uint8),  # Must be 0x00.
+    ]
+
+class USBButtonResponseStruct(UltimarcStruct):
+    """ Defines the structure used by most Ultimarc boards.  Total size is 64 """
+    _fields_ = [
+        ('header', USBButtonRequestStruct),  # 1 - 4  (4 bytes)
+        ('bytes', ct.c_ubyte * 60),  # 5 - 64
+    ]
 
 class USBButtonDevice(USBDeviceHandle):
     """
@@ -194,6 +209,27 @@ class USBButtonDevice(USBDeviceHandle):
 
         return self.write_alt(USBRequestCode.SET_CONFIGURATION, 0x00, USBButtonWIndex, data,
                               ct.sizeof(data))
+
+    def get_device_config (self, indent=None, file=None):
+        """ Return a json string of the device configuration """
+        config = self.read_device()
+        json_obj = self.convert_to_json(config)
+
+    def read_device(self):
+        """ Return the configuration of the connected USBButton """
+        request = USBButtonRequestStruct(0x59, 0xdd, 0x00, 0x00)
+        # ret = self.write_raw(USBRequestCode.SET_CONFIGURATION, 0x03, USBButtonWIndex,
+        ret = self.write_raw(USBRequestCode.SET_CONFIGURATION, 0x200, 0x00,
+                         request, ct.sizeof(request))
+        return None
+        #return self.read_interrupt(0x84, USBButtonResponseStruct()) if ret else None
+
+    def convert_to_json(self, usb_struct):
+        """ Convert from USBStruct to JSON structure """
+        config = {'schemaVersion': 2.0, 'resourceType': 'usb-button-config',
+                  'deviceClass': self.class_id}
+
+        _logger.debug(usb_struct)
 
     @classmethod
     def write_to_file(cls, data: dict, file_path, indent=None):
