@@ -382,15 +382,17 @@ class USBDeviceHandle:
         payload = (ct.c_ubyte * length)(0)
         payload_ptr = ct.byref(payload)
 
-        # Here don't add the report_id into the response structure, 4 instead of 5
-        for pos in range(0, ct.sizeof(response), 4 if uses_report_id else 5):
+        # Don't count the report_id into the response structure size, 4 instead of 5
+        for pos in range(0, ct.sizeof(response), 4 if not uses_report_id else 5):
             self._make_interrupt_transfer(endpoint, payload_ptr, length, ct.byref(actual_length))
-            # Remove report_id (byte 0) if it is used
-            actual_length = actual_length \
-                if actual_length == length and not uses_report_id else ct.c_int(actual_length.value - 1)
+
+            # Remove report_id (byte 0) from copy length if it is used
+            copy_length = actual_length.value - (1 if uses_report_id else 0)
+            if copy_length < 0:
+                copy_length = 0
             ct.memmove(ct.addressof(response) + pos,
                        ct.byref(payload, 1) if uses_report_id else ct.byref(payload),
-                       actual_length.value)
+                       copy_length)
             _logger.debug(_(' '.join(hex(x) for x in payload)))
 
         return response
