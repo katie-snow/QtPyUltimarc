@@ -114,8 +114,7 @@ class UsbButtonUI(Device):
                                                    address=self.args.address)]
                 for dev in devices:
                     with dev as dev_h:
-                        # TODO: Add function to device for getting the complete configuration
-                        self.config = dev_h.convert_to_json(dev_h.read_device())
+                        self.config = dev_h.create_json(dev_h.read_device())
             else:
                 self.config = {'schemaVersion': 2.0, 'resourceType': 'usb-button-config',
                                'deviceClass': self.device_class_id.value,
@@ -206,7 +205,7 @@ class UsbButtonUI(Device):
                                            address=self.args.address)]
         for dev in devices:
             with dev as dev_h:
-                return dev_h.set_config_ui(self.config)
+                return dev_h.set_config_ui(self._json_config)
 
     def write_file(self, file):
         # Ensure keys are up-to-date from UI models before writing to file
