@@ -95,9 +95,8 @@ class USBButtonClass(object):
         elif self.args.get_config:
             for dev in devices:
                 with dev as dev_h:
-                    #indent = int(self.args.indent) if self.args.indent else None
-                    # response = dev_h.get_device_config(indent, self.args.file)
-                    response = dev_h.read_device()
+                    indent = int(self.args.indent) if self.args.indent else None
+                    response = dev_h.get_device_config(indent, self.args.file)
                     _logger.info(response)
         return 0
 
@@ -114,11 +113,15 @@ def run():
                         action='store_true')
     parser.add_argument('--get-color', help=_('output current usb button color RGB value'), default=False,
                         action='store_true')
-    parser.add_argument('--set-config', help=_('Set button config from config file.'), type=str, default=None,
+    parser.add_argument('--set-config', help=_('set button config from config file.'), type=str, default=None,
                         metavar='CONFIG-FILE')
-    parser.add_argument('--get-config', help=_('output current usb button configuration'), default=False,
+    parser.add_argument('--get-config', help=_('output current configuration'), default=False,
                         action='store_true')
-    parser.add_argument('--temporary', help=_('Apply config until device unplugged.'), default=False,
+    parser.add_argument('--indent', help=_('set the indent level for the output'),
+                       default=None, metavar='INT')
+    parser.add_argument('--file', help=_('file path to write out the device configuration'), type=str,
+                       default=None, metavar='FILE-NAME')
+    parser.add_argument('--temporary', help=_('apply config until device unplugged.'), default=False,
                         action='store_true')
 
     args = parser.parse_args()
@@ -147,6 +150,13 @@ def run():
         if not os.path.exists(args.set_config):
             _logger.error(_('Unable to find configuration file specified in argument.'))
             return -1
+
+    if not args.get_config and args.indent:
+        _logger.error(_('The --indent argument can only be used with the --get_config argument '))
+        return -1
+    if not args.get_config and args.file:
+        _logger.error(_('The --file argument can only be used with the --get_config argument '))
+        return -1
 
     with ToolContextManager(tool_cmd, args) as tool_env:
         process = USBButtonClass(args, tool_env)
