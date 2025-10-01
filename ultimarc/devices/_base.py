@@ -20,7 +20,7 @@ from ultimarc.devices.usb_button import USBButtonDevice
 from ultimarc.devices.aimtrak import AimTrakDevice
 from ultimarc.devices.mini_pac import MiniPacDevice
 from ultimarc.devices.ultrastik import UltraStikPre2015Device, UltraStikDevice
-from ultimarc.devices.ultimateIO import UltimateIODevice
+from ultimarc.devices.ultimate_io import UltimateIODevice
 from ultimarc.exceptions import USBDeviceNotFoundError
 
 _logger = logging.getLogger('ultimarc')

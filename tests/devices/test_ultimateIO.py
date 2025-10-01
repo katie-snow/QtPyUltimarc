@@ -12,7 +12,7 @@ from unittest.mock import patch
 from ultimarc.devices._device import USBDeviceHandle
 from ultimarc.devices._mappings import get_ipac_series_debounce_key
 from ultimarc.devices._structures import PacConfigUnion
-from ultimarc.devices.ultimateIO import UltimateIODevice
+from ultimarc.devices.ultimate_io import UltimateIODevice
 from ultimarc.system_utils import git_project_root
 
 
