@@ -71,7 +71,7 @@ class DeviceClassID(Enum):
     IPAC4 = 'ipac4'
     JPAC = 'jpac'
     UltraStik = 'ultrastik'  # Represents pre-2015 devices and 2015 and newer devices
-    UltimateIO = 'ultimateIO'
+    UltimateIO = 'ultimate-io'
 
 
 class USBDeviceInfo:

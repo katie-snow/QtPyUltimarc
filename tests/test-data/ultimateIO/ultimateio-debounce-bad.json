@@ -1,7 +1,7 @@
 {
   "schemaVersion" : 2.0,
-  "resourceType" : "ultimateIO-pin",
-  "deviceClass" : "ultimateIO",
+  "resourceType" : "ultimate-io-pin",
+  "deviceClass" : "ultimate-io",
   "debounce" : "invalid debounce value",
   "macros": [
     {"name": "macro #1", "action": ["s", "a", "b"]},

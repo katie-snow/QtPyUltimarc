@@ -17,7 +17,7 @@ _logger = logging.getLogger('ultimarc')
 
 # Tool_cmd and tool_desc name are required.
 # Remember to add/update bash completion in 'tools.bash'
-tool_cmd = _('ultimateio')
+tool_cmd = _('ultimate-io')
 tool_desc = _('Manage UltimateIO devices')
 
 
@@ -42,7 +42,7 @@ class UltimateIOClass(object):
                                                 address=self.args.address)]
 
         if not devices:
-            _logger.error(_('No ultimateIO devices found, aborting'))
+            _logger.error(_('No ultimate-io devices found, aborting'))
             return -1
 
         # Get the pin configuration from the device
@@ -53,7 +53,7 @@ class UltimateIOClass(object):
                     response = dev_h.get_device_config(indent, self.args.file)
                     _logger.info(response)
 
-        # Set ultimateIO device pin configuration from a configuration file
+        # Set ultimate-io device pin configuration from a configuration file
         if self.args.set_pin_config:
             for dev in devices:
                 with dev as dev_h:
@@ -145,20 +145,20 @@ def run():
     group = parser.add_argument_group()
 
     # TODO:  Setup additional program arguments here.
-    group.add_argument('--get-pin-config', help=_('Get ultimateIO device pin config'), default=False, action='store_true')
+    group.add_argument('--get-pin-config', help=_('Get ultimate-io device pin config'), default=False, action='store_true')
     group.add_argument('--indent', help=_('Set the json indent level for the output of the device configuration'),
                        default=None, metavar='INT')
     group.add_argument('--file', help=_('File path to write out the json of the device configuration'), type=str,
                        default=None, metavar='FILE-NAME')
-    group.add_argument('--set-pin-config', help=_('Set ultimateIO device pin config from config file'), type=str, default=None,
+    group.add_argument('--set-pin-config', help=_('Set ultimate-io device pin config from config file'), type=str, default=None,
                        metavar='CONFIG-FILE')
     group.add_argument('--current',
-                       help=_('Use ultimateIO current pin config when applying config from file'), default=False,
+                       help=_('Use ultimate-io current pin config when applying config from file'), default=False,
                        action='store_true')
     group.add_argument('--set-debounce', help=_('Set debounce value'), type=str, metavar='STR')
     group.add_argument('--set-pin', help=_('Set single pin'), type=str,
                        default=None, metavar=('PIN', 'ACTION', 'ALT_ACTION', 'IS_SHIFT'), nargs=4)
-    group.add_argument('--set-led-config', help=_('Set ultimateIO device LEDs from config file'), type=str,
+    group.add_argument('--set-led-config', help=_('Set ultimate-io device LEDs from config file'), type=str,
                        default=None,
                        metavar='CONFIG-FILE')
     group.add_argument('--set-led', help=_('Set single LED'), type=int, default=None,

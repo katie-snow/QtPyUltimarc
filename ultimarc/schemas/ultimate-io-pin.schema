@@ -18,13 +18,13 @@
       "$id": "#root/resourceType",
       "title": "Resourcetype",
       "type": "string",
-      "const": "ultimateIO-pin"
+      "const": "ultimate-io-pin"
     },
     "deviceClass": {
       "$id": "#root/deviceClass",
       "title": "Deviceclass",
       "type": "string",
-      "const": "ultimateIO"
+      "const": "ultimate-io"
     },
     "debounce": {
       "$id": "#root/debounce",

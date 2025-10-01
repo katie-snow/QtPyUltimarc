@@ -26,14 +26,14 @@ class UltimateIODeviceTest(TestCase):
         """ This is called before every test method in the test class """
         super(UltimateIODeviceTest, self).setUp()
 
-        schema_file = os.path.join(git_project_root(), 'ultimarc/schemas/ultimateio-led.schema')
+        schema_file = os.path.join(git_project_root(), 'ultimarc/schemas/ultimate-io-led.schema')
         self.assertTrue(os.path.exists(schema_file))
 
         # https://python-jsonschema.readthedocs.io/en/stable/
         with open(schema_file) as h:
             self.ultimateio_led_schema = json.loads(h.read())
 
-        schema_file = os.path.join(git_project_root(), 'ultimarc/schemas/ultimateio-pin.schema')
+        schema_file = os.path.join(git_project_root(), 'ultimarc/schemas/ultimate-io-pin.schema')
         self.assertTrue(os.path.exists(schema_file))
 
         # https://python-jsonschema.readthedocs.io/en/stable/
@@ -221,7 +221,7 @@ class UltimateIODeviceTest(TestCase):
 
         prev_dir = os.path.abspath(os.curdir)
         os.chdir(os.path.abspath(__file__).split('/QtPyUltimarc/')[0])
-        self.assertTrue(dev.load_config_schema('ultimateio-led.schema'))
+        self.assertTrue(dev.load_config_schema('ultimate-io-led.schema'))
         os.chdir(prev_dir)
 
     @patch.object(USBDeviceHandle, '_get_descriptor_fields', return_value=None)

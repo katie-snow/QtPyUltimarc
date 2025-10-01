@@ -20,9 +20,9 @@ class UltimateIOSchemaTest(TestCase):
         """ This is called before every test method in the test class """
         super(UltimateIOSchemaTest, self).setUp()
 
-        led_schema_file = os.path.join(git_project_root(), 'ultimarc/schemas/ultimateio-led.schema')
+        led_schema_file = os.path.join(git_project_root(), 'ultimarc/schemas/ultimate-io-led.schema')
         self.assertTrue(os.path.exists(led_schema_file))
-        pin_schema_file = os.path.join(git_project_root(), 'ultimarc/schemas/ultimateio-pin.schema')
+        pin_schema_file = os.path.join(git_project_root(), 'ultimarc/schemas/ultimate-io-pin.schema')
         self.assertTrue(os.path.exists(pin_schema_file))
 
         # https://python-jsonschema.readthedocs.io/en/stable/
@@ -32,7 +32,7 @@ class UltimateIOSchemaTest(TestCase):
             self.ultimateio_pin_schema = json.loads(h.read())
 
     def test_ultimateio_good(self):
-        """ Test that the ultimateIO-pin and ultimateIO-led config matches their respective schemas """
+        """ Test that the ultimate-io-pin and ultimate-io-led config matches their respective schemas """
         config_file = os.path.join(git_project_root(), 'ultimarc/examples/ultimateIO/ultimateio-led.json')
         self.assertTrue(os.path.exists(config_file))
         with open(config_file) as h:
@@ -76,7 +76,7 @@ class UltimateIOSchemaTest(TestCase):
             validate(bad_config, self.ultimateio_led_schema)
 
     def test_ultimateio_bad_pin_json(self):
-        """ Test that bad json configurations fail against the ultimateio pin schema """
+        """ Test that bad json configurations fail against the ultimate-io pin schema """
 
         # Macro entry
         bad_config_file = os.path.join(git_project_root(),
@@ -112,7 +112,7 @@ class UltimateIOSchemaTest(TestCase):
             validate(bad_config, self.ultimateio_pin_schema)
 
     def test_ultimateio_bad_led_json(self):
-        """ Test that bad json configurations fail against the ultimateio led schema """
+        """ Test that bad json configurations fail against the ultimate-io led schema """
 
         # all intensities
         bad_config_file = os.path.join(git_project_root(),

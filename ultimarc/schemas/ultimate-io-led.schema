@@ -18,13 +18,13 @@
       "$id": "#root/resourceType",
       "title": "Resourcetype",
       "type": "string",
-      "const": "ultimateIO-led"
+      "const": "ultimate-io-led"
     },
     "deviceClass": {
       "$id": "#root/deviceClass",
       "title": "Deviceclass",
       "type": "string",
-      "const": "ultimateIO"
+      "const": "ultimate-io"
     },
     "randomState": {
       "$id": "#root/randomState",

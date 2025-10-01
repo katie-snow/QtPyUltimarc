@@ -15,9 +15,9 @@ from ultimarc.devices._structures import PacHeaderStruct, PacStruct, PacConfigUn
 
 _logger = logging.getLogger('ultimarc')
 
-ULTIMATE_IO_RESOURCE_TYPES = ['ultimateIO_pin', 'ultimateIO_led']
+ULTIMATE_IO_RESOURCE_TYPES = ['ultimate-io-pin', 'ultimate-io-led']
 
-# Pin mapping for ultimateIO device
+# Pin mapping for ultimate-io device
 # code_index: Normal action
 # alternate_code_index: Alternate action
 # alternate_index: Which pin is the shift code
@@ -75,8 +75,8 @@ PinMapping = {
 
 
 class UltimateIODevice(USBDeviceHandle):
-    """ Manage an ultimateIO device """
-    class_id = 'ultimateIO'
+    """ Manage an ultimate-io device """
+    class_id = 'ultimate-io'
     class_descr = _('ULTIMATE IO')
     interface = 2
     ULTIMATEIO_INDEX = ct.c_uint16(0x02)
@@ -95,14 +95,14 @@ class UltimateIODevice(USBDeviceHandle):
         json_obj = self.to_json_str(config)
         if file:
             if self.write_to_file(json_obj, file, indent):
-                return _('Wrote ultimateIO configuration to ' + file)
+                return _('Wrote ultimate-io configuration to ' + file)
             else:
-                return _('Failed to write ultimateIO configuration to file.')
+                return _('Failed to write ultimate-io configuration to file.')
         else:
             return json.dumps(json_obj, indent=indent) if config else None
 
     def read_device(self):
-        """ Return the configuration of the connected ultimateIO """
+        """ Return the configuration of the connected ultimate-io """
         request = PacHeaderStruct(0x59, 0xdd, 0x0f, 0)
         ret = self.write(USBRequestCode.SET_CONFIGURATION, int(0x03), self.ULTIMATEIO_INDEX,
                          request, ct.sizeof(request))
@@ -110,7 +110,7 @@ class UltimateIODevice(USBDeviceHandle):
 
     def to_json_str(self, ultimate_struct):
         """ Converts a PacStruct to a json object """
-        json_obj = {'schemaVersion': 2.0, 'resourceType': 'ultimateIO-pin', 'deviceClass': self.class_id}
+        json_obj = {'schemaVersion': 2.0, 'resourceType': 'ultimate-io-pin', 'deviceClass': self.class_id}
 
         # header configuration
         header = PacConfigUnion()
@@ -150,7 +150,7 @@ class UltimateIODevice(USBDeviceHandle):
                 pins.append(pin)
         json_obj['pins'] = pins
 
-        return json_obj if self.validate_config(json_obj, 'ultimateio-pin.schema') else None
+        return json_obj if self.validate_config(json_obj, 'ultimate-io-pin.schema') else None
 
     @classmethod
     def _create_macro_array_(cls, pac_struct):
@@ -196,8 +196,8 @@ class UltimateIODevice(USBDeviceHandle):
     def set_led_config(self, config_file):
         """ Write a new LED configuration to the current UltimateUI device """
 
-        # List of possible 'resourceType' values in the config file for an ultimateIO device.
-        resource_types = ['ultimateIO-led']
+        # List of possible 'resourceType' values in the config file for an ultimate-io device.
+        resource_types = ['ultimate-io-led']
 
         # Validate against the base schema.
         valid_config = self.validate_config_base(config_file, resource_types)
@@ -206,12 +206,12 @@ class UltimateIODevice(USBDeviceHandle):
 
         config = JSONObject(valid_config)
 
-        if config.deviceClass != 'ultimateIO':
-            _logger.error(_('Configuration device class is not "ultimateIO".'))
+        if config.deviceClass != 'ultimate-io':
+            _logger.error(_('Configuration device class is not "ultimate-io".'))
             return False
 
-        if config.resourceType == 'ultimateio-led':
-            if not self.validate_config(config, 'ultimateio-led.schema'):
+        if config.resourceType == 'ultimate-io-led':
+            if not self.validate_config(config, 'ultimate-io-led.schema'):
                 return False
 
         if config.allIntensities.active:
@@ -271,7 +271,7 @@ class UltimateIODevice(USBDeviceHandle):
             if res else False
 
     def set_pin(self, pin_config):
-        """ Write a pin to the current ultimateIO device """
+        """ Write a pin to the current ultimate-io device """
         pin = pin_config[0]
         # Get the current configuration from the device
         cur_config = self.read_device()
@@ -324,7 +324,7 @@ class UltimateIODevice(USBDeviceHandle):
                               cur_config, ct.sizeof(cur_config))
 
     def set_debounce(self, debounce):
-        """ Set debounce value to the current ultimateIO device """
+        """ Set debounce value to the current ultimate-io device """
         val = debounce.lower()
         if val in IPACSeriesDebounce:
             # Get the current configuration from the device
@@ -349,7 +349,7 @@ class UltimateIODevice(USBDeviceHandle):
                               cur_config, ct.sizeof(cur_config))
 
     def set_config_ui(self, config_dict: dict):
-        """ Write a new configuration from UI to the current ultimateIO device """
+        """ Write a new configuration from UI to the current ultimate-io device """
 
         # Insert the new configuration into the PacStruct data object
         res, data = self._create_device_struct_(config_dict)
@@ -368,8 +368,8 @@ class UltimateIODevice(USBDeviceHandle):
     def _create_device_message_(self, config_file: str, cur_device_config=None):
         """ Create the message to be sent to the device """
 
-        # List of possible 'resourceType' values in the config file for an ultimateIO device.
-        resource_types = ['ultimateIO-pin']
+        # List of possible 'resourceType' values in the config file for an ultimate-io device.
+        resource_types = ['ultimate-io-pin']
 
         # Validate against the base schema.
         valid_config = self.validate_config_base(config_file, resource_types)
@@ -382,18 +382,18 @@ class UltimateIODevice(USBDeviceHandle):
         data = cur_device_config if cur_device_config else PacStruct()
         config = JSONObject(json_config)
 
-        if config.deviceClass != 'ultimateIO':
-            _logger.error(_('Configuration device class is not "ultimateIO".'))
+        if config.deviceClass != 'ultimate-io':
+            _logger.error(_('Configuration device class is not "ultimate-io".'))
             return False, None
 
         # Determine which config resource type we have.
-        if config.resourceType == 'ultimateIO-pin':
+        if config.resourceType == 'ultimate-io-pin':
             return self._create_pin_data_(config, cur_device_config, data)
 
         return False, None
 
     def _create_pin_data_(self, config, cur_device_config, data):
-        if not self.validate_config(config, 'ultimateio-pin.schema'):
+        if not self.validate_config(config, 'ultimate-io-pin.schema'):
             return False, None
         # Prep the data structure
         data.bytes[13] = 0xff
@@ -445,7 +445,7 @@ class UltimateIODevice(USBDeviceHandle):
 
             if len(config.macros) > self.MACRO_MAX_COUNT:
                 _logger.debug(_(f'There are more than {self.MACRO_MAX_COUNT} '
-                                f'macros defined for the ultimateIO device'))
+                                f'macros defined for the ultimate-io device'))
                 return False, None
 
             for macro in config.macros:
@@ -466,7 +466,7 @@ class UltimateIODevice(USBDeviceHandle):
 
                         if cur_size_count > self.MACRO_MAX_SIZE:
                             _logger.debug(_(f'There are more than {self.MACRO_MAX_SIZE} '
-                                            f'macro values defined for the ultimateIO device'))
+                                            f'macro values defined for the ultimate-io device'))
                             return False, None
         except AttributeError:
             pass
@@ -503,5 +503,5 @@ class UltimateIODevice(USBDeviceHandle):
                     pass
 
             except KeyError:
-                _logger.debug(_(f'Pin {pin.name} does not exists in ultimateIO device'))
+                _logger.debug(_(f'Pin {pin.name} does not exists in ultimate-io device'))
         return True, data
