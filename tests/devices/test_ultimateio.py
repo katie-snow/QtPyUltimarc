@@ -49,7 +49,7 @@ class UltimateIODeviceTest(TestCase):
 
         dev.__class__ = UltimateIODevice
 
-        config_file = os.path.join(git_project_root(), 'ultimarc/examples/ultimateIO/ultimateio-pin.json')
+        config_file = os.path.join(git_project_root(), 'ultimarc/examples/ultimateIO/ultimate-io-pin.json')
         valid, data = dev._create_device_message_(config_file)
         # print(data)
         self.assertTrue(valid)
@@ -197,7 +197,7 @@ class UltimateIODeviceTest(TestCase):
         # debounce is short (0x02)
         self.assertTrue(header.config.debounce == 0x02)
 
-        config_file = os.path.join(git_project_root(), 'ultimarc/examples/ultimateIO/ultimateio-pin.json')
+        config_file = os.path.join(git_project_root(), 'ultimarc/examples/ultimateIO/ultimate-io-pin.json')
         valid, data = dev._create_device_message_(config_file)
 
         header = PacConfigUnion()

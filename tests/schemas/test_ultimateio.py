@@ -33,13 +33,13 @@ class UltimateIOSchemaTest(TestCase):
 
     def test_ultimateio_good(self):
         """ Test that the ultimate-io-pin and ultimate-io-led config matches their respective schemas """
-        config_file = os.path.join(git_project_root(), 'ultimarc/examples/ultimateIO/ultimateio-led.json')
+        config_file = os.path.join(git_project_root(), 'ultimarc/examples/ultimateIO/ultimate-io-led.json')
         self.assertTrue(os.path.exists(config_file))
         with open(config_file) as h:
             good_config = json.loads(h.read())
         self.assertIsNone(validate(good_config, self.ultimateio_led_schema))
 
-        config_file = os.path.join(git_project_root(), 'ultimarc/examples/ultimateIO/ultimateio-pin.json')
+        config_file = os.path.join(git_project_root(), 'ultimarc/examples/ultimateIO/ultimate-io-pin.json')
         self.assertTrue(os.path.exists(config_file))
         with open(config_file) as h:
             good_config = json.loads(h.read())
