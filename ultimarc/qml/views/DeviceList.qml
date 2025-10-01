@@ -34,6 +34,17 @@ Item {
         keyNavigationWraps: true
         focus: true
 
+        // Ensure the first radio button becomes the active widget on startup
+        Component.onCompleted: {
+            if (count > 0) {
+                currentIndex = 0
+                if (currentItem) currentItem.forceActiveFocus()
+            }
+        }
+        onCurrentItemChanged: {
+            if (currentItem) currentItem.forceActiveFocus()
+        }
+
         highlight: Rectangle {
             color: 'light gray'
             width: gridView.cellWidth
@@ -44,6 +55,9 @@ Item {
                 property GridView __gv: GridView.view
                 width: gridView.cellWidth
                 height: gridView.cellHeight
+                focusPolicy: Qt.StrongFocus
+                // Forward arrow keys to the GridView so navigation still works when this has focus
+                Keys.forwardTo: [__gv]
 
                 // keep
                 text: model.device_name

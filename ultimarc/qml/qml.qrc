@@ -4,8 +4,12 @@
         <file>views/DeviceList.qml</file>
         <file>views/DeviceStackView.qml</file>
         <file>views/PacDetail.qml</file>
+        <file>views/UsbButtonDetail.qml</file>
+        <file>complex/AboutDialog.qml</file>
+        <file>complex/BackgroundImage.qml</file>
         <file>complex/MacroPopup.qml</file>
         <file>complex/ImageBar.qml</file>
+        <file>complex/RGBSlider.qml</file>
         <file>dialogs/FileDialog.qml</file>
         <file>main.qml</file>
     </qresource>

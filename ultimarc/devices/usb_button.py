@@ -3,13 +3,14 @@
 # file 'LICENSE', which is part of this source code package.
 #
 import ctypes as ct
+import json
 import logging
 from enum import IntEnum
 
 from python_easy_json import JSONObject
 from ultimarc import translate_gettext as _
 from ultimarc.devices._device import USBDeviceHandle, USBRequestCode
-from ultimarc.devices._mappings import IPACSeriesMapping
+from ultimarc.devices._mappings import IPACSeriesMapping, get_ipac_series_mapping_key
 from ultimarc.devices._structures import UltimarcStruct
 
 _logger = logging.getLogger('ultimarc')
@@ -54,7 +55,7 @@ class USBButtonConfigStruct(UltimarcStruct):
         # ('reportId', ct.c_uint8),  # Can be 0x00 or 0x01, not sure exactly which one is right.
         ('configApplication', ct.c_uint8),  # Can be 0x50 for permanent or 0x51 for temporary. See: ConfigApplication.
         ('opDetail', ct.c_uint8),  # Must always be 0xdd.
-        ('mode', ct.c_uint8),  # See ButtonModeMapping.
+        ('action', ct.c_uint8),  # See ButtonModeMapping.
         ('reserved', ct.c_uint8),  # Must be 0x00.
         ('releasedRGB', RGBValueStruct),
         ('pressedRGB', RGBValueStruct),
@@ -67,6 +68,15 @@ class USBButtonConfigStruct(UltimarcStruct):
         ('row7', ROWARRAY),
         ('row8', ROWARRAY),
         ('padding', ROWARRAY)
+    ]
+
+class USBButtonRequestStruct(UltimarcStruct):
+    """ Defines a request message for the USB button device. """
+    _fields_ = [
+        ('configApplication', ct.c_uint8),  # Must be 0x59 for request
+        ('opDetail', ct.c_uint8),  # Must always be 0xdd.
+        ('action', ct.c_uint8),  # Must be 0x00
+        ('reserved', ct.c_uint8),  # Must be 0x00.
     ]
 
 
@@ -154,6 +164,18 @@ class USBButtonDevice(USBDeviceHandle):
             return False
         _logger.debug(_('Device JSON configuration passed schema validation.'))
 
+        data = self.create_message(config, application)
+        return self.write_alt(USBRequestCode.SET_CONFIGURATION, 0x00, USBButtonWIndex, data,
+                              ct.sizeof(data))
+
+    def create_message(self, config: JSONObject, application=ConfigApplication.permanent):
+        """
+        Create message to send to the device.
+        :param config: JSON object with configuration.
+        :param application: Permanent or temporary application of configuration to device.
+        :return: data structure to be sent.
+
+        """
         action = ButtonModeMapping[config.action]
 
         released_rgb = RGBValueStruct(config.releasedColor.red, config.releasedColor.green, config.releasedColor.blue)
@@ -191,5 +213,99 @@ class USBButtonDevice(USBDeviceHandle):
         for row in debug_data:
             _logger.debug(_(' row') + f': {", ".join(row)}')
 
+        return data
+
+    def set_config_ui(self, config: JSONObject):
+        """ Write the configuration from UI to the device """
+        data = self.create_message(config)
         return self.write_alt(USBRequestCode.SET_CONFIGURATION, 0x00, USBButtonWIndex, data,
                               ct.sizeof(data))
+
+    def get_device_config (self, indent=None, file=None):
+        """ Return a json string of the device configuration """
+        config = self.read_device()
+        json_obj = self.create_json(config)
+        if file:
+            if self.write_to_file(json_obj, file, indent):
+                return _('Wrote USB-Button configuration to ' + file)
+            else:
+                return _('Failed to write USB-Button configuration to file.')
+        else:
+            return json.dumps(json_obj, indent=indent) if config else None
+
+    def create_json (self, data):
+        """ Create a string for the USB-Button configuration"""
+        config = {'schemaVersion': 2.0, 'resourceType': 'usb-button-config', 'deviceClass': 'usb-button'}
+
+        # action
+        action = hex(data.action)
+        for key, value in ButtonModeMapping.items():
+            if hex(value) == action:
+                config['action'] = key
+                break
+
+        # releasedColor
+        color = {'red': data.releasedRGB.red,
+                 'green': data.releasedRGB.green,
+                 'blue': data.releasedRGB.blue}
+        config['releasedColor'] = color
+
+        # pressedColor
+        color = {'red': data.pressedRGB.red,
+                 'green': data.pressedRGB.green,
+                 'blue': data.pressedRGB.blue}
+        config['pressedColor'] = color
+
+        # Keys Primary rows 1-4
+        config['keys'] = []
+        keys = {'sequence': 'primary', 'row1':[], 'row2': [], 'row3': [], 'row4': []}
+        for x in range(6):
+            key = get_ipac_series_mapping_key(data.row1[x])
+            keys['row1'].append(key)
+
+            key = get_ipac_series_mapping_key(data.row2[x])
+            keys['row2'].append(key)
+
+            key = get_ipac_series_mapping_key(data.row3[x])
+            keys['row3'].append(key)
+
+            key = get_ipac_series_mapping_key(data.row4[x])
+            keys['row4'].append(key)
+
+        config['keys'].append(keys)
+
+        # Keys Secondary rows 5 - 8
+        keys = {'sequence': 'secondary', 'row1': [], 'row2': [], 'row3': [], 'row4': []}
+        for x in range(6):
+            key = get_ipac_series_mapping_key(data.row5[x])
+            keys['row1'].append(key)
+
+            key = get_ipac_series_mapping_key(data.row6[x])
+            keys['row2'].append(key)
+
+            key = get_ipac_series_mapping_key(data.row7[x])
+            keys['row3'].append(key)
+
+            key = get_ipac_series_mapping_key(data.row8[x])
+            keys['row4'].append(key)
+
+        config['keys'].append(keys)
+
+        return config if self.validate_config(config, 'usb-button-config.schema') else None
+
+    def read_device(self):
+        """ Return the configuration of the connected USBButton """
+        request = USBButtonRequestStruct(0x59, 0xdd, 0x00, 0x00)
+        ret = self.write_raw(USBRequestCode.SET_CONFIGURATION, 0x200, 0x00,
+                         request, ct.sizeof(request))
+        return self.read_interrupt(0x81, USBButtonConfigStruct(), False) if ret else None
+
+    @classmethod
+    def write_to_file(cls, data: dict, file_path, indent=None):
+        try:
+            with open(file_path, 'w') as h:
+                json.dump(data, h, indent=indent)
+                return True
+        except FileNotFoundError as err:
+            _logger.debug(err)
+            return False

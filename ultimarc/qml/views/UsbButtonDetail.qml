@@ -1,0 +1,463 @@
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+
+import "../complex"
+
+Item {
+    id: root
+
+    function applyColorToSliders(colorObj) {
+        if (!colorObj) return;
+        var r = colorObj.red; var g = colorObj.green; var b = colorObj.blue;
+        if (r !== undefined) redSlider.value = Math.max(0, Math.min(1, r / 255.0));
+        if (g !== undefined) greenSlider.value = Math.max(0, Math.min(1, g / 255.0));
+        if (b !== undefined) blueSlider.value = Math.max(0, Math.min(1, b / 255.0));
+    }
+
+    Component.onCompleted: {
+        try {
+            var c = _device_model.device.released_color;
+            applyColorToSliders(c);
+        } catch (e) {
+            // property might be unavailable; ignore
+        }
+    }
+
+    Label {
+        id: referenceLabel
+        visible: false
+        opacity: 0
+        width: 30
+    }
+
+    Rectangle {
+        id: keySequenceRect
+        anchors {
+            top: root.top
+            horizontalCenter: parent.horizontalCenter
+        }
+        width: childrenRect.width
+        height: childrenRect.height
+
+        RadioButton {
+            id: primaryBtn
+
+            anchors {
+                top: parent.top
+                left: parent.left
+            }
+            text: 'Primary Keys'
+            font.pointSize: 12
+
+            checked: true
+            onToggled: {
+                keyStack.replace(priKey)
+            }
+        }
+        RadioButton {
+            id: secondaryBtn
+
+            anchors {
+                top: parent.top
+                left: primaryBtn.right
+            }
+            text: 'Secondary Keys'
+            font.pointSize: 12
+
+            onToggled: {
+                keyStack.replace(secKey)
+            }
+        }
+    }
+
+    StackView {
+        id: keyStack
+        initialItem: priKey
+        anchors {
+            top: keySequenceRect.bottom
+            left: root.left
+            right: root.right
+            leftMargin: 5
+        }
+
+        height: 125
+    }
+
+    GridView {
+        id: priKey
+
+        anchors {
+            margins: 2
+        }
+
+        clip: true
+        interactive: true
+        cellWidth: 110
+        cellHeight: 26
+        model: _device_model.device.primary_key_sequence
+        delegate: Rectangle {
+            id: key
+            width: priKey.cellWidth
+            height: priKey.cellHeight
+            anchors {
+                margins: 2
+            }
+
+            border {
+                color: Qt.darker(palette.window, 1.2)
+                width: 1
+            }
+
+            ComboBox {
+                id: actionCombo
+                indicator: Canvas {
+                    id: canvas
+                    // Don't paint an indicator on the dropdown
+                }
+
+                width: 130
+                model: _device_model.device.action_model
+
+                // Initialize the combo to reflect the item's current action
+                Component.onCompleted: {
+                    // 'action' is the role from the GridView's model (KeySequenceUI)
+                    if (action !== undefined && action !== null) {
+                        var idx = actionCombo.find(action)
+                        if (idx >= 0) actionCombo.currentIndex = idx
+                    }
+                }
+
+                // When user selects an option, write it back to the model entry
+                onActivated: {
+                    action = actionCombo.currentText
+                }
+            }
+        }
+    }
+
+    GridView {
+        id: secKey
+
+        anchors {
+            margins: 2
+        }
+
+        clip: true
+        interactive: true
+        cellWidth: 110
+        cellHeight: 26
+        model: _device_model.device.secondary_key_sequence
+        delegate: Rectangle {
+            id: key
+            width: secKey.cellWidth
+            height: secKey.cellHeight
+            anchors {
+                margins: 2
+            }
+
+            border {
+                color: Qt.darker(palette.window, 1.2)
+                width: 1
+            }
+
+            ComboBox {
+                id: actionCombo
+                indicator: Canvas {
+                    id: canvas
+                    // Don't paint an indicator on the dropdown
+                }
+
+                width: 130
+                model: _device_model.device.action_model
+
+                // Initialize the combo to reflect the item's current action
+                Component.onCompleted: {
+                    // 'action' is the role from the GridView's model (KeySequenceUI)
+                    if (action !== undefined && action !== null) {
+                        var idx = actionCombo.find(action)
+                        if (idx >= 0) actionCombo.currentIndex = idx
+                    }
+                }
+
+                // When user selects an option, write it back to the model entry
+                onActivated: {
+                    action = actionCombo.currentText
+                }
+            }
+        }
+    }
+
+    Rectangle {
+        id: actionRect
+
+        anchors {
+            top: keyStack.bottom
+            left: root.left
+            topMargin: 5
+        }
+
+        width: childrenRect.width
+        height: childrenRect.height
+
+        Label {
+            id: actionLabel
+            anchors {
+                top: parent.top
+                left: parent.left
+            }
+            text: "Action"
+            font.pointSize: 13
+        }
+
+        ButtonGroup {
+            id: actionGroup
+        }
+
+        RadioButton {
+            id: extended
+            ButtonGroup.group: actionGroup
+            anchors {
+                top: actionLabel.bottom
+                left: parent.left
+                leftMargin: 15
+            }
+            text: 'Extended: Send both sequences on every press'
+            font.pointSize: 12
+            checked: _device_model.device.action === 'extended'
+            onToggled: if (extended.checked) _device_model.device.action = 'extended'
+        }
+        RadioButton {
+            id: alternate
+            ButtonGroup.group: actionGroup
+            anchors {
+                top: extended.bottom
+                left: parent.left
+                leftMargin: 15
+            }
+            text: 'Alternate: Send primary then secondary on alternate presses'
+            font.pointSize: 12
+            checked: _device_model.device.action === 'alternate'
+            onToggled: if (alternate.checked) _device_model.device.action = 'alternate'
+        }
+        RadioButton {
+            id: both
+            ButtonGroup.group: actionGroup
+            anchors {
+                top: alternate.bottom
+                left: parent.left
+                leftMargin: 15
+            }
+            text: 'Both: Send primary on short press, secondary on long press'
+            font.pointSize: 12
+            checked: _device_model.device.action === 'both'
+            onToggled: if (both.checked) _device_model.device.action = 'both'
+        }
+    }
+
+    Rectangle {
+        id: ledRect
+        anchors {
+            top: actionRect.bottom
+            left: parent.left
+        }
+
+        width: childrenRect.width
+        height: childrenRect.height
+
+        Label {
+            id: ledLabel
+            anchors {
+                top: parent.top
+                left: parent.left
+                topMargin: 15
+            }
+            text: "LED"
+            font.pointSize: 13
+        }
+
+        Rectangle {
+            id: colorRect
+            anchors {
+                top: ledLabel.bottom
+                left: parent.left
+                topMargin: 10
+                leftMargin: 30
+            }
+            border {
+                width: 2
+            }
+
+            width: 50
+            height: 50
+
+            color: Qt.rgba(red, green, blue, 1)
+
+            property real red: redSlider.value.toFixed(2)
+            property real green: greenSlider.value.toFixed(2)
+            property real blue: blueSlider.value.toFixed(2)
+        }
+
+        Rectangle {
+            id: colorAction
+            anchors {
+                top: ledLabel.bottom
+                left: colorRect.right
+                leftMargin: 10
+            }
+
+            width: childrenRect.width
+
+            RadioButton {
+                id: releasedColor
+                anchors {
+                    top: parent.top
+                    left: parent.left
+                }
+
+                text: 'Released Color'
+                font.pointSize: 12
+                checked: true
+                focusPolicy: Qt.StrongFocus
+
+                Keys.onPressed: function(event) {
+                    if (event.key === Qt.Key_Space || event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                        // Select this option on activation keys
+                        releasedColor.checked = true
+                        event.accepted = true
+                    } else if (event.key === Qt.Key_Down || event.key === Qt.Key_Right) {
+                        // Move to the other radio button with arrows
+                        pressedColor.forceActiveFocus()
+                        pressedColor.checked = true
+                        event.accepted = true
+                    }
+                }
+
+                onToggled: {
+                    if (releasedColor.checked) {
+                        try {
+                            var c = _device_model.device.released_color
+                            applyColorToSliders(c)
+                        } catch (e) {
+                            // ignore if not available
+                        }
+                    }
+                }
+            }
+
+            RadioButton {
+                id: pressedColor
+                anchors {
+                    top: releasedColor.bottom
+                    left: parent.left
+                }
+
+                property int red: 0
+
+                text: 'Pressed Color'
+                font.pointSize: 12
+                focusPolicy: Qt.StrongFocus
+
+                Keys.onPressed: function(event) {
+                    if (event.key === Qt.Key_Space || event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                        pressedColor.checked = true
+                        event.accepted = true
+                    } else if (event.key === Qt.Key_Up || event.key === Qt.Key_Left) {
+                        releasedColor.forceActiveFocus()
+                        releasedColor.checked = true
+                        event.accepted = true
+                    }
+                }
+
+                onToggled: {
+                    if (pressedColor.checked) {
+                        try {
+                            var c2 = _device_model.device.pressed_color
+                            applyColorToSliders(c2)
+                        } catch (e) {
+                            // ignore if not available
+                        }
+                    }
+                }
+            }
+        }
+
+        RGBSlider {
+            id: redSlider
+            anchors {
+                top: ledLabel.bottom
+                left: colorAction.right
+                leftMargin: 10
+            }
+
+            text: 'Red'
+            sliderWidth: 350
+
+            // When user adjusts the slider, update the model for whichever color option is selected
+            onValueChanged: {
+                var colorObj = {
+                    red: Math.round(redSlider.value * 255),
+                    green: Math.round(greenSlider.value * 255),
+                    blue: Math.round(blueSlider.value * 255)
+                }
+                if (releasedColor.checked) {
+                    _device_model.device.released_color = colorObj
+                } else if (pressedColor.checked) {
+                    _device_model.device.pressed_color = colorObj
+                }
+            }
+        }
+
+        RGBSlider {
+            id: greenSlider
+            anchors {
+                top: redSlider.bottom
+                left: colorAction.right
+                topMargin: 10
+                leftMargin: 10
+            }
+            text: 'Green'
+            sliderWidth: 350
+
+            // When user adjusts the slider, update the model for whichever color option is selected
+            onValueChanged: {
+                var colorObj = {
+                    red: Math.round(redSlider.value * 255),
+                    green: Math.round(greenSlider.value * 255),
+                    blue: Math.round(blueSlider.value * 255)
+                }
+                if (releasedColor.checked) {
+                    _device_model.device.released_color = colorObj
+                } else if (pressedColor.checked) {
+                    _device_model.device.pressed_color = colorObj
+                }
+            }
+        }
+
+        RGBSlider {
+            id: blueSlider
+            anchors {
+                top: greenSlider.bottom
+                left: colorAction.right
+                topMargin: 10
+                leftMargin: 10
+            }
+            text: 'Blue'
+            sliderWidth: 350
+
+            // When user adjusts the slider, update the model for whichever color option is selected
+            onValueChanged: {
+                var colorObj = {
+                    red: Math.round(redSlider.value * 255),
+                    green: Math.round(greenSlider.value * 255),
+                    blue: Math.round(blueSlider.value * 255)
+                }
+                if (releasedColor.checked) {
+                    _device_model.device.released_color = colorObj
+                } else if (pressedColor.checked) {
+                    _device_model.device.pressed_color = colorObj
+                }
+            }
+        }
+    }
+}

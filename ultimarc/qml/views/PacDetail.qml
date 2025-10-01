@@ -94,11 +94,6 @@ Item {
                                 id: selectedAction
                                 implicitWidth: 130
                                 model: _device_model.device.actions
-                                onCurrentIndexChanged: {
-                                    if(activeFocus) {
-                                        model.action = selectedAction.textAt(currentIndex)
-                                    }
-                                }
                             }
                         }
                         RowLayout {
@@ -145,11 +140,6 @@ Item {
                                 id: selectedAltAction
                                 implicitWidth: 130
                                 model: _device_model.device.alt_actions
-                                onCurrentIndexChanged: {
-                                    if (activeFocus) {
-                                        model.action = selectedAltAction.textAt(currentIndex)
-                                    }
-                                }
                             }
                         }
                     }
