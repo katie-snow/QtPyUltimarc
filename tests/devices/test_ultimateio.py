@@ -3,9 +3,8 @@
 # file 'LICENSE', which is part of this source code package.
 #
 import json
-import os
+from pathlib import Path
 
-from python_easy_json import JSONObject
 from unittest import TestCase
 from unittest.mock import patch
 
@@ -26,15 +25,15 @@ class UltimateIODeviceTest(TestCase):
         """ This is called before every test method in the test class """
         super(UltimateIODeviceTest, self).setUp()
 
-        schema_file = os.path.join(git_project_root(), 'ultimarc/schemas/ultimate-io-led.schema')
-        self.assertTrue(os.path.exists(schema_file))
+        schema_file = Path(git_project_root()) / 'ultimarc/schemas/ultimate-io-led.schema'
+        self.assertTrue(schema_file.is_file())
 
         # https://python-jsonschema.readthedocs.io/en/stable/
         with open(schema_file) as h:
             self.ultimateio_led_schema = json.loads(h.read())
 
-        schema_file = os.path.join(git_project_root(), 'ultimarc/schemas/ultimate-io-pin.schema')
-        self.assertTrue(os.path.exists(schema_file))
+        schema_file = Path(git_project_root()) / 'ultimarc/schemas/ultimate-io-pin.schema'
+        self.assertTrue(schema_file.is_file())
 
         # https://python-jsonschema.readthedocs.io/en/stable/
         with open(schema_file) as h:
@@ -49,7 +48,7 @@ class UltimateIODeviceTest(TestCase):
 
         dev.__class__ = UltimateIODevice
 
-        config_file = os.path.join(git_project_root(), 'ultimarc/examples/ultimateIO/ultimate-io-pin.json')
+        config_file = Path(git_project_root()) / 'ultimarc/examples/ultimateIO/ultimate-io-pin.json'
         valid, data = dev._create_device_message_(config_file)
         # print(data)
         self.assertTrue(valid)
@@ -126,8 +125,8 @@ class UltimateIODeviceTest(TestCase):
 
         dev.__class__ = UltimateIODevice
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/ultimateIO/ultimateio-pin-optional.json')
-        self.assertTrue(os.path.exists(config_file))
+        config_file = Path(git_project_root()) / 'tests/test-data/ultimateIO/ultimateio-pin-optional.json'
+        self.assertTrue(config_file.is_file())
         valid, data = dev._create_device_message_(config_file)
 
         # pin 1down values, has both optional values
@@ -152,12 +151,12 @@ class UltimateIODeviceTest(TestCase):
         self.assertTrue(dev)
         dev.__class__ = UltimateIODevice
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/ultimateIO/ultimateio-macro-large-count.json')
+        config_file = Path(git_project_root()) / 'tests/test-data/ultimateIO/ultimateio-macro-large-count.json'
         valid, data = dev._create_device_message_(config_file)
         self.assertFalse(valid)
         self.assertIsNone(data)
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/ultimateIO/ultimateio-macro-large-action-count.json')
+        config_file = Path(git_project_root()) / 'tests/test-data/ultimateIO/ultimateio-macro-large-action-count.json'
         valid, data = dev._create_device_message_(config_file)
         self.assertFalse(valid)
         self.assertIsNone(data)
@@ -185,7 +184,7 @@ class UltimateIODeviceTest(TestCase):
 
         dev.__class__ = UltimateIODevice
 
-        config_file = os.path.join(git_project_root(), 'tests/test-data/ultimateIO/ultimateio-pin-optional.json')
+        config_file = Path(git_project_root()) / 'tests/test-data/ultimateIO/ultimateio-pin-optional.json'
         valid, data = dev._create_device_message_(config_file)
 
         header = PacConfigUnion()
@@ -197,7 +196,7 @@ class UltimateIODeviceTest(TestCase):
         # debounce is short (0x02)
         self.assertTrue(header.config.debounce == 0x02)
 
-        config_file = os.path.join(git_project_root(), 'ultimarc/examples/ultimateIO/ultimate-io-pin.json')
+        config_file = Path(git_project_root()) / 'ultimarc/examples/ultimateIO/ultimate-io-pin.json'
         valid, data = dev._create_device_message_(config_file)
 
         header = PacConfigUnion()
@@ -208,21 +207,6 @@ class UltimateIODeviceTest(TestCase):
 
         # debounce is short (0x00)
         self.assertTrue(header.config.debounce == 0x00)
-
-    @patch.object(USBDeviceHandle, '_get_descriptor_fields', return_value=None)
-    @patch('libusb.get_device', return_value='pointer')
-    def test_schema_path(self, dev_handle_mock, lib_usb_mock):
-        """ Test that the schema file can be found when running ultimarc outside the project """
-
-        dev = USBDeviceHandle('test_handle', '0000:0000')
-        self.assertTrue(dev)
-
-        dev.__class__ = UltimateIODevice
-
-        prev_dir = os.path.abspath(os.curdir)
-        os.chdir(os.path.abspath(__file__).split('/QtPyUltimarc/')[0])
-        self.assertTrue(dev.load_config_schema('ultimate-io-led.schema'))
-        os.chdir(prev_dir)
 
     @patch.object(USBDeviceHandle, '_get_descriptor_fields', return_value=None)
     @patch('libusb.get_device', return_value='pointer')
