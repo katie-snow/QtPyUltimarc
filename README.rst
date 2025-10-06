@@ -43,12 +43,12 @@ Supported Ultimarc Devices
      - Yes
    * - USB Button
      - Yes
+     - Yes
+   * - Ultimate I/O
+     - Yes
      - No
    * - UltraStik 360 Joystick
      - Yes
-     - No
-   * - AimTrak Light Gun
-     - No
      - No
 
 Get It Now
