@@ -84,7 +84,9 @@ class UltimateIOClass(object):
             for dev in devices:
                 with dev as dev_h:
                     response = dev_h.set_led_config(self.args.set_led_config)
-                    _logger.info(response)
+                    if response:
+                        _logger.info(f'{dev.dev_key} ({dev.bus},{dev.address}): ' +
+                                     _('LED config successfully applied to device.'))
 
         # Set one LED
         if self.args.set_led:
@@ -102,7 +104,9 @@ class UltimateIOClass(object):
                         return -1
 
                     response = dev_h.set_led_intensity(led, value)
-                    _logger.info(response)
+                    if response:
+                        _logger.info(f'{dev.dev_key} ({dev.bus},{dev.address}): ' +
+                                     _('LED successfully applied to device.'))
 
         # Set all LEDs to one intensity
         if self.args.set_all_leds:
@@ -114,7 +118,9 @@ class UltimateIOClass(object):
                         return -1
 
                     response = dev_h.set_all_led_intensities(value)
-                    _logger.info(response)
+                    if response:
+                        _logger.info(f'{dev.dev_key} ({dev.bus},{dev.address}): ' +
+                                     _('LED intensities successfully applied to device.'))
 
         # Set fade rate for all LEDs
         if self.args.set_leds_fade_rate:
@@ -126,14 +132,18 @@ class UltimateIOClass(object):
                         return -1
 
                     response = dev_h.set_led_fade_rate(self.args.set_leds_fade_rate)
-                    _logger.info(response)
+                    if response:
+                        _logger.info(f'{dev.dev_key} ({dev.bus},{dev.address}): ' +
+                                     _('LED fade rate successfully applied to device.'))
 
         # Set LEDs to random state
         if self.args.set_leds_random_state:
             for dev in devices:
                 with dev as dev_h:
                     response = dev_h.set_led_random_state()
-                    _logger.info(response)
+                    if response:
+                        _logger.info(f'{dev.dev_key} ({dev.bus},{dev.address}): ' +
+                                     _('LED random state successfully applied to device.'))
         return 0
 
 
