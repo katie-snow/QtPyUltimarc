@@ -108,8 +108,9 @@ class UltraStikStruct(UltimarcStruct):
 
 
 class LEDConfigStruct(UltimarcStruct):
-    _fields = [
-        ('action', ct.c_uint, 1),  # action[0] : led (1-96), all intensities(0x80), fade rate(0xC0), random state(0x89)
-        ('value', ct.c_uint, 1),
-        ('reserved', ct.c_uint, 1)
+    level = 2
+    _fields_ = [
+        ('action', ct.c_uint8),  # action[0] : led (1-96), all intensities(0x80), fade rate(0xC0), random state(0x89)
+        ('value', ct.c_uint8),
+        ('reserved', ct.c_ubyte)
     ]
