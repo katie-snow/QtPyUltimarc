@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 2.0,
+  "resourceType": "ultimate-io-led",
+  "deviceClass": "ultimate-io",
+  "randomState" : 2,
+  "intensities": [],
+  "fadeRate" : 0,
+  "allIntensities": {
+    "active": false,
+    "value": 0
+  }
+}

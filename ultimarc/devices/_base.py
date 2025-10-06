@@ -20,6 +20,7 @@ from ultimarc.devices.usb_button import USBButtonDevice
 from ultimarc.devices.aimtrak import AimTrakDevice
 from ultimarc.devices.mini_pac import MiniPacDevice
 from ultimarc.devices.ultrastik import UltraStikPre2015Device, UltraStikDevice
+from ultimarc.devices.ultimate_io import UltimateIODevice
 from ultimarc.exceptions import USBDeviceNotFoundError
 
 _logger = logging.getLogger('ultimarc')
@@ -35,6 +36,7 @@ _USB_PRODUCT_CLASSES = {
     'd209:045': JpacDevice,
     'd209:050': UltraStikPre2015Device,
     'd209:051': UltraStikDevice,
+    'd209:041': UltimateIODevice
 }
 
 # USB key values for every USB device.
@@ -56,6 +58,7 @@ USB_PRODUCT_DESCRIPTIONS = {
     'd209:0512': 'UltraStik 360 Joystick #2',
     'd209:0513': 'UltraStik 360 Joystick #3',
     'd209:0514': 'UltraStik 360 Joystick #4',
+    'd209:0410': 'Ultimate IO #1',
 }
 
 
@@ -68,6 +71,7 @@ class DeviceClassID(Enum):
     IPAC4 = 'ipac4'
     JPAC = 'jpac'
     UltraStik = 'ultrastik'  # Represents pre-2015 devices and 2015 and newer devices
+    UltimateIO = 'ultimate-io'
 
 
 class USBDeviceInfo:

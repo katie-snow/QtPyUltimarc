@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 2.0,
+  "resourceType": "ultimate-io-led",
+  "deviceClass": "ultimate-io",
+  "intensities": [],
+  "allIntensities" : {
+    "active": false,
+    "value": "hello"
+  }
+}

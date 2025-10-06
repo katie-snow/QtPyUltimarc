@@ -105,3 +105,12 @@ class UltraStikStruct(UltimarcStruct):
         ('reserved', ct.c_uint8 * 3),  # reserved
         ('flash', ct.c_uint8)  # flash[95] : (Pre-2015) false RAM(0xFF), true FLASH(0x00), (=> 2015) 0x0
     ]
+
+
+class LEDConfigStruct(UltimarcStruct):
+    level = 2
+    _fields_ = [
+        ('action', ct.c_uint8),  # action[0] : led (1-96), all intensities(0x80), fade rate(0xC0), random state(0x89)
+        ('value', ct.c_uint8),
+        ('reserved', ct.c_ubyte)
+    ]

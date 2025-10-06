@@ -372,29 +372,31 @@ class USBDeviceHandle:
         Read response from USB device on the interrupt endpoint.
         :param endpoint: Endpoint to receive message on.
         :param response: Variable holding the complete response from the device.
-        :param uses_report_id: True if report_id is in the message.
+        :param uses_report_id: True if report_id is in the response message.  report_id is not copied into the response.
         """
         if self.interface is None:
             raise USBDeviceInterfaceNotClaimedError(self.dev_key)
 
         actual_length = ct.c_int(0)
-        length = 5 if uses_report_id else 4  # Expecting the report_id in the message
+        length = 5 if uses_report_id else 4
         payload = (ct.c_ubyte * length)(0)
         payload_ptr = ct.byref(payload)
+        #_logger.debug(f'Expecting {ct.sizeof(response)} bytes of data')
 
-        # Don't count the report_id into the response structure size, 4 instead of 5
-        for pos in range(0, ct.sizeof(response), 4 if not uses_report_id else 5):
+        # response structures plan on 4 bytes of data each read
+        for pos in range(0, ct.sizeof(response), 4):
             self._make_interrupt_transfer(endpoint, payload_ptr, length, ct.byref(actual_length))
+            _logger.debug(_(' '.join(hex(x) for x in payload)))
 
             # Remove report_id (byte 0) from copy length if it is used
             copy_length = actual_length.value - (1 if uses_report_id else 0)
             if copy_length < 0:
                 copy_length = 0
             ct.memmove(ct.addressof(response) + pos,
-                       ct.byref(payload, 1) if uses_report_id else ct.byref(payload),
+                       ct.byref(payload, 1) if uses_report_id else ct.byref(payload), # remove report_id if present
                        copy_length)
-            _logger.debug(_(' '.join(hex(x) for x in payload)))
 
+        # _logger.debug(response)
         return response
 
     @classmethod

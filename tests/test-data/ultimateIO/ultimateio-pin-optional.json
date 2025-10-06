@@ -1,0 +1,18 @@
+{
+  "schemaVersion" : 2.0,
+  "resourceType" : "ultimate-io-pin",
+  "deviceClass" : "ultimate-io",
+  "debounce" : "short",
+  "pins" : [
+    {
+      "name": "1right",
+      "action": "right"
+    },
+    {
+      "name": "1down",
+      "action": "down",
+      "alternate_action": "p",
+      "shift": true
+    }
+  ]
+}
