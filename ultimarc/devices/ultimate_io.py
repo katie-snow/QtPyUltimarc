@@ -252,7 +252,7 @@ class UltimateIODevice(USBDeviceHandle):
         return self.write(USBRequestCode.SET_CONFIGURATION, int(0x03), self.ULTIMATEIO_INDEX,
                           data, ct.sizeof(data))
 
-    def set_all_led_intensities(self, rate):
+    def set_led_fade_rate(self, rate):
         """ Set the fade rate for the LEDs """
         data = self._create_led_device_message_(0xc0, rate)
 
