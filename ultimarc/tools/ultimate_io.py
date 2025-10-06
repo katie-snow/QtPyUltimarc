@@ -93,12 +93,11 @@ class UltimateIOClass(object):
                     led = self.args.set_led[0]
                     value = self.args.set_led[1]
 
-                    # check value is in range
-                    if led not in range(1-97):
+                    if not 1 <= led <= 96:
                         _logger.info(f'LED {led} is not between 1 to 96')
                         return -1
 
-                    if value not in range(0-256):
+                    if not 0 <= value <= 255:
                         _logger.info(f'LED value {value} is not between 0 to 255')
                         return -1
 
@@ -110,7 +109,7 @@ class UltimateIOClass(object):
             for dev in devices:
                 with dev as dev_h:
                     value = self.args.set_all_leds
-                    if value not in range(0-256):
+                    if not 0 <= value <= 255:
                         _logger.info(f'LED value {value} is not between 0 to 255')
                         return -1
 
@@ -122,11 +121,11 @@ class UltimateIOClass(object):
             for dev in devices:
                 with dev as dev_h:
                     value = self.args.set_leds_fade_rate
-                    if value not in range(0 - 256):
+                    if not 0 <= value <= 255:
                         _logger.info(f'LED fade rate {value} is not between 0 to 255')
                         return -1
 
-                    response = dev_h.set_all_led_intensities(self.args.set_leds_fade_rate)
+                    response = dev_h.set_led_fade_rate(self.args.set_leds_fade_rate)
                     _logger.info(response)
 
         # Set LEDs to random state
