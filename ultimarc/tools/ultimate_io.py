@@ -189,10 +189,17 @@ def run():
         _logger.error(_('The --current argument can only be used with the --set_pin_config argument '))
         return -1
 
-    if args.set_pin_config or args.set_led_config:
+    if args.set_pin_config:
         # Always force absolute path for config files.
-        args.set_config = ToolContextManager.clean_config_path(args.set_config)
-        if not os.path.exists(args.set_config):
+        args.set_pin_config = ToolContextManager.clean_config_path(args.set_pin_config)
+        if not os.path.exists(args.set_pin_config):
+            _logger.error(_('Unable to find configuration file specified in argument.'))
+            return -1
+
+    if args.set_led_config:
+        # Always force absolute path for config files.
+        args.set_led_config = ToolContextManager.clean_config_path(args.set_led_config)
+        if not os.path.exists(args.set_led_config):
             _logger.error(_('Unable to find configuration file specified in argument.'))
             return -1
 
