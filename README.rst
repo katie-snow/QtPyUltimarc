@@ -65,7 +65,7 @@ To install both the command line and graphical tools, run:
     $ pip install ultimarc[ui]
 
 Installing on Windows
-::
+~~~~~~~~~~~~~~~~~~~~~
 
 Install Python 3 from `Python.org <https://www.python.org/>`_.  The Python available through the
 Microsoft Store doesn't have all the required dll's to run the Graphical Tool.
