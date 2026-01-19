@@ -10,7 +10,7 @@ import logging
 import os.path
 import sys
 
-from devices.ultrastik import UltraStikPre2015Device, UltraStikDevice, USTIK_RESOURCE_TYPES
+from ultimarc.devices.ultrastik import UltraStikPre2015Device, UltraStikDevice, USTIK_RESOURCE_TYPES
 from ultimarc import translate_gettext as _
 from ultimarc.devices import DeviceClassID
 from ultimarc.tools import ToolContextManager, ToolEnvironmentObject
