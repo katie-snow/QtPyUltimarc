@@ -266,8 +266,8 @@ Item {
 
                                 selectedName.text = model.name
                                 selectedShift.checked = model.shift
-                                selectedAction.currentIndex = selectedAction.find(model.action, Qt.MatchFixedString)
-                                selectedAltAction.currentIndex = selectedAltAction.find(model.alt_action, Qt.MatchFixedString)
+                                selectedAction.currentIndex = selectedAction.find(model.action)
+                                selectedAltAction.currentIndex = selectedAltAction.find(model.alt_action)
                             }
                             onClicked: {
                                 mouseAction()
@@ -338,9 +338,9 @@ Item {
 
                                             Connections {
                                                 target: selectedAction
-                                                function onCurrentIndexChanged() {
-                                                    if (grid.currentIndex == index && selectedAction.activeFocus) {
-                                                        model.action = selectedAction.textAt(selectedAction.currentIndex)
+                                                function onActivated() {
+                                                    if (grid.currentIndex == index) {
+                                                        model.action = selectedAction.displayText
                                                     }
                                                 }
                                             }
@@ -365,9 +365,9 @@ Item {
 
                                             Connections {
                                                 target: selectedAltAction
-                                                function onCurrentIndexChanged() {
-                                                    if (grid.currentIndex == index && selectedAltAction.activeFocus) {
-                                                        model.alt_action = selectedAltAction.textAt(selectedAltAction.currentIndex)
+                                                function onActivated() {
+                                                    if (grid.currentIndex == index) {
+                                                        model.alt_action = selectedAltAction.displayText
                                                     }
                                                 }
                                             }

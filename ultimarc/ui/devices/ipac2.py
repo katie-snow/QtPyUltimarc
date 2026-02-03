@@ -186,6 +186,7 @@ class Ipac2UI(Device):
             pin['alternate_action'] = value
 
         self._json_obj = JSONObject(self.config)
+        self.dataChanged.emit(index, index, [role])
         return True
 
     def set_macros(self):
