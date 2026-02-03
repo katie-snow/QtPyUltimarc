@@ -6,7 +6,7 @@ import logging
 import typing
 from enum import Enum
 
-from PySide6.QtCore import QModelIndex, QObject, QAbstractListModel, QPersistentModelIndex
+from PySide6.QtCore import QModelIndex, QObject, QAbstractListModel, QPersistentModelIndex, Property
 
 from ultimarc.devices import DeviceClassID
 
@@ -93,3 +93,8 @@ class Device(QAbstractListModel, QObject):
 
     def get_device_key(self):
         return self.device_key
+
+    def has_paclink(self):
+        return True
+
+    paclink_supported = Property(bool, has_paclink, constant=True)

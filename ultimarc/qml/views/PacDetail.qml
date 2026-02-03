@@ -101,13 +101,22 @@ Item {
                                 id: paclink
                                 font.pointSize: referenceLabel.font.pointSize - 1
                                 text: qsTr("PacLink")
+                                enabled: _device_model.device.paclink_supported
+                                visible: _device_model.device.paclink_supported
 
                                 onToggled: {
                                     _device_model.device.paclink = checked
                                 }
                                 Component.onCompleted: {
-                                    checked = _device_model.device.paclink
+                                    if (_device_model.device.paclink_supported) {
+                                        checked = _device_model.device.paclink
+                                    }
                                 }
+                            }
+                            Rectangle {
+                                implicitWidth: paclink.implicitWidth
+                                visible: !_device_model.device.paclink_supported
+                                color: 'transparent'
                             }
                             Button {
                                 text: {
